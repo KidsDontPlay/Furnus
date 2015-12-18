@@ -102,19 +102,19 @@ public class FurnusGUI extends GuiContainer {
 	}
 
 	private void drawMore(int k, int l) {
-		if (tile.getSlot() > 0 || true) {
+		if (tile.getSlot() > 0) {
 			drawTexturedModalRect(k + 19, l + 47, 176, 31, 18, 18);
 			drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
 		}
-		if (tile.getSlot() > 1 || true) {
+		if (tile.getSlot() > 1) {
 			drawTexturedModalRect(k + 19, l + 47 + 27, 176, 31, 18, 18);
 			drawTexturedModalRect(k + 43, l + 49 + 27, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
 		}
-		int d = 11;
+		int d = 14 - tile.getFuel();
 		drawTexturedModalRect(k + 46, l + 103 + d, 176, 0 + d, 14, 14 - d);
 
 	}

@@ -1,11 +1,17 @@
 package mrriegel.furnus.block;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import mrriegel.furnus.Furnus;
+import mrriegel.furnus.item.ItemUpgrade;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntityFurnace;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -18,7 +24,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	Map<Integer, SideConfig> map;
 
 	public TileFurnus() {
-		super(10);
+		super(15);
 		map = new HashMap<Integer, SideConfig>();
 	}
 
@@ -145,6 +151,75 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	@Override
+	public boolean isItemValidForSlot(int p_94041_1_, ItemStack stack) {
+		if (slot >= 0 && slot <= 8)
+			return true;
+		if (slot == 9)
+			return TileEntityFurnace.isItemFuel(stack);
+		if (slot >= 10)
+			return stack.getItem() == ItemUpgrade.upgrade;
+		return false;
+	}
+
+	public void updateStats(EntityPlayer player, int index) {
+		int s = getSlot();
+		setSpeed(0);
+		setEffi(0);
+		setInout(false);
+		setSlot(0);
+		setBonus(0);
+		setXp(0);
+		setEco(false);
+		for (int i = 10; i < 15; i++) {
+			ItemStack stack = getStackInSlot(i);
+			if (stack == null)
+				continue;
+			int meta = stack.getItemDamage();
+			switch (meta) {
+			case 0:
+				setSpeed(stack.stackSize);
+				break;
+			case 1:
+				setEffi(stack.stackSize);
+				break;
+			case 2:
+				setInout(true);
+				break;
+			case 3:
+				setSlot(stack.stackSize);
+				break;
+			case 4:
+				setBonus(stack.stackSize);
+				break;
+			case 5:
+				setXp(stack.stackSize);
+				break;
+			case 6:
+				setEco(true);
+				break;
+			}
+		}
+
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		if (s <= getSlot())
+			return;
+		ArrayList<Integer> lis = new ArrayList<Integer>();
+		lis.addAll(Arrays.asList(new Integer[] { 2, 5, 8 }));
+		if (getSlot() == 0)
+			lis.addAll(Arrays.asList(new Integer[] { 1, 4, 7 }));
+		if (worldObj.isRemote)
+			return;
+		for (int i : lis) {
+			if (getStackInSlot(i) == null)
+				continue;
+			ItemStack stack = getStackInSlot(i).copy();
+			player.dropPlayerItemWithRandomChoice(stack, false);
+			setInventorySlotContents(i, null);
+		}
+
+	}
+
+	@Override
 	public int[] getAccessibleSlotsFromSide(int side) {
 		return map.get(side).getSlots();
 	}
@@ -177,16 +252,12 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean inStackValid(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 2)
 			return true;
-		if (slot >= 3 && slot <= 8)
-			return false;
 		if (slot == 9)
-			return GameRegistry.getFuelValue(stack) > 0;
+			return TileEntityFurnace.isItemFuel(stack);
 		return false;
 	}
 
 	private boolean outStackValid(int slot, ItemStack stack) {
-		if (slot >= 0 && slot <= 2)
-			return false;
 		if (slot >= 3 && slot <= 8)
 			return true;
 		return false;

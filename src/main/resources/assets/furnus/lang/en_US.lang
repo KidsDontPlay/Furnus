@@ -1,0 +1,9 @@
+tile.furnus:furnus.name=Furnus
+
+item.furnus:upgrade_0.name=Speed
+item.furnus:upgrade_1.name=Effi
+item.furnus:upgrade_2.name=put
+item.furnus:upgrade_3.name=slots
+item.furnus:upgrade_4.name=bonus
+item.furnus:upgrade_5.name=xp
+item.furnus:upgrade_6.name=eco
