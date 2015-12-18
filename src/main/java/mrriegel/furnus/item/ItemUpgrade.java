@@ -59,9 +59,22 @@ public class ItemUpgrade extends Item {
 	@Override
 	public int getItemStackLimit(ItemStack stack) {
 		switch (stack.getItemDamage()) {
-
+		case 0:
+			return 4;
+		case 1:
+			return 4;
+		case 2:
+			return 1;
+		case 3:
+			return 2;
+		case 4:
+			return 4;
+		case 5:
+			return 4;
+		case 6:
+			return 1;
 		}
-		return 33;
+		return -1;
 		// return -1;
 	}
 

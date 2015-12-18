@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
@@ -20,7 +22,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean burning, eco, inout, split;
-	private int speed, effi, slot, bonus, xp, process, fuel;
+	private int speed, effi, slots, bonus, xp, process, fuel;
 	Map<Integer, SideConfig> map;
 
 	public TileFurnus() {
@@ -36,7 +38,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		split = tag.getBoolean("split");
 		speed = tag.getInteger("speed");
 		effi = tag.getInteger("effi");
-		slot = tag.getInteger("slot");
+		slots = tag.getInteger("slot");
 		bonus = tag.getInteger("bonus");
 		xp = tag.getInteger("xp");
 		process = tag.getInteger("process");
@@ -54,7 +56,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		tag.setBoolean("split", split);
 		tag.setInteger("speed", speed);
 		tag.setInteger("effi", effi);
-		tag.setInteger("slot", slot);
+		tag.setInteger("slot", slots);
 		tag.setInteger("bonus", bonus);
 		tag.setInteger("xp", xp);
 		tag.setInteger("process", process);
@@ -102,12 +104,12 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		this.effi = effi;
 	}
 
-	public int getSlot() {
-		return slot;
+	public int getSlots() {
+		return slots;
 	}
 
-	public void setSlot(int slot) {
-		this.slot = slot;
+	public void setSlots(int slots) {
+		this.slots = slots;
 	}
 
 	public int getBonus() {
@@ -151,61 +153,64 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int p_94041_1_, ItemStack stack) {
+	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 8)
 			return true;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
+		boolean x = false;
 		if (slot >= 10)
-			return stack.getItem() == ItemUpgrade.upgrade;
+			return stack.getItem() == ItemUpgrade.upgrade
+					&& UpgradeSlot.in(stack, slot, this);
 		return false;
 	}
 
-	public void updateStats(EntityPlayer player, int index) {
-		int s = getSlot();
-		setSpeed(0);
-		setEffi(0);
-		setInout(false);
-		setSlot(0);
-		setBonus(0);
-		setXp(0);
-		setEco(false);
+	public void updateStats(EntityPlayer player) {
+		int s = getSlots();
+		Map<Integer, Integer> upgrades = new HashMap<Integer, Integer>();
+		for (int i = 0; i < 7; i++)
+			upgrades.put(i, 0);
+		for(int i=0;i<15;i++)
+			System.out.println(i+" , "+getStackInSlot(i));
 		for (int i = 10; i < 15; i++) {
 			ItemStack stack = getStackInSlot(i);
 			if (stack == null)
 				continue;
 			int meta = stack.getItemDamage();
-			switch (meta) {
+			upgrades.put(meta, stack.stackSize);
+		}
+		for (Entry<Integer, Integer> e : upgrades.entrySet()) {
+			switch (e.getKey()) {
 			case 0:
-				setSpeed(stack.stackSize);
+				setSpeed(e.getValue());
 				break;
 			case 1:
-				setEffi(stack.stackSize);
+				setEffi(e.getValue());
 				break;
 			case 2:
-				setInout(true);
+				setInout(e.getValue() > 0 ? true : false);
 				break;
 			case 3:
-				setSlot(stack.stackSize);
+				setSlots(e.getValue());
 				break;
 			case 4:
-				setBonus(stack.stackSize);
+				setBonus(e.getValue());
 				break;
 			case 5:
-				setXp(stack.stackSize);
+				setXp(e.getValue());
 				break;
 			case 6:
-				setEco(true);
+				setEco(e.getValue() > 0 ? true : false);
 				break;
 			}
 		}
-
+System.out.println("map: "+upgrades);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		if (s <= getSlot())
+		if (s <= getSlots())
 			return;
 		ArrayList<Integer> lis = new ArrayList<Integer>();
 		lis.addAll(Arrays.asList(new Integer[] { 2, 5, 8 }));
-		if (getSlot() == 0)
+		if (getSlots() == 0)
 			lis.addAll(Arrays.asList(new Integer[] { 1, 4, 7 }));
 		if (worldObj.isRemote)
 			return;
@@ -215,6 +220,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			ItemStack stack = getStackInSlot(i).copy();
 			player.dropPlayerItemWithRandomChoice(stack, false);
 			setInventorySlotContents(i, null);
+
 		}
 
 	}
