@@ -6,6 +6,7 @@ import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.Slot;
@@ -71,7 +72,7 @@ public class FurnusContainer extends Container {
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		// System.out.println("mooooo");
+
 		if (startSlot != tile.getSlots()
 				&& player.inventory.getItemStack() == null) {
 			startSlot = tile.getSlots();

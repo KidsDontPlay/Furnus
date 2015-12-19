@@ -8,6 +8,7 @@ import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.handler.CheckMessage;
 import mrriegel.furnus.handler.PacketHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
@@ -21,6 +22,7 @@ public class FurnusGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(
 			Furnus.MODID + ":" + "textures/gui/furnus.png");
 	GuiCheckBox check;
+	GuiButton i, o;
 	TileFurnus tile;
 
 	public FurnusGUI(Container p_i1072_1_) {
@@ -54,6 +56,10 @@ public class FurnusGUI extends GuiContainer {
 			}
 		};
 		buttonList.add(check);
+		i = new GuiButton(1, guiLeft + 146, guiTop + 108, 11, 11, "I");
+		buttonList.add(i);
+		o = new GuiButton(2, guiLeft + 160, guiTop + 108, 11, 11, "O");
+		buttonList.add(o);
 	}
 
 	@Override
@@ -77,6 +83,17 @@ public class FurnusGUI extends GuiContainer {
 			check.enabled = true;
 			check.visible = true;
 		}
+		if (tile.isInout()) {
+			i.enabled = true;
+			i.visible = true;
+			o.enabled = true;
+			o.visible = true;
+		} else {
+			i.enabled = false;
+			i.visible = false;
+			o.enabled = false;
+			o.visible = false;
+		}
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
 		int i = Mouse.getX() * this.width / this.mc.displayWidth;
 		int j = this.height - Mouse.getY() * this.height
@@ -98,6 +115,10 @@ public class FurnusGUI extends GuiContainer {
 			GL11.glPopAttrib();
 			GL11.glPopAttrib();
 		}
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton p_146284_1_) {
 	}
 
 	private void drawMore(int k, int l) {

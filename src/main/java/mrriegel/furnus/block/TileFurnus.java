@@ -155,7 +155,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 8)
-			return true;
+			return stack.getItem() != ItemUpgrade.upgrade;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
 		if (slot >= 10)
