@@ -22,7 +22,7 @@ public class FurnusGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(
 			Furnus.MODID + ":" + "textures/gui/furnus.png");
 	GuiCheckBox check;
-	GuiButton i, o;
+	GuiButton i, o, f;
 	TileFurnus tile;
 
 	public FurnusGUI(Container p_i1072_1_) {
@@ -56,10 +56,12 @@ public class FurnusGUI extends GuiContainer {
 			}
 		};
 		buttonList.add(check);
-		i = new GuiButton(1, guiLeft + 146, guiTop + 108, 11, 11, "I");
+		i = new GuiButton(1, guiLeft + 130, guiTop + 108, 11, 11, "I");
 		buttonList.add(i);
-		o = new GuiButton(2, guiLeft + 160, guiTop + 108, 11, 11, "O");
+		o = new GuiButton(2, guiLeft + 144, guiTop + 108, 11, 11, "O");
 		buttonList.add(o);
+		f = new GuiButton(3, guiLeft + 158, guiTop + 108, 11, 11, "F");
+		buttonList.add(f);
 	}
 
 	@Override
@@ -88,11 +90,15 @@ public class FurnusGUI extends GuiContainer {
 			i.visible = true;
 			o.enabled = true;
 			o.visible = true;
+			f.enabled = true;
+			f.visible = true;
 		} else {
 			i.enabled = false;
 			i.visible = false;
 			o.enabled = false;
 			o.visible = false;
+			f.enabled = false;
+			f.visible = false;
 		}
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
 		int i = Mouse.getX() * this.width / this.mc.displayWidth;
@@ -119,6 +125,8 @@ public class FurnusGUI extends GuiContainer {
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
+		mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id,
+				tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
 	}
 
 	private void drawMore(int k, int l) {
