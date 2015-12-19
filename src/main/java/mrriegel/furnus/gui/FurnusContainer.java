@@ -15,11 +15,13 @@ import cpw.mods.fml.common.IFuelHandler;
 public class FurnusContainer extends Container {
 	TileFurnus tile;
 	EntityPlayer player;
+	int startSlot;
 
 	public FurnusContainer(InventoryPlayer inventory, TileFurnus tileEntity) {
 		tile = tileEntity;
 		player = inventory.player;
 		initSlots();
+		startSlot = tile.getSlots();
 	}
 
 	void initSlots() {
@@ -35,6 +37,7 @@ public class FurnusContainer extends Container {
 			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107,
 					21 + 27));
 		}
+
 		if (tile.getSlots() > 1) {
 			this.addSlotToContainer(new InputSlot(player, tile, 2, 20, 21 + 54));
 			this.addSlotToContainer(new OutputSlot(player, tile, 5, 77, 21 + 54));
@@ -59,7 +62,22 @@ public class FurnusContainer extends Container {
 			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18,
 					142 + 47));
 		}
-		detectAndSendChanges();
+		// detectAndSendChanges();
+		System.out.println("size: " + inventorySlots.size());
+		System.out.println(14 + ": " + getSlot(14).getStack());
+		System.out.println(11 + ": " + getSlot(11).getStack());
+	}
+
+	@Override
+	public void detectAndSendChanges() {
+		super.detectAndSendChanges();
+		// System.out.println("mooooo");
+		if (startSlot != tile.getSlots()
+				&& player.inventory.getItemStack() == null) {
+			startSlot = tile.getSlots();
+			player.openGui(Furnus.instance, 0, tile.getWorldObj(), tile.xCoord,
+					tile.yCoord, tile.zCoord);
+		}
 	}
 
 	@Override
@@ -69,18 +87,6 @@ public class FurnusContainer extends Container {
 
 	public TileFurnus getTile() {
 		return tile;
-	}
-
-	@Override
-	public ItemStack slotClick(int slot, int p_75144_2_, int p_75144_3_,
-			EntityPlayer player) {
-		tile.updateStats(player);
-		detectAndSendChanges();
-		initSlots();
-		player.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord,
-				tile.zCoord);
-
-		return super.slotClick(slot, p_75144_2_, p_75144_3_, player);
 	}
 
 }

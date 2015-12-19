@@ -158,20 +158,17 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			return true;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
-		boolean x = false;
 		if (slot >= 10)
 			return stack.getItem() == ItemUpgrade.upgrade
 					&& UpgradeSlot.in(stack, slot, this);
 		return false;
 	}
 
-	public void updateStats(EntityPlayer player) {
+	public void updateStats() {
 		int s = getSlots();
 		Map<Integer, Integer> upgrades = new HashMap<Integer, Integer>();
 		for (int i = 0; i < 7; i++)
 			upgrades.put(i, 0);
-		for(int i=0;i<15;i++)
-			System.out.println(i+" , "+getStackInSlot(i));
 		for (int i = 10; i < 15; i++) {
 			ItemStack stack = getStackInSlot(i);
 			if (stack == null)
@@ -204,7 +201,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 				break;
 			}
 		}
-System.out.println("map: "+upgrades);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		if (s <= getSlots())
 			return;
@@ -218,7 +214,7 @@ System.out.println("map: "+upgrades);
 			if (getStackInSlot(i) == null)
 				continue;
 			ItemStack stack = getStackInSlot(i).copy();
-			player.dropPlayerItemWithRandomChoice(stack, false);
+			// player.dropPlayerItemWithRandomChoice(stack, false);
 			setInventorySlotContents(i, null);
 
 		}
