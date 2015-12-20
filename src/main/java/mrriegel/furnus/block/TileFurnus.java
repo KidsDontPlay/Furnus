@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import mrriegel.crunch.helper.InventoryHelper;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.IOFGui;
 import mrriegel.furnus.gui.IOFGui.Mode;
@@ -439,6 +440,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	@Override
 	public void updateEntity() {
+		if (worldObj.isRemote)
+			return;
 		// output
 		ArrayList<ItemStack> out = new ArrayList<ItemStack>();
 		output();
@@ -448,6 +451,45 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		for (int i : getOutputSlots()) {
 
 		}
+	}
+
+	boolean tryMerge(int i1, int i2) {
+		ItemStack stack1 = getStackInSlot(i1), stack2 = getStackInSlot(i2);
+		if (stack1 == null && stack2 == null)
+			return true;
+		if (stack1 == null) {
+			stack1 = stack2.copy();
+			stack1.stackSize = split(stack2.stackSize)[0];
+			stack2.stackSize = split(stack2.stackSize)[1];
+			setInventorySlotContents(i1, stack1);
+			setInventorySlotContents(i2, stack2);
+			return true;
+		} else if (stack2 == null) {
+			stack2 = stack1.copy();
+			stack2.stackSize = split(stack1.stackSize)[0];
+			stack1.stackSize = split(stack1.stackSize)[1];
+			setInventorySlotContents(i1, stack1);
+			setInventorySlotContents(i2, stack2);
+			return true;
+		} else {
+			if (InventoryHelper.areStacksEqual(stack1, stack2, true)) {
+				int s = stack1.stackSize + stack2.stackSize;
+				stack1.stackSize = split(s)[0];
+				stack2.stackSize = split(s)[1];
+				setInventorySlotContents(i1, stack1);
+				setInventorySlotContents(i2, stack2);
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	int[] split(int a) {
+		if (a % 2 == 0)
+			return new int[] { a / 2, a / 2 };
+		else
+			return new int[] { a / 2 + 1, a / 2 };
 	}
 
 	private void split() {
@@ -460,12 +502,14 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 				break;
 			}
 		}
+		System.out.println(""+getInputSlots());
 		if (!x)
 			return;
-		List<ItemStack> lis=new ArrayList<ItemStack>();
-		for(Integer i:getInputSlots()){
-			// if
-			// lis.add(gets)
+		System.out.println(""+getInputSlots());
+		for (int i : getInputSlots()) {
+			for (int j : getInputSlots()) {
+				tryMerge(i, j);
+			}
 		}
 	}
 }
