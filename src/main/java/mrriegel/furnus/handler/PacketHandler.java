@@ -14,5 +14,7 @@ public class PacketHandler {
 				Side.SERVER);
 		INSTANCE.registerMessage(OpenMessage.class, OpenMessage.class, id++,
 				Side.SERVER);
+		INSTANCE.registerMessage(PutMessage.class, PutMessage.class, id++,
+				Side.SERVER);
 	}
 }

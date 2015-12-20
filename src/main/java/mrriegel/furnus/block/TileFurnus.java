@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.IOFGui;
+import mrriegel.furnus.gui.IOFGui.Mode;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,11 +27,22 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean burning, eco, inout, split;
 	private int speed, effi, slots, bonus, xp, process, fuel;
 	Map<Integer, IOFGui.Mode> input, output, fuelput;
-	final int[] outputSlots = new int[] { 3, 4, 5, 6, 7, 8 };
-	final int[] inputSlots = new int[] { 0, 1, 2 };
+	final ArrayList<Integer> outputSlots = new ArrayList<Integer>(
+			Arrays.asList(new Integer[] { 3, 4, 5, 6, 7, 8 }));
+	final ArrayList<Integer> inputSlots = new ArrayList<Integer>(
+			Arrays.asList(new Integer[] { 0, 1, 2 }));
+	String face;
 
 	public TileFurnus() {
 		super(15);
+		input = new HashMap<Integer, IOFGui.Mode>();
+		output = new HashMap<Integer, IOFGui.Mode>();
+		fuelput = new HashMap<Integer, IOFGui.Mode>();
+		for (int i = 0; i < 6; i++) {
+			input.put(i, IOFGui.Mode.NORMAL);
+			output.put(i, IOFGui.Mode.NORMAL);
+			fuelput.put(i, IOFGui.Mode.NORMAL);
+		}
 	}
 
 	@Override
@@ -55,6 +67,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		fuelput = new Gson().fromJson(tag.getString("fuelput"),
 				new TypeToken<Map<Integer, IOFGui.Mode>>() {
 				}.getType());
+		face = tag.getString("face");
 	}
 
 	@Override
@@ -73,6 +86,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		tag.setString("input", new Gson().toJson(input));
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
+		tag.setString("face", face);
 	}
 
 	public boolean isBurning() {
@@ -163,6 +177,38 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		this.fuel = fuel;
 	}
 
+	public Map<Integer, IOFGui.Mode> getInput() {
+		return input;
+	}
+
+	public void setInput(Map<Integer, IOFGui.Mode> input) {
+		this.input = input;
+	}
+
+	public Map<Integer, IOFGui.Mode> getOutput() {
+		return output;
+	}
+
+	public void setOutput(Map<Integer, IOFGui.Mode> output) {
+		this.output = output;
+	}
+
+	public Map<Integer, IOFGui.Mode> getFuelput() {
+		return fuelput;
+	}
+
+	public void setFuelput(Map<Integer, IOFGui.Mode> fuelput) {
+		this.fuelput = fuelput;
+	}
+
+	public String getFace() {
+		return face;
+	}
+
+	public void setFace(String face) {
+		this.face = face;
+	}
+
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 8)
@@ -175,7 +221,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		return false;
 	}
 
-	public void updateStats() {
+	public void updateStats(EntityPlayer player) {
 		int s = getSlots();
 		Map<Integer, Integer> upgrades = new HashMap<Integer, Integer>();
 		for (int i = 0; i < 7; i++)
@@ -225,7 +271,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			if (getStackInSlot(i) == null)
 				continue;
 			ItemStack stack = getStackInSlot(i).copy();
-			// player.dropPlayerItemWithRandomChoice(stack, false);
+			player.dropPlayerItemWithRandomChoice(stack, false);
 			setInventorySlotContents(i, null);
 
 		}
@@ -234,25 +280,114 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side) {
-		return map.get(side).getSlots();
+		ArrayList<Integer> lis = new ArrayList<Integer>();
+		int wrongSide = getWrongSide(side);
+		if (input.get(wrongSide) == Mode.NORMAL
+				|| input.get(wrongSide) == Mode.AUTO)
+			for (int i : inputSlots)
+				lis.add(i);
+		if (output.get(wrongSide) == Mode.NORMAL
+				|| output.get(wrongSide) == Mode.AUTO)
+			for (int i : outputSlots)
+				lis.add(i);
+		if (fuelput.get(wrongSide) == Mode.NORMAL
+				|| fuelput.get(wrongSide) == Mode.AUTO)
+			lis.add(9);
+		int[] end = new int[lis.size()];
+		for (int i = 0; i < lis.size(); i++)
+			end[i] = lis.get(i);
+		return end;
+		// return new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14
+		// };
+	}
+
+	int getWrongSide(int side) {
+		if (side == 1)
+			return 0;
+		if (side == 0)
+			return 4;
+		if (face.equals("N")) {
+			switch (side) {
+			case 2:
+				return 1;
+			case 3:
+				return 5;
+			case 4:
+				return 3;
+			case 5:
+				return 2;
+			}
+		}
+		if (face.equals("S")) {
+			switch (side) {
+			case 2:
+				return 5;
+			case 3:
+				return 1;
+			case 4:
+				return 2;
+			case 5:
+				return 3;
+			}
+		}
+		if (face.equals("E")) {
+			switch (side) {
+			case 2:
+				return 3;
+			case 3:
+				return 2;
+			case 4:
+				return 5;
+			case 5:
+				return 1;
+			}
+		}
+		if (face.equals("W")) {
+			switch (side) {
+			case 2:
+				return 2;
+			case 3:
+				return 3;
+			case 4:
+				return 1;
+			case 5:
+				return 5;
+			}
+		}
+		return 33;
 	}
 
 	@Override
 	public boolean canInsertItem(int slot, ItemStack stack, int side) {
-		if (!map.get(side).isIn())
+		if (!inputSlots.contains(slot) || slot != 9)
 			return false;
-		if (!contains(slot, map.get(side).getSlots()))
+		ArrayList<Integer> lis = new ArrayList<Integer>();
+		int wrongSide = getWrongSide(side);
+		if (input.get(wrongSide) == Mode.NORMAL
+				|| input.get(wrongSide) == Mode.AUTO)
+			for (int i : inputSlots)
+				lis.add(i);
+		if (fuelput.get(wrongSide) == Mode.NORMAL
+				|| fuelput.get(wrongSide) == Mode.AUTO)
+			lis.add(9);
+		if (!lis.contains(side))
 			return false;
 		return inStackValid(slot, stack);
 	}
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack stack, int side) {
-		if (!map.get(side).isOut())
+		if (!outputSlots.contains(slot))
 			return false;
-		if (!contains(slot, map.get(side).getSlots()))
+		ArrayList<Integer> lis = new ArrayList<Integer>();
+		int wrongSide = getWrongSide(side);
+		if (output.get(wrongSide) == Mode.NORMAL
+				|| output.get(wrongSide) == Mode.AUTO)
+			for (int i : outputSlots)
+				lis.add(i);
+		if (!lis.contains(side))
 			return false;
-		return outStackValid(slot, stack);
+		return inStackValid(slot, stack);
 	}
 
 	private boolean contains(int z, int[] a) {
@@ -264,7 +399,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	private boolean inStackValid(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 2)
-			return true;
+			return stack.getItem() != ItemUpgrade.upgrade;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
 		return false;
@@ -276,16 +411,14 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		return false;
 	}
 
-	int[] getAutoOutputSlots() {
-		ArrayList<Integer> tmp=new ArrayList<Integer>();
-	}
-
 	@Override
 	public void updateEntity() {
 		// output
 		ArrayList<ItemStack> out = new ArrayList<ItemStack>();
-		for (int i : getAutoOutputSlots()) {
-			
-		}
+		// if (worldObj.getTotalWorldTime() % 30 == 0)
+		// System.out.println(getInput());
+		// for (int i : getAutoOutputSlots()) {
+		//
+		// }
 	}
 }

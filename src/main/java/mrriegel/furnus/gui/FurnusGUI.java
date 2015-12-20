@@ -51,7 +51,6 @@ public class FurnusGUI extends GuiContainer {
 							.isChecked()));
 					return true;
 				}
-
 				return false;
 			}
 		};

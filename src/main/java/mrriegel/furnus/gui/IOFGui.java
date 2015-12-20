@@ -1,9 +1,12 @@
 package mrriegel.furnus.gui;
 
+import java.util.Map;
+
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.handler.OpenMessage;
 import mrriegel.furnus.handler.PacketHandler;
+import mrriegel.furnus.handler.PutMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -32,12 +35,7 @@ public class IOFGui extends GuiScreen {
 		}
 	}
 
-	Mode topMode = Mode.NORMAL;
-	Mode frontMode = Mode.NORMAL;
-	Mode leftMode = Mode.NORMAL;
-	Mode rightMode = Mode.NORMAL;
-	Mode bottomMode = Mode.NORMAL;
-	Mode backMode = Mode.NORMAL;
+	Mode topMode, frontMode, leftMode, rightMode, bottomMode, backMode;
 
 	public IOFGui(TileFurnus tileEntity, int iD) {
 		tile = tileEntity;
@@ -47,16 +45,13 @@ public class IOFGui extends GuiScreen {
 			id = "O";
 		else if (iD == 3)
 			id = "F";
-		// System.out.println("id: "+id);
-		// System.out.println("t: "+tile);
-		// System.out.println("c; "+tile.getConfigs());
-		// System.out.println("a: "+tile.getConfigs().get(id));
-		// topMode = tile.getConfigs().get(id).get(0);
-		// frontMode = tile.getConfigs().get(id).get(1);
-		// leftMode = tile.getConfigs().get(id).get(2);
-		// rightMode = tile.getConfigs().get(id).get(3);
-		// bottomMode = tile.getConfigs().get(id).get(4);
-		// backMode = tile.getConfigs().get(id).get(5);
+
+		topMode = getMap(id, tile).get(0);
+		frontMode = getMap(id, tile).get(1);
+		leftMode = getMap(id, tile).get(2);
+		rightMode = getMap(id, tile).get(3);
+		bottomMode = getMap(id, tile).get(4);
+		backMode = getMap(id, tile).get(5);
 	}
 
 	@Override
@@ -91,33 +86,61 @@ public class IOFGui extends GuiScreen {
 			topMode = topMode.next();
 			top.displayString = topMode.toString().substring(0, 1)
 					.toUpperCase();
+			getMap(id, tile).put(0, topMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(0, tile.xCoord,
+					tile.yCoord, tile.zCoord, id, topMode.toString()));
 			break;
 		case 1:
 			frontMode = frontMode.next();
 			front.displayString = frontMode.toString().substring(0, 1)
 					.toUpperCase();
+			getMap(id, tile).put(1, frontMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(1, tile.xCoord,
+					tile.yCoord, tile.zCoord, id, frontMode.toString()));
 			break;
 		case 2:
 			leftMode = leftMode.next();
 			left.displayString = leftMode.toString().substring(0, 1)
 					.toUpperCase();
+			getMap(id, tile).put(2, leftMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(2, tile.xCoord,
+					tile.yCoord, tile.zCoord, id, leftMode.toString()));
 			break;
 		case 3:
 			rightMode = rightMode.next();
 			right.displayString = rightMode.toString().substring(0, 1)
 					.toUpperCase();
+			getMap(id, tile).put(3, rightMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(3, tile.xCoord,
+					tile.yCoord, tile.zCoord, id, rightMode.toString()));
 			break;
 		case 4:
 			bottomMode = bottomMode.next();
 			bottom.displayString = bottomMode.toString().substring(0, 1)
 					.toUpperCase();
+			getMap(id, tile).put(4, bottomMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(4, tile.xCoord,
+					tile.yCoord, tile.zCoord, id, bottomMode.toString()));
 			break;
 		case 5:
 			backMode = backMode.next();
 			back.displayString = backMode.toString().substring(0, 1)
 					.toUpperCase();
+			getMap(id, tile).put(5, backMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(5, tile.xCoord,
+					tile.yCoord, tile.zCoord, id, backMode.toString()));
 			break;
 		}
+	}
+
+	public static Map<Integer, IOFGui.Mode> getMap(String id, TileFurnus tile) {
+		if (id.equals("I"))
+			return tile.getInput();
+		else if (id.equals("O"))
+			return tile.getOutput();
+		else if (id.equals("F"))
+			return tile.getFuelput();
+		return null;
 	}
 
 	@Override
@@ -131,6 +154,9 @@ public class IOFGui extends GuiScreen {
 				this.imageHeight);
 
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+		mc.fontRenderer.drawString(id.equals("F") ? "Fuel"
+				: id.equals("I") ? "Input" : "Output", guiLeft + 8, guiTop + 6,
+				4210752);
 
 	}
 
@@ -141,8 +167,6 @@ public class IOFGui extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		// mc.thePlayer.openGui(Furnus.instance, 0, mc.theWorld, tile.xCoord,
-		// tile.yCoord, tile.zCoord);
 		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.xCoord,
 				tile.yCoord, tile.zCoord));
 	}

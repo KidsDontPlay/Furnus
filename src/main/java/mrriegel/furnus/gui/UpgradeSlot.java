@@ -11,14 +11,12 @@ import net.minecraft.item.ItemStack;
 
 public class UpgradeSlot extends Slot {
 	EntityPlayer player;
-	FurnusContainer con;
 
 	public UpgradeSlot(FurnusContainer furnusContainer, EntityPlayer player,
 			IInventory p_i1824_1_, int p_i1824_2_, int p_i1824_3_,
 			int p_i1824_4_) {
 		super(p_i1824_1_, p_i1824_2_, p_i1824_3_, p_i1824_4_);
 		this.player = player;
-		con = furnusContainer;
 	}
 
 	@Override
@@ -41,7 +39,7 @@ public class UpgradeSlot extends Slot {
 	public void onSlotChanged() {
 		super.onSlotChanged();
 		TileFurnus t = (TileFurnus) inventory;
-		t.updateStats();
+		t.updateStats(player);
 		// con.detectAndSendChanges();
 		// System.out.println(player.openContainer.getClass());
 		// if (getHasStack() && getStack().getItemDamage() == 3)
