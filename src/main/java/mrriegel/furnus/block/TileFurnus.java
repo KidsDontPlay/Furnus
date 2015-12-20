@@ -3,6 +3,7 @@ package mrriegel.furnus.block;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -411,14 +412,60 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		return false;
 	}
 
+	private void output() {
+		int size = getOutputSlots().size();
+		if (worldObj.getTotalWorldTime() % 20 == 0)
+			System.out.println("more");
+	}
+
+	private ArrayList<Integer> getOutputSlots() {
+		if (slots == 2)
+			return outputSlots;
+		if (slots == 1)
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
+					6, 7 }));
+		else
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 6 }));
+	}
+
+	private ArrayList<Integer> getInputSlots() {
+		if (slots == 2)
+			return inputSlots;
+		if (slots == 1)
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0, 1 }));
+		else
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0 }));
+	}
+
 	@Override
 	public void updateEntity() {
 		// output
 		ArrayList<ItemStack> out = new ArrayList<ItemStack>();
+		output();
+		split();
 		// if (worldObj.getTotalWorldTime() % 30 == 0)
 		// System.out.println(getInput());
-		// for (int i : getAutoOutputSlots()) {
-		//
-		// }
+		for (int i : getOutputSlots()) {
+
+		}
+	}
+
+	private void split() {
+		if (slots == 0 || !split)
+			return;
+		boolean x = false;
+		for (int i : getInputSlots()) {
+			if (getStackInSlot(i) != null) {
+				x = true;
+				break;
+			}
+		}
+		if (!x)
+			return;
+		List<ItemStack> lis=new ArrayList<ItemStack>();
+		for(Integer i:getInputSlots()){
+			// if
+			// lis.add(gets)
+		}
 	}
 }
