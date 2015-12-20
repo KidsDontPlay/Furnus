@@ -1,6 +1,8 @@
 package mrriegel.furnus.handler;
 
 import io.netty.buffer.ByteBuf;
+import mrriegel.furnus.Furnus;
+import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.gui.FurnusContainer;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -22,6 +24,10 @@ public class CheckMessage implements IMessage,
 	public IMessage onMessage(CheckMessage message, MessageContext ctx) {
 		((FurnusContainer) ctx.getServerHandler().playerEntity.openContainer)
 				.getTile().setSplit(message.split);
+		// TileFurnus tile=((FurnusContainer)
+		// ctx.getServerHandler().playerEntity.openContainer)
+		//			.getTile();
+//		ctx.getServerHandler().playerEntity.openGui(Furnus.instance, 0, tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
 		return null;
 	}
 

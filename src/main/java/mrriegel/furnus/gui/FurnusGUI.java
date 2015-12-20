@@ -8,6 +8,7 @@ import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.handler.CheckMessage;
 import mrriegel.furnus.handler.PacketHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -21,8 +22,7 @@ import cpw.mods.fml.client.config.GuiCheckBox;
 public class FurnusGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(
 			Furnus.MODID + ":" + "textures/gui/furnus.png");
-	GuiCheckBox check;
-	GuiButton i, o, f;
+	GuiButton i, o, f, check;
 	TileFurnus tile;
 
 	public FurnusGUI(Container p_i1072_1_) {
@@ -35,25 +35,8 @@ public class FurnusGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		check = new GuiCheckBox(0, guiLeft + 21, guiTop + 6, "Split",
-				tile.isSplit()) {
-			@Override
-			public boolean mousePressed(Minecraft p_146116_1_, int p_146116_2_,
-					int p_146116_3_) {
-				if (this.enabled && this.visible
-						&& p_146116_2_ >= this.xPosition
-						&& p_146116_3_ >= this.yPosition
-						&& p_146116_2_ < this.xPosition + this.width
-						&& p_146116_3_ < this.yPosition + this.height) {
-					this.setIsChecked(!this.isChecked());
-					tile.setSplit(this.isChecked());
-					PacketHandler.INSTANCE.sendToServer(new CheckMessage(this
-							.isChecked()));
-					return true;
-				}
-				return false;
-			}
-		};
+		check = new GuiButton(0, guiLeft + 21, guiTop + 6, 11, 11,
+				tile.isSplit() ? "x" : " ");
 		buttonList.add(check);
 		i = new GuiButton(1, guiLeft + 130, guiTop + 108, 11, 11, "I");
 		buttonList.add(i);
@@ -72,6 +55,9 @@ public class FurnusGUI extends GuiContainer {
 		int l = (height - ySize) / 2;
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
+		if (tile.getSlots() > 0)
+			drawString(mc.fontRenderer, "Split", guiLeft + 33, guiTop + 7,
+					14737632);
 
 	}
 
@@ -124,8 +110,18 @@ public class FurnusGUI extends GuiContainer {
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
-		mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id,
-				tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
+		if (p_146284_1_.id != 0)
+			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id,
+					tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
+		else {
+			if (check.displayString.equals("x"))
+				check.displayString = " ";
+			else
+				check.displayString = "x";
+			boolean chek = check.displayString.equals("x");
+			tile.setSplit(chek);
+			PacketHandler.INSTANCE.sendToServer(new CheckMessage(chek));
+		}
 	}
 
 	private void drawMore(int k, int l) {
@@ -145,4 +141,5 @@ public class FurnusGUI extends GuiContainer {
 		drawTexturedModalRect(k + 46, l + 103 + d, 176, 0 + d, 14, 14 - d);
 
 	}
+
 }

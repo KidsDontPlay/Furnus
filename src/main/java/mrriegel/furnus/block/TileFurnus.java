@@ -415,8 +415,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	private void output() {
 		int size = getOutputSlots().size();
-		if (worldObj.getTotalWorldTime() % 20 == 0)
-			System.out.println("more");
+		// if (worldObj.getTotalWorldTime() % 10 == 0)
+		// System.out.println(getStackInSlot(0));
 	}
 
 	private ArrayList<Integer> getOutputSlots() {
@@ -446,41 +446,42 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		ArrayList<ItemStack> out = new ArrayList<ItemStack>();
 		output();
 		split();
-		// if (worldObj.getTotalWorldTime() % 30 == 0)
-		// System.out.println(getInput());
-		for (int i : getOutputSlots()) {
-
-		}
 	}
 
-	boolean tryMerge(int i1, int i2) {
+	private void tryMerge(int i1, int i2) {
 		ItemStack stack1 = getStackInSlot(i1), stack2 = getStackInSlot(i2);
 		if (stack1 == null && stack2 == null)
-			return true;
+			return;
 		if (stack1 == null) {
+			if (stack2.stackSize <= 1)
+				return;
 			stack1 = stack2.copy();
 			stack1.stackSize = split(stack2.stackSize)[0];
 			stack2.stackSize = split(stack2.stackSize)[1];
-			setInventorySlotContents(i1, stack1);
-			setInventorySlotContents(i2, stack2);
-			return true;
+			setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1 : null);
+			setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
+			return;
 		} else if (stack2 == null) {
+			if (stack1.stackSize <= 1)
+				return;
 			stack2 = stack1.copy();
 			stack2.stackSize = split(stack1.stackSize)[0];
 			stack1.stackSize = split(stack1.stackSize)[1];
-			setInventorySlotContents(i1, stack1);
-			setInventorySlotContents(i2, stack2);
-			return true;
+			setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1 : null);
+			setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
+			return;
 		} else {
 			if (InventoryHelper.areStacksEqual(stack1, stack2, true)) {
 				int s = stack1.stackSize + stack2.stackSize;
 				stack1.stackSize = split(s)[0];
 				stack2.stackSize = split(s)[1];
-				setInventorySlotContents(i1, stack1);
-				setInventorySlotContents(i2, stack2);
-				return true;
+				setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1
+						: null);
+				setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2
+						: null);
+				return;
 			} else {
-				return false;
+				return;
 			}
 		}
 	}
@@ -493,7 +494,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void split() {
-		if (slots == 0 || !split)
+		if (slots == 0 || !split || worldObj.getTotalWorldTime() % 4 != 0)
 			return;
 		boolean x = false;
 		for (int i : getInputSlots()) {
@@ -502,14 +503,14 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 				break;
 			}
 		}
-		System.out.println(""+getInputSlots());
 		if (!x)
 			return;
-		System.out.println(""+getInputSlots());
 		for (int i : getInputSlots()) {
 			for (int j : getInputSlots()) {
-				tryMerge(i, j);
+				if (i >= j)
+					tryMerge(j, i);
 			}
 		}
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 }
