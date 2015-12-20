@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.gui.IOFGui;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.tileentity.TileEntityHopper;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -23,11 +25,12 @@ import cpw.mods.fml.common.registry.GameRegistry;
 public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean burning, eco, inout, split;
 	private int speed, effi, slots, bonus, xp, process, fuel;
-	Map<Integer, SideConfig> map;
+	Map<Integer, IOFGui.Mode> input, output, fuelput;
+	final int[] outputSlots = new int[] { 3, 4, 5, 6, 7, 8 };
+	final int[] inputSlots = new int[] { 0, 1, 2 };
 
 	public TileFurnus() {
 		super(15);
-		map = new HashMap<Integer, SideConfig>();
 	}
 
 	@Override
@@ -43,8 +46,14 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		xp = tag.getInteger("xp");
 		process = tag.getInteger("process");
 		fuel = tag.getInteger("fuel");
-		map = new Gson().fromJson(tag.getString("map"),
-				new TypeToken<HashMap<Integer, SideConfig>>() {
+		input = new Gson().fromJson(tag.getString("input"),
+				new TypeToken<Map<Integer, IOFGui.Mode>>() {
+				}.getType());
+		output = new Gson().fromJson(tag.getString("output"),
+				new TypeToken<Map<Integer, IOFGui.Mode>>() {
+				}.getType());
+		fuelput = new Gson().fromJson(tag.getString("fuelput"),
+				new TypeToken<Map<Integer, IOFGui.Mode>>() {
 				}.getType());
 	}
 
@@ -61,7 +70,9 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		tag.setInteger("xp", xp);
 		tag.setInteger("process", process);
 		tag.setInteger("fuel", fuel);
-		tag.setString("map", new Gson().toJson(map));
+		tag.setString("input", new Gson().toJson(input));
+		tag.setString("output", new Gson().toJson(output));
+		tag.setString("fuelput", new Gson().toJson(fuelput));
 	}
 
 	public boolean isBurning() {
@@ -265,4 +276,16 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		return false;
 	}
 
+	int[] getAutoOutputSlots() {
+		ArrayList<Integer> tmp=new ArrayList<Integer>();
+	}
+
+	@Override
+	public void updateEntity() {
+		// output
+		ArrayList<ItemStack> out = new ArrayList<ItemStack>();
+		for (int i : getAutoOutputSlots()) {
+			
+		}
+	}
 }

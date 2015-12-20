@@ -80,6 +80,7 @@ public class BlockFurnus extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z,
 			EntityLivingBase player, ItemStack stack) {
+		TileFurnus tile=(TileFurnus) world.getTileEntity(x, y, z);
 		int l = MathHelper
 				.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		if (l == 0) {

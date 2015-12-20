@@ -12,5 +12,7 @@ public class PacketHandler {
 		int id = 0;
 		INSTANCE.registerMessage(CheckMessage.class, CheckMessage.class, id++,
 				Side.SERVER);
+		INSTANCE.registerMessage(OpenMessage.class, OpenMessage.class, id++,
+				Side.SERVER);
 	}
 }

@@ -63,7 +63,6 @@ public class FurnusContainer extends Container {
 			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18,
 					142 + 47));
 		}
-		// detectAndSendChanges();
 		System.out.println("size: " + inventorySlots.size());
 		System.out.println(14 + ": " + getSlot(14).getStack());
 		System.out.println(11 + ": " + getSlot(11).getStack());
