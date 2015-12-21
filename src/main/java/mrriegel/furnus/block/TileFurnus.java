@@ -14,6 +14,7 @@ import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 
@@ -255,15 +256,13 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 				break;
 			}
 		}
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+
 		if (s <= getSlots())
 			return;
 		ArrayList<Integer> lis = new ArrayList<Integer>();
 		lis.addAll(Arrays.asList(new Integer[] { 2, 5, 8 }));
 		if (getSlots() == 0)
 			lis.addAll(Arrays.asList(new Integer[] { 1, 4, 7 }));
-		if (worldObj.isRemote)
-			return;
 		for (int i : lis) {
 			if (getStackInSlot(i) == null)
 				continue;
@@ -272,6 +271,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			setInventorySlotContents(i, null);
 
 		}
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 
 	}
 
@@ -360,8 +360,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			return false;
 		ArrayList<Integer> lis = new ArrayList<Integer>();
 		int wrongSide = getWrongSide(side);
-		if (input.get(wrongSide) == Mode.NORMAL
-				|| input.get(wrongSide) == Mode.AUTO)
+		if ((input.get(wrongSide) == Mode.NORMAL || input.get(wrongSide) == Mode.AUTO)
+				&& FurnaceRecipes.smelting().getSmeltingResult(stack) != null)
 			for (int i : inputSlots)
 				lis.add(i);
 		if (fuelput.get(wrongSide) == Mode.NORMAL
@@ -396,7 +396,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	private boolean inStackValid(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 2)
-			return stack.getItem() != ItemUpgrade.upgrade;
+			return FurnaceRecipes.smelting().getSmeltingResult(stack) != null;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
 		return false;
