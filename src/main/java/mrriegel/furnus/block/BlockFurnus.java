@@ -83,7 +83,6 @@ public class BlockFurnus extends BlockContainer {
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
 		int l = MathHelper
 				.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
-		System.out.println("" + l);
 		if (l == 0) {
 			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
 			tile.setFace("N");

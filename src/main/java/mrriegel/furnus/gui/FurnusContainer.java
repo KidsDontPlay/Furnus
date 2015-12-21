@@ -176,7 +176,6 @@ public class FurnusContainer extends Container {
 					if (this.mergeItemStack(itemstack1, getFuelputSlot(),
 							getFuelputSlot() + 1, false)) {
 						merged = true;
-
 					}
 				}
 				if (!merged

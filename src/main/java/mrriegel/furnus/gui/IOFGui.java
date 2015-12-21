@@ -10,6 +10,7 @@ import mrriegel.furnus.handler.PutMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -18,8 +19,8 @@ public class IOFGui extends GuiScreen {
 			Furnus.MODID + ":textures/gui/iof.png");
 	TileFurnus tile;
 	GuiButton top, front, left, right, bottom, back;
-	int imageWidth = 100;
-	int imageHeight = 100;
+	int imageWidth = 101;
+	int imageHeight = 101;
 	int guiLeft, guiTop;
 	String id;
 
@@ -30,6 +31,10 @@ public class IOFGui extends GuiScreen {
 		public Mode next() {
 			return vals[(this.ordinal() + 1) % vals.length];
 		}
+	}
+
+	public enum Direction {
+		TOP, RIGHT, LEFT, FRONT, BOTTOM, BACK;
 	}
 
 	Mode topMode, frontMode, leftMode, rightMode, bottomMode, backMode;
@@ -83,54 +88,60 @@ public class IOFGui extends GuiScreen {
 			topMode = topMode.next();
 			top.displayString = topMode.toString().substring(0, 1)
 					.toUpperCase();
-			getMap(id, tile).put(0, topMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(0, tile.xCoord,
-					tile.yCoord, tile.zCoord, id, topMode.toString()));
+			getMap(id, tile).put(Direction.TOP, topMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP
+					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
+					topMode.toString()));
 			break;
 		case 1:
 			frontMode = frontMode.next();
 			front.displayString = frontMode.toString().substring(0, 1)
 					.toUpperCase();
-			getMap(id, tile).put(1, frontMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(1, tile.xCoord,
-					tile.yCoord, tile.zCoord, id, frontMode.toString()));
+			getMap(id, tile).put(Direction.FRONT, frontMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.FRONT
+					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
+					frontMode.toString()));
 			break;
 		case 2:
 			leftMode = leftMode.next();
 			left.displayString = leftMode.toString().substring(0, 1)
 					.toUpperCase();
-			getMap(id, tile).put(2, leftMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(2, tile.xCoord,
-					tile.yCoord, tile.zCoord, id, leftMode.toString()));
+			getMap(id, tile).put(Direction.LEFT, leftMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.LEFT
+					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
+					leftMode.toString()));
 			break;
 		case 3:
 			rightMode = rightMode.next();
 			right.displayString = rightMode.toString().substring(0, 1)
 					.toUpperCase();
-			getMap(id, tile).put(3, rightMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(3, tile.xCoord,
-					tile.yCoord, tile.zCoord, id, rightMode.toString()));
+			getMap(id, tile).put(Direction.RIGHT, rightMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.RIGHT
+					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
+					rightMode.toString()));
 			break;
 		case 4:
 			bottomMode = bottomMode.next();
 			bottom.displayString = bottomMode.toString().substring(0, 1)
 					.toUpperCase();
-			getMap(id, tile).put(4, bottomMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(4, tile.xCoord,
-					tile.yCoord, tile.zCoord, id, bottomMode.toString()));
+			getMap(id, tile).put(Direction.BOTTOM, bottomMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BOTTOM
+					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
+					bottomMode.toString()));
 			break;
 		case 5:
 			backMode = backMode.next();
 			back.displayString = backMode.toString().substring(0, 1)
 					.toUpperCase();
-			getMap(id, tile).put(5, backMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(5, tile.xCoord,
-					tile.yCoord, tile.zCoord, id, backMode.toString()));
+			getMap(id, tile).put(Direction.BACK, backMode);
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BACK
+					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
+					backMode.toString()));
 			break;
 		}
 	}
 
-	public static Map<Integer, IOFGui.Mode> getMap(String id, TileFurnus tile) {
+	public static Map<Direction, IOFGui.Mode> getMap(String id, TileFurnus tile) {
 		if (id.equals("I"))
 			return tile.getInput();
 		else if (id.equals("O"))
@@ -151,6 +162,8 @@ public class IOFGui extends GuiScreen {
 				this.imageHeight);
 
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+		// GL11.glDisable(GL11.GL_BLEND);
+		// drawTexturedModalRect(top.xPosition, top.yPosition, 100, 0, 20, 20);
 		mc.fontRenderer.drawString(id.equals("F") ? "Fuel"
 				: id.equals("I") ? "Input" : "Output", guiLeft + 8, guiTop + 6,
 				4210752);

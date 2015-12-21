@@ -52,11 +52,11 @@ public class OutputSlot extends Slot {
 	protected void onCrafting(ItemStack p_75208_1_) {
 		p_75208_1_.onCrafting(this.thePlayer.worldObj, this.thePlayer,
 				this.field_75228_b);
-
 		if (!this.thePlayer.worldObj.isRemote) {
 			int i = this.field_75228_b;
 			float f = FurnaceRecipes.smelting().func_151398_b(p_75208_1_)
-					* ((FurnusContainer) thePlayer.openContainer).tile.getXp();
+					+ (.5f * ((FurnusContainer) thePlayer.openContainer).tile
+							.getXp());
 			int j;
 
 			if (f == 0.0F) {
