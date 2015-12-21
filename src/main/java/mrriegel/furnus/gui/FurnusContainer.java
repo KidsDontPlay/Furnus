@@ -4,19 +4,20 @@ import java.util.ArrayList;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import cpw.mods.fml.common.IFuelHandler;
+import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.tileentity.TileEntityFurnace;
 
 public class FurnusContainer extends Container {
 	TileFurnus tile;
 	EntityPlayer player;
 	int startSlot;
+	int tileSlots;
 
 	public FurnusContainer(InventoryPlayer inventory, TileFurnus tileEntity) {
 		tile = tileEntity;
@@ -53,6 +54,7 @@ public class FurnusContainer extends Container {
 			this.addSlotToContainer(new UpgradeSlot(this, player, tile,
 					index++, 152, 12 + i * 18));
 		}
+		tileSlots = inventorySlots.size();
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
 				this.addSlotToContainer(new Slot(player.inventory, j + i * 9
@@ -63,9 +65,6 @@ public class FurnusContainer extends Container {
 			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18,
 					142 + 47));
 		}
-		// System.out.println("size: " + inventorySlots.size());
-		// System.out.println(14 + ": " + getSlot(14).getStack());
-		// System.out.println(11 + ": " + getSlot(11).getStack());
 	}
 
 	@Override
@@ -89,4 +88,118 @@ public class FurnusContainer extends Container {
 		return tile;
 	}
 
+	int[] getInputSlots() {
+		switch (tileSlots) {
+		case 15:
+			return new int[] { 0, 3, 6 };
+		case 12:
+			return new int[] { 0, 3 };
+		case 9:
+			return new int[] { 0 };
+		}
+		return null;
+	}
+
+	int[] getOutputSlots() {
+		switch (tileSlots) {
+		case 15:
+			return new int[] { 1, 2, 4, 5, 7, 8 };
+		case 12:
+			return new int[] { 1, 2, 4, 5 };
+		case 9:
+			return new int[] { 1, 2 };
+		}
+		return null;
+	}
+
+	int getFuelputSlot() {
+		switch (tileSlots) {
+		case 15:
+			return 9;
+		case 12:
+			return 6;
+		case 9:
+			return 3;
+		}
+		return -1;
+	}
+
+	int[] getUpgradeSlots() {
+		switch (tileSlots) {
+		case 15:
+			return new int[] { 10, 11, 12, 13, 14 };
+		case 12:
+			return new int[] { 7, 8, 9, 10, 11 };
+		case 9:
+			return new int[] { 4, 5, 6, 7, 8 };
+		}
+		return null;
+	}
+
+	boolean upgradeIn(int meta) {
+		for (int i : getUpgradeSlots()) {
+			ItemStack s = getSlot(i).getStack();
+			if (s == null)
+				continue;
+			if (s.getItemDamage() == meta)
+				return s.stackSize == s.getMaxStackSize();
+		}
+		return false;
+	}
+
+	@Override
+	public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex) {
+		ItemStack itemstack = null;
+		Slot slot = (Slot) this.inventorySlots.get(slotIndex);
+
+		if (slot != null && slot.getHasStack()) {
+			ItemStack itemstack1 = slot.getStack();
+			itemstack = itemstack1.copy();
+
+			if (slotIndex <= tileSlots - 1) {
+				if (!this.mergeItemStack(itemstack1, tileSlots, tileSlots + 36,
+						true)) {
+					return null;
+				}
+				slot.onSlotChange(itemstack1, itemstack);
+			} else {
+				if (itemstack1.getItem() == ItemUpgrade.upgrade
+						&& !upgradeIn(itemstack1.getItemDamage())) {
+					if (!this
+							.mergeItemStack(
+									itemstack1,
+									getUpgradeSlots()[0],
+									getUpgradeSlots()[getUpgradeSlots().length - 1] + 1,
+									false)) {
+						return null;
+					}
+				} else if (TileEntityFurnace.isItemFuel(itemstack1)) {
+					if (!this.mergeItemStack(itemstack1, getFuelputSlot(),
+							getFuelputSlot() + 1, false)) {
+						return null;
+					}
+				} else {
+					if (!this.mergeItemStack(itemstack1, getInputSlots()[0],
+							getInputSlots()[getInputSlots().length - 1] + 1,
+							false)) {
+						return null;
+					}
+				}
+			}
+
+			if (itemstack1.stackSize == 0) {
+				slot.putStack((ItemStack) null);
+			} else {
+				slot.onSlotChanged();
+			}
+
+			if (itemstack1.stackSize == itemstack.stackSize) {
+				return null;
+			}
+
+			slot.onPickupFromSlot(player, itemstack1);
+		}
+
+		return itemstack;
+	}
 }

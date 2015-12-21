@@ -21,10 +21,12 @@ public class OutputSlot extends Slot {
 		this.thePlayer = p_i1813_1_;
 	}
 
+	@Override
 	public boolean isItemValid(ItemStack p_75214_1_) {
 		return false;
 	}
 
+	@Override
 	public ItemStack decrStackSize(int p_75209_1_) {
 		if (this.getHasStack()) {
 			this.field_75228_b += Math.min(p_75209_1_,
@@ -34,16 +36,19 @@ public class OutputSlot extends Slot {
 		return super.decrStackSize(p_75209_1_);
 	}
 
+	@Override
 	public void onPickupFromSlot(EntityPlayer p_82870_1_, ItemStack p_82870_2_) {
 		this.onCrafting(p_82870_2_);
 		super.onPickupFromSlot(p_82870_1_, p_82870_2_);
 	}
 
+	@Override
 	protected void onCrafting(ItemStack p_75210_1_, int p_75210_2_) {
 		this.field_75228_b += p_75210_2_;
 		this.onCrafting(p_75210_1_);
 	}
 
+	@Override
 	protected void onCrafting(ItemStack p_75208_1_) {
 		p_75208_1_.onCrafting(this.thePlayer.worldObj, this.thePlayer,
 				this.field_75228_b);
@@ -57,10 +62,10 @@ public class OutputSlot extends Slot {
 			if (f == 0.0F) {
 				i = 0;
 			} else if (f < 1.0F) {
-				j = MathHelper.floor_float((float) i * f);
+				j = MathHelper.floor_float(i * f);
 
-				if (j < MathHelper.ceiling_float_int((float) i * f)
-						&& (float) Math.random() < (float) i * f - (float) j) {
+				if (j < MathHelper.ceiling_float_int(i * f)
+						&& (float) Math.random() < i * f - j) {
 					++j;
 				}
 				i = j;
@@ -89,11 +94,11 @@ public class OutputSlot extends Slot {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj==null)return false;
+		if (obj == null)
+			return false;
 		Slot e = ((Slot) obj);
 		return e.xDisplayPosition == xDisplayPosition
 				&& e.yDisplayPosition == yDisplayPosition;
 	}
-	
 
 }

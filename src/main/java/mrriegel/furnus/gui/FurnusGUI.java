@@ -7,8 +7,6 @@ import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.handler.CheckMessage;
 import mrriegel.furnus.handler.PacketHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -16,8 +14,6 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.config.GuiCheckBox;
 
 public class FurnusGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(

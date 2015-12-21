@@ -2,7 +2,6 @@ package mrriegel.furnus.handler;
 
 import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.block.TileFurnus;
-import mrriegel.furnus.gui.FurnusContainer;
 import mrriegel.furnus.gui.IOFGui;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;

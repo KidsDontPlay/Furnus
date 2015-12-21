@@ -3,12 +3,10 @@ package mrriegel.furnus.block;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import mrriegel.crunch.helper.InventoryHelper;
-import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.IOFGui;
 import mrriegel.furnus.gui.IOFGui.Mode;
 import mrriegel.furnus.gui.UpgradeSlot;
@@ -18,12 +16,9 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.tileentity.TileEntityHopper;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
-
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean burning, eco, inout, split;

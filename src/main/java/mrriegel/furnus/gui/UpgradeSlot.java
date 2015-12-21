@@ -1,7 +1,5 @@
 package mrriegel.furnus.gui;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
@@ -40,17 +38,7 @@ public class UpgradeSlot extends Slot {
 		super.onSlotChanged();
 		TileFurnus t = (TileFurnus) inventory;
 		t.updateStats(player);
-		// con.detectAndSendChanges();
-		// System.out.println(player.openContainer.getClass());
-		// if (getHasStack() && getStack().getItemDamage() == 3)
-		// player.openGui(Furnus.instance, 0, t.getWorldObj(), t.yCoord,
-		// t.yCoord, t.zCoord);
-		// player.openContainer = new FurnusContainer(player.inventory, t);
 		player.worldObj.markBlockForUpdate(t.xCoord, t.yCoord, t.zCoord);
-		// for (int i = 0; i < t.INVSIZE; i++) {
-		// System.out.println(FMLCommonHandler.instance().getEffectiveSide()
-		// + " " + t.getStackInSlot(i));
-		// }
 
 	}
 }
