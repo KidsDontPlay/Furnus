@@ -223,7 +223,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
-		if (slot >= 0 && slot <= 8)
+		if (slot >= 0 && slot <= 2)
 			return FurnaceRecipes.smelting().getSmeltingResult(stack) != null;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
@@ -371,10 +371,10 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			return false;
 		Direction wrongSide = getWrongSide(side);
 		if ((input.get(wrongSide) != Mode.X) && getInputSlots().contains(slot)) {
-			return inStackValid(slot, stack);
+			return isItemValidForSlot(slot, stack);
 		}
 		if (fuelput.get(wrongSide) != Mode.X && slot == 9)
-			return inStackValid(slot, stack);
+			return isItemValidForSlot(slot, stack);
 		return false;
 	}
 
@@ -387,7 +387,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		Direction wrongSide = getWrongSide(side);
 		if ((output.get(wrongSide) != Mode.X)
 				&& getOutputSlots().contains(slot)) {
-			return inStackValid(slot, stack);
+			return true;
 		}
 		return false;
 	}
@@ -396,20 +396,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		for (int i : a)
 			if (z == i)
 				return true;
-		return false;
-	}
-
-	private boolean inStackValid(int slot, ItemStack stack) {
-		if (slot >= 0 && slot <= 2)
-			return FurnaceRecipes.smelting().getSmeltingResult(stack) != null;
-		if (slot == 9)
-			return TileEntityFurnace.isItemFuel(stack);
-		return false;
-	}
-
-	private boolean outStackValid(int slot, ItemStack stack) {
-		if (slot >= 3 && slot <= 8)
-			return true;
 		return false;
 	}
 
@@ -430,6 +416,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 							rest > 0 ? InventoryHelper.copyStack(
 									getStackInSlot(i).copy(), rest) : null);
 				}
+			} else {
+
 			}
 	}
 
@@ -565,7 +553,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	public void updateEntity() {
 		if (worldObj.isRemote)
 			return;
-		if (worldObj.getTotalWorldTime() % 30 == 0)
+		if (System.currentTimeMillis() % 30 == 0)
 			output();
 		split();
 		// if (worldObj.getTotalWorldTime() % 25 == 0) {
@@ -621,7 +609,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void split() {
-		if (slots == 0 || !split || worldObj.getTotalWorldTime() % 4 != 0)
+		if (slots == 0 || !split || System.currentTimeMillis() % 4 != 0)
 			return;
 		boolean x = false;
 		for (int i : getInputSlots()) {
@@ -638,6 +626,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					tryMerge(j, i);
 			}
 		}
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		// worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 }
