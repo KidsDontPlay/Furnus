@@ -2,6 +2,8 @@ package mrriegel.furnus.handler;
 
 import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TileFurnus.Direction;
+import mrriegel.furnus.block.TileFurnus.Mode;
 import mrriegel.furnus.gui.IOFGui;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -31,9 +33,8 @@ public class PutMessage implements IMessage,
 	public IMessage onMessage(PutMessage message, MessageContext ctx) {
 		TileFurnus tile = (TileFurnus) ctx.getServerHandler().playerEntity.worldObj
 				.getTileEntity(message.x, message.y, message.z);
-		IOFGui.getMap(message.kind, tile).put(
-				IOFGui.Direction.valueOf(message.i),
-				IOFGui.Mode.valueOf(message.mode));
+		IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
+				Mode.valueOf(message.mode));
 		ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(
 				message.x, message.y, message.z);
 		return null;

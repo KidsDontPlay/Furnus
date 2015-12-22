@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mrriegel.crunch.helper.InventoryHelper;
-import mrriegel.furnus.gui.IOFGui.Direction;
-import mrriegel.furnus.gui.IOFGui.Mode;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +26,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean burning, eco, inout, split;
 	private int speed, effi, slots, bonus, xp, process, fuel;
 	Map<Direction, Mode> input, output, fuelput;
-
 	String face;
 
 	public TileFurnus() {
@@ -41,6 +38,23 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			output.put(f, Mode.NORMAL);
 			fuelput.put(f, Mode.X);
 		}
+	}
+
+	public enum Mode {
+		NORMAL, AUTO, X;
+		private static Mode[] vals = values();
+
+		public Mode next() {
+			return vals[(this.ordinal() + 1) % vals.length];
+		}
+	}
+
+	public enum Direction {
+		TOP, FRONT, LEFT, RIGHT, BOTTOM, BACK;
+	}
+
+	enum Comp {
+		TOP, BOTTOM, NORTH, EAST, SOUTH, WEST;
 	}
 
 	@Override
@@ -400,10 +414,81 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void output() {
-		for (int i : getOutputSlots()) {
-			// for (IInventory ir : getBlockPos())
-			// ;
+		if (!inout)
+			return;
+		// if (worldObj.getTotalWorldTime() % 20. / (speed + 1.) != 0)
+		// return;
+		int i = getOutputSlots().get(
+				worldObj.rand.nextInt(getOutputSlots().size()));
+		for (IInventory ir : getIInventories())
+			if (!(ir instanceof ISidedInventory)) {
+				if (getStackInSlot(i) != null) {
+					int rest = InventoryHelper.addToInventoryWithLeftover(
+							getStackInSlot(i).copy(), ir, false);
+					setInventorySlotContents(
+							i,
+							rest > 0 ? InventoryHelper.copyStack(
+									getStackInSlot(i).copy(), rest) : null);
+				}
+			}
+	}
+
+	Comp getCompass(Direction d) {
+		if (d == Direction.TOP)
+			return Comp.TOP;
+		if (d == Direction.BOTTOM)
+			return Comp.BOTTOM;
+		if (face == null)
+			return null;
+		if (face.equals("N")) {
+			switch (d) {
+			case FRONT:
+				return Comp.NORTH;
+			case BACK:
+				return Comp.SOUTH;
+			case RIGHT:
+				return Comp.WEST;
+			case LEFT:
+				return Comp.EAST;
+			}
 		}
+		if (face.equals("S")) {
+			switch (d) {
+			case FRONT:
+				return Comp.SOUTH;
+			case BACK:
+				return Comp.NORTH;
+			case RIGHT:
+				return Comp.EAST;
+			case LEFT:
+				return Comp.WEST;
+			}
+		}
+		if (face.equals("E")) {
+			switch (d) {
+			case FRONT:
+				return Comp.EAST;
+			case BACK:
+				return Comp.WEST;
+			case RIGHT:
+				return Comp.NORTH;
+			case LEFT:
+				return Comp.SOUTH;
+			}
+		}
+		if (face.equals("W")) {
+			switch (d) {
+			case FRONT:
+				return Comp.WEST;
+			case BACK:
+				return Comp.EAST;
+			case RIGHT:
+				return Comp.SOUTH;
+			case LEFT:
+				return Comp.NORTH;
+			}
+		}
+		return null;
 	}
 
 	private List<IInventory> getIInventories() {
@@ -411,26 +496,26 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		for (int i = 0; i < 6; i++) {
 			Direction wrongSide = getWrongSide(i);
 			if (output.get(wrongSide) == Mode.AUTO) {
-				switch (wrongSide) {
+				switch (getCompass(wrongSide)) {
 				case TOP:
 					TileEntity a = worldObj.getTileEntity(xCoord, yCoord + 1,
 							zCoord);
 					if (a != null && a instanceof IInventory)
 						lis.add((IInventory) a);
 					break;
-				case FRONT:
+				case EAST:
 					TileEntity b = worldObj.getTileEntity(xCoord + 1, yCoord,
 							zCoord);
 					if (b != null && b instanceof IInventory)
 						lis.add((IInventory) b);
 					break;
-				case LEFT:
+				case SOUTH:
 					TileEntity c = worldObj.getTileEntity(xCoord, yCoord,
 							zCoord + 1);
 					if (c != null && c instanceof IInventory)
 						lis.add((IInventory) c);
 					break;
-				case RIGHT:
+				case NORTH:
 					TileEntity d = worldObj.getTileEntity(xCoord, yCoord,
 							zCoord - 1);
 					if (d != null && d instanceof IInventory)
@@ -442,7 +527,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					if (e != null && e instanceof IInventory)
 						lis.add((IInventory) e);
 					break;
-				case BACK:
+				case WEST:
 					TileEntity f = worldObj.getTileEntity(xCoord - 1, yCoord,
 							zCoord);
 					if (f != null && f instanceof IInventory)
@@ -480,10 +565,14 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	public void updateEntity() {
 		if (worldObj.isRemote)
 			return;
-		output();
+		if (worldObj.getTotalWorldTime() % 30 == 0)
+			output();
 		split();
-		if (worldObj.getTotalWorldTime() % 25 == 0)
-			System.out.println(getIInventories());
+		// if (worldObj.getTotalWorldTime() % 25 == 0) {
+		// System.out.println("top: " + getCompass(Direction.TOP));
+		// System.out.println("bottom: " + getCompass(Direction.BOTTOM));
+		// System.out.println("front: " + getCompass(Direction.FRONT));
+		// }
 	}
 
 	private void tryMerge(int i1, int i2) {

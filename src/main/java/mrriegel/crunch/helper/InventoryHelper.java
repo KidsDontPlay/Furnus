@@ -29,14 +29,14 @@ public class InventoryHelper {
 		ArrayList<Integer> validslots = new ArrayList();
 		for (int i = 0; i < slots.length && stack.stackSize > 0; i++) {
 			int slot = slots[i];
-			// if (overrideValid || inv.isItemValidForSlot(slot, stack)) {
-			ItemStack in = inv.getStackInSlot(slot);
-			if (areStacksEqual(stack, in, true)) {
-				int space = Math.min(max - in.stackSize, stack.stackSize);
-				addable += space;
-				validslots.add(slot);
+			if (inv.isItemValidForSlot(slot, stack)) {
+				ItemStack in = inv.getStackInSlot(slot);
+				if (areStacksEqual(stack, in, true)) {
+					int space = Math.min(max - in.stackSize, stack.stackSize);
+					addable += space;
+					validslots.add(slot);
+				}
 			}
-			// }
 		}
 		if (empty != -1)
 			addable += stack.getMaxStackSize();
@@ -61,6 +61,42 @@ public class InventoryHelper {
 		return false;
 	}
 
+	/** nicked from reika */
+	public static int addToInventoryWithLeftover(ItemStack stack,
+			IInventory inventory, boolean simulate) {
+		int left = stack.stackSize;
+		int max = Math.min(inventory.getInventoryStackLimit(),
+				stack.getMaxStackSize());
+		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+			ItemStack in = inventory.getStackInSlot(i);
+			if (!inventory.isItemValidForSlot(i, stack))
+				continue;
+			if (in == null) {
+				int add = Math.min(max, left);
+				if (!simulate)
+					inventory
+							.setInventorySlotContents(i, copyStack(stack, add));
+				left -= add;
+				if (left <= 0)
+					return 0;
+			} else {
+				if (stack.isItemEqual(in)
+						&& ItemStack.areItemStackTagsEqual(stack, in)) {
+					int space = max - in.stackSize;
+					int add = Math.min(space, stack.stackSize);
+					if (add > 0) {
+						if (!simulate)
+							in.stackSize += add;
+						left -= add;
+						if (left <= 0)
+							return 0;
+					}
+				}
+			}
+		}
+		return left;
+	}
+
 	private static int findEmptySlot(IInventory inv) {
 		for (int i = 0; i < inv.getSizeInventory()
 				- ((inv instanceof InventoryPlayer) ? 4 : 0); i++) {
@@ -76,6 +112,8 @@ public class InventoryHelper {
 	}
 
 	public static ItemStack copyStack(ItemStack stack, int size) {
+		if (stack == null)
+			return null;
 		ItemStack tmp = stack.copy();
 		tmp.stackSize = size;
 		return tmp;

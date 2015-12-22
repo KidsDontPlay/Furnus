@@ -23,7 +23,7 @@ public class OutputSlot extends Slot {
 
 	@Override
 	public boolean isItemValid(ItemStack p_75214_1_) {
-		return false;
+		return !false;
 	}
 
 	@Override

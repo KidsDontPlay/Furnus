@@ -4,13 +4,14 @@ import java.util.Map;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TileFurnus.Direction;
+import mrriegel.furnus.block.TileFurnus.Mode;
 import mrriegel.furnus.handler.OpenMessage;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.handler.PutMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -24,19 +25,6 @@ public class IOFGui extends GuiScreen {
 	int guiLeft, guiTop;
 	String id;
 
-	public enum Mode {
-		NORMAL, AUTO, X;
-		private static Mode[] vals = values();
-
-		public Mode next() {
-			return vals[(this.ordinal() + 1) % vals.length];
-		}
-	}
-
-	public enum Direction {
-		TOP, RIGHT, LEFT, FRONT, BOTTOM, BACK;
-	}
-
 	Mode topMode, frontMode, leftMode, rightMode, bottomMode, backMode;
 
 	public IOFGui(TileFurnus tileEntity, int iD) {
@@ -48,12 +36,12 @@ public class IOFGui extends GuiScreen {
 		else if (iD == 3)
 			id = "F";
 
-		topMode = getMap(id, tile).get(0);
-		frontMode = getMap(id, tile).get(1);
-		leftMode = getMap(id, tile).get(2);
-		rightMode = getMap(id, tile).get(3);
-		bottomMode = getMap(id, tile).get(4);
-		backMode = getMap(id, tile).get(5);
+		topMode = getMap(id, tile).get(Direction.TOP);
+		frontMode = getMap(id, tile).get(Direction.FRONT);
+		leftMode = getMap(id, tile).get(Direction.LEFT);
+		rightMode = getMap(id, tile).get(Direction.RIGHT);
+		bottomMode = getMap(id, tile).get(Direction.BOTTOM);
+		backMode = getMap(id, tile).get(Direction.BACK);
 	}
 
 	@Override
@@ -141,13 +129,14 @@ public class IOFGui extends GuiScreen {
 		}
 	}
 
-	public static Map<Direction, IOFGui.Mode> getMap(String id, TileFurnus tile) {
+	public static Map<Direction, Mode> getMap(String id, TileFurnus tile) {
 		if (id.equals("I"))
 			return tile.getInput();
-		else if (id.equals("O"))
+		if (id.equals("O"))
 			return tile.getOutput();
-		else if (id.equals("F"))
+		if (id.equals("F"))
 			return tile.getFuelput();
+		System.out.println("nullli");
 		return null;
 	}
 
