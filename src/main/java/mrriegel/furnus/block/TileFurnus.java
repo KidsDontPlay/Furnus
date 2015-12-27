@@ -424,35 +424,34 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private void output() {
 		if (!inout)
 			return;
-		for (IInventory ir : getOutIInventories()) {
-			for (int i : getOutputSlots())
+		for (IInventory ir : getIInventories()) {
+			for (int i : getOutputSlots()) {
+				System.out.println(output.get(getWrongSide(getDirection(this,
+						(TileEntity) ir))) + "");
+				if (getStackInSlot(i) == null)
+					continue;
+				
 				if (!(ir instanceof ISidedInventory)) {
-					if (getStackInSlot(i) != null) {
-						int rest = InventoryHelper.addToInventoryWithLeftover(
-								getStackInSlot(i).copy(), ir, false);
-						setInventorySlotContents(
-								i,
-								rest > 0 ? InventoryHelper.copyStack(
-										getStackInSlot(i).copy(), rest) : null);
-						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-						break;
-					}
+					int rest = InventoryHelper.addToInventoryWithLeftover(
+							getStackInSlot(i).copy(), ir, false);
+					setInventorySlotContents(
+							i,
+							rest > 0 ? InventoryHelper.copyStack(
+									getStackInSlot(i).copy(), rest) : null);
+					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+					break;
 				} else if (ir instanceof ISidedInventory) {
-					if (getStackInSlot(i) != null) {
-						int rest = InventoryHelper
-								.addToSidedInventoryWithLeftover(
-										getStackInSlot(i).copy(),
-										(ISidedInventory) ir,
-										getDirection(this, (TileEntity) ir),
-										false);
-						setInventorySlotContents(
-								i,
-								rest > 0 ? InventoryHelper.copyStack(
-										getStackInSlot(i).copy(), rest) : null);
-						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-						break;
-					}
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(
+							getStackInSlot(i).copy(), (ISidedInventory) ir,
+							getDirection(this, (TileEntity) ir), false);
+					setInventorySlotContents(
+							i,
+							rest > 0 ? InventoryHelper.copyStack(
+									getStackInSlot(i).copy(), rest) : null);
+					worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+					break;
 				}
+			}
 		}
 	}
 
@@ -504,17 +503,17 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	private int getDirection(TileEntity von, TileEntity zu) {
 		if (von.yCoord == zu.yCoord + 1)
-			return 1;
-		if (von.yCoord == zu.yCoord - 1)
 			return 0;
+		if (von.yCoord == zu.yCoord - 1)
+			return 1;
 		if (von.zCoord == zu.zCoord + 1)
-			return 3;
-		if (von.zCoord == zu.zCoord - 1)
 			return 2;
+		if (von.zCoord == zu.zCoord - 1)
+			return 3;
 		if (von.xCoord == zu.xCoord + 1)
-			return 5;
-		if (von.xCoord == zu.xCoord - 1)
 			return 4;
+		if (von.xCoord == zu.xCoord - 1)
+			return 5;
 		return -1;
 	}
 
@@ -576,101 +575,130 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		return null;
 	}
 
-	private List<IInventory> getOutIInventories() {
+	private List<IInventory> getIInventories() {
 		ArrayList<IInventory> lis = new ArrayList<IInventory>();
-		for (int i = 0; i < 6; i++) {
-			Direction wrongSide = getWrongSide(i);
-			if (output.get(wrongSide) == Mode.AUTO) {
-				switch (getCompass(wrongSide)) {
-				case TOP:
-					TileEntity a = worldObj.getTileEntity(xCoord, yCoord + 1,
-							zCoord);
-					if (a != null && a instanceof IInventory)
-						lis.add((IInventory) a);
-					break;
-				case EAST:
-					TileEntity b = worldObj.getTileEntity(xCoord + 1, yCoord,
-							zCoord);
-					if (b != null && b instanceof IInventory)
-						lis.add((IInventory) b);
-					break;
-				case SOUTH:
-					TileEntity c = worldObj.getTileEntity(xCoord, yCoord,
-							zCoord + 1);
-					if (c != null && c instanceof IInventory)
-						lis.add((IInventory) c);
-					break;
-				case NORTH:
-					TileEntity d = worldObj.getTileEntity(xCoord, yCoord,
-							zCoord - 1);
-					if (d != null && d instanceof IInventory)
-						lis.add((IInventory) d);
-					break;
-				case BOTTOM:
-					TileEntity e = worldObj.getTileEntity(xCoord, yCoord - 1,
-							zCoord);
-					if (e != null && e instanceof IInventory)
-						lis.add((IInventory) e);
-					break;
-				case WEST:
-					TileEntity f = worldObj.getTileEntity(xCoord - 1, yCoord,
-							zCoord);
-					if (f != null && f instanceof IInventory)
-						lis.add((IInventory) f);
-					break;
-				}
-			}
-		}
+		TileEntity a = worldObj.getTileEntity(xCoord, yCoord + 1, zCoord);
+		if (a != null && a instanceof IInventory)
+			lis.add((IInventory) a);
+
+		TileEntity b = worldObj.getTileEntity(xCoord, yCoord - 1, zCoord);
+		if (b != null && b instanceof IInventory)
+			lis.add((IInventory) b);
+
+		TileEntity c = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
+		if (c != null && c instanceof IInventory)
+			lis.add((IInventory) c);
+
+		TileEntity d = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
+		if (d != null && d instanceof IInventory)
+			lis.add((IInventory) d);
+
+		TileEntity e = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
+		if (e != null && e instanceof IInventory)
+			lis.add((IInventory) e);
+
+		TileEntity f = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
+		if (f != null && f instanceof IInventory)
+			lis.add((IInventory) f);
+
 		return lis;
 	}
 
-	private List<IInventory> getInIInventories() {
-		ArrayList<IInventory> lis = new ArrayList<IInventory>();
-		for (int i = 0; i < 6; i++) {
-			Direction wrongSide = getWrongSide(i);
-			if (input.get(wrongSide) == Mode.AUTO) {
-				switch (getCompass(wrongSide)) {
-				case TOP:
-					TileEntity a = worldObj.getTileEntity(xCoord, yCoord + 1,
-							zCoord);
-					if (a != null && a instanceof IInventory)
-						lis.add((IInventory) a);
-					break;
-				case EAST:
-					TileEntity b = worldObj.getTileEntity(xCoord + 1, yCoord,
-							zCoord);
-					if (b != null && b instanceof IInventory)
-						lis.add((IInventory) b);
-					break;
-				case SOUTH:
-					TileEntity c = worldObj.getTileEntity(xCoord, yCoord,
-							zCoord + 1);
-					if (c != null && c instanceof IInventory)
-						lis.add((IInventory) c);
-					break;
-				case NORTH:
-					TileEntity d = worldObj.getTileEntity(xCoord, yCoord,
-							zCoord - 1);
-					if (d != null && d instanceof IInventory)
-						lis.add((IInventory) d);
-					break;
-				case BOTTOM:
-					TileEntity e = worldObj.getTileEntity(xCoord, yCoord - 1,
-							zCoord);
-					if (e != null && e instanceof IInventory)
-						lis.add((IInventory) e);
-					break;
-				case WEST:
-					TileEntity f = worldObj.getTileEntity(xCoord - 1, yCoord,
-							zCoord);
-					if (f != null && f instanceof IInventory)
-						lis.add((IInventory) f);
-					break;
-				}
-			}
-		}
-		return lis;
-	}
+	// private List<IInventory> getOutIInventories() {
+	// ArrayList<IInventory> lis = new ArrayList<IInventory>();
+	// for (int i = 0; i < 6; i++) {
+	// Direction wrongSide = getWrongSide(i);
+	// if (output.get(wrongSide) == Mode.AUTO) {
+	// switch (getCompass(wrongSide)) {
+	// case TOP:
+	// TileEntity a = worldObj.getTileEntity(xCoord, yCoord + 1,
+	// zCoord);
+	// if (a != null && a instanceof IInventory)
+	// lis.add((IInventory) a);
+	// break;
+	// case EAST:
+	// TileEntity b = worldObj.getTileEntity(xCoord + 1, yCoord,
+	// zCoord);
+	// if (b != null && b instanceof IInventory)
+	// lis.add((IInventory) b);
+	// break;
+	// case SOUTH:
+	// TileEntity c = worldObj.getTileEntity(xCoord, yCoord,
+	// zCoord + 1);
+	// if (c != null && c instanceof IInventory)
+	// lis.add((IInventory) c);
+	// break;
+	// case NORTH:
+	// TileEntity d = worldObj.getTileEntity(xCoord, yCoord,
+	// zCoord - 1);
+	// if (d != null && d instanceof IInventory)
+	// lis.add((IInventory) d);
+	// break;
+	// case BOTTOM:
+	// TileEntity e = worldObj.getTileEntity(xCoord, yCoord - 1,
+	// zCoord);
+	// if (e != null && e instanceof IInventory)
+	// lis.add((IInventory) e);
+	// break;
+	// case WEST:
+	// TileEntity f = worldObj.getTileEntity(xCoord - 1, yCoord,
+	// zCoord);
+	// if (f != null && f instanceof IInventory)
+	// lis.add((IInventory) f);
+	// break;
+	// }
+	// }
+	// }
+	// return lis;
+	// }
+	//
+	// private List<IInventory> getInIInventories() {
+	// ArrayList<IInventory> lis = new ArrayList<IInventory>();
+	// for (int i = 0; i < 6; i++) {
+	// Direction wrongSide = getWrongSide(i);
+	// if (input.get(wrongSide) == Mode.AUTO) {
+	// switch (getCompass(wrongSide)) {
+	// case TOP:
+	// TileEntity a = worldObj.getTileEntity(xCoord, yCoord + 1,
+	// zCoord);
+	// if (a != null && a instanceof IInventory)
+	// lis.add((IInventory) a);
+	// break;
+	// case EAST:
+	// TileEntity b = worldObj.getTileEntity(xCoord + 1, yCoord,
+	// zCoord);
+	// if (b != null && b instanceof IInventory)
+	// lis.add((IInventory) b);
+	// break;
+	// case SOUTH:
+	// TileEntity c = worldObj.getTileEntity(xCoord, yCoord,
+	// zCoord + 1);
+	// if (c != null && c instanceof IInventory)
+	// lis.add((IInventory) c);
+	// break;
+	// case NORTH:
+	// TileEntity d = worldObj.getTileEntity(xCoord, yCoord,
+	// zCoord - 1);
+	// if (d != null && d instanceof IInventory)
+	// lis.add((IInventory) d);
+	// break;
+	// case BOTTOM:
+	// TileEntity e = worldObj.getTileEntity(xCoord, yCoord - 1,
+	// zCoord);
+	// if (e != null && e instanceof IInventory)
+	// lis.add((IInventory) e);
+	// break;
+	// case WEST:
+	// TileEntity f = worldObj.getTileEntity(xCoord - 1, yCoord,
+	// zCoord);
+	// if (f != null && f instanceof IInventory)
+	// lis.add((IInventory) f);
+	// break;
+	// }
+	// }
+	// }
+	// return lis;
+	// }
 
 	@Override
 	public void updateEntity() {
@@ -678,13 +706,13 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			return;
 		if (worldObj.getTotalWorldTime() % 40 == 0) {
 			output();
-			input();
+			// input();
 		}
 		split();
 	}
 
 	private void split() {
-		if (slots == 0 || !split || System.currentTimeMillis() % 4 != 0)
+		if (slots == 0 || !split || worldObj.getTotalWorldTime() % 4 != 0)
 			return;
 		boolean x = false;
 		for (int i : getInputSlots()) {
