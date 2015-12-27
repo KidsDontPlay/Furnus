@@ -1,10 +1,11 @@
-package mrriegel.crunch.helper;
+package mrriegel.furnus;
 
 import java.util.ArrayList;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -71,6 +72,43 @@ public class InventoryHelper {
 			ItemStack in = inventory.getStackInSlot(i);
 			if (!inventory.isItemValidForSlot(i, stack))
 				continue;
+			if (in == null) {
+				int add = Math.min(max, left);
+				if (!simulate)
+					inventory
+							.setInventorySlotContents(i, copyStack(stack, add));
+				left -= add;
+				if (left <= 0)
+					return 0;
+			} else {
+				if (stack.isItemEqual(in)
+						&& ItemStack.areItemStackTagsEqual(stack, in)) {
+					int space = max - in.stackSize;
+					int add = Math.min(space, stack.stackSize);
+					if (add > 0) {
+						if (!simulate)
+							in.stackSize += add;
+						left -= add;
+						if (left <= 0)
+							return 0;
+					}
+				}
+			}
+		}
+		return left;
+	}
+
+	/** nicked from reika */
+	public static int addToSidedInventoryWithLeftover(ItemStack stack,
+			ISidedInventory inventory, int side, boolean simulate) {
+		int left = stack.stackSize;
+		int max = Math.min(inventory.getInventoryStackLimit(),
+				stack.getMaxStackSize());
+		for (int i : inventory.getAccessibleSlotsFromSide(side)) {
+			if (!inventory.isItemValidForSlot(i, stack)
+					|| !inventory.canInsertItem(i, stack, side))
+				continue;
+			ItemStack in = inventory.getStackInSlot(i);
 			if (in == null) {
 				int add = Math.min(max, left);
 				if (!simulate)

@@ -40,14 +40,5 @@ public class Furnus {
 		BlockFurnus.init();
 		ItemUpgrade.init();
 		CraftingRecipes.init();
-		// GameRegistry.registerFuelHandler(new IFuelHandler() {
-		//
-		// @Override
-		// public int getBurnTime(ItemStack fuel) {
-		// if (fuel.getItem() == ItemUpgrade.upgrade)
-		// return 20;
-		// return 0;
-		// }
-		// });
 	}
 }

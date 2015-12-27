@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mrriegel.crunch.helper.InventoryHelper;
+import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
@@ -221,6 +221,27 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		this.face = face;
 	}
 
+	private ArrayList<Integer> getOutputSlots() {
+		if (slots == 2)
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
+					5, 6, 7, 8 }));
+		if (slots == 1)
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
+					6, 7 }));
+		else
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 6 }));
+	}
+
+	private ArrayList<Integer> getInputSlots() {
+		if (slots == 2)
+			return new ArrayList<Integer>(
+					Arrays.asList(new Integer[] { 0, 1, 2 }));
+		if (slots == 1)
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0, 1 }));
+		else
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0 }));
+	}
+
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 2)
@@ -402,23 +423,53 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private void output() {
 		if (!inout)
 			return;
-		// if (worldObj.getTotalWorldTime() % 20. / (speed + 1.) != 0)
-		// return;
-		int i = getOutputSlots().get(
-				worldObj.rand.nextInt(getOutputSlots().size()));
-		for (IInventory ir : getIInventories())
-			if (!(ir instanceof ISidedInventory)) {
-				if (getStackInSlot(i) != null) {
-					int rest = InventoryHelper.addToInventoryWithLeftover(
-							getStackInSlot(i).copy(), ir, false);
-					setInventorySlotContents(
-							i,
-							rest > 0 ? InventoryHelper.copyStack(
-									getStackInSlot(i).copy(), rest) : null);
+		for (IInventory ir : getIInventories()) {
+			// System.out.println(""+getDirection(this, (TileEntity) ir));
+			for (int i : getOutputSlots())
+				if (!(ir instanceof ISidedInventory)) {
+					if (getStackInSlot(i) != null) {
+						int rest = InventoryHelper.addToInventoryWithLeftover(
+								getStackInSlot(i).copy(), ir, false);
+						setInventorySlotContents(
+								i,
+								rest > 0 ? InventoryHelper.copyStack(
+										getStackInSlot(i).copy(), rest) : null);
+						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+						break;
+					}
+				} else if (ir instanceof ISidedInventory) {
+					if (getStackInSlot(i) != null) {
+						int rest = InventoryHelper
+								.addToSidedInventoryWithLeftover(
+										getStackInSlot(i).copy(),
+										(ISidedInventory) ir,
+										getDirection(this, (TileEntity) ir),
+										false);
+						setInventorySlotContents(
+								i,
+								rest > 0 ? InventoryHelper.copyStack(
+										getStackInSlot(i).copy(), rest) : null);
+						worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+						break;
+					}
 				}
-			} else {
+		}
+	}
 
-			}
+	private int getDirection(TileEntity von, TileEntity zu) {
+		if (von.yCoord == zu.yCoord + 1)
+			return 0;
+		if (von.yCoord == zu.yCoord - 1)
+			return 1;
+		if (von.zCoord == zu.zCoord + 1)
+			return 2;
+		if (von.zCoord == zu.zCoord - 1)
+			return 3;
+		if (von.xCoord == zu.xCoord + 1)
+			return 4;
+		if (von.xCoord == zu.xCoord - 1)
+			return 5;
+		return -1;
 	}
 
 	Comp getCompass(Direction d) {
@@ -528,32 +579,11 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	}
 
-	private ArrayList<Integer> getOutputSlots() {
-		if (slots == 2)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
-					5, 6, 7, 8 }));
-		if (slots == 1)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
-					6, 7 }));
-		else
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 6 }));
-	}
-
-	private ArrayList<Integer> getInputSlots() {
-		if (slots == 2)
-			return new ArrayList<Integer>(
-					Arrays.asList(new Integer[] { 0, 1, 2 }));
-		if (slots == 1)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0, 1 }));
-		else
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0 }));
-	}
-
 	@Override
 	public void updateEntity() {
 		if (worldObj.isRemote)
 			return;
-		if (System.currentTimeMillis() % 30 == 0)
+		if (System.currentTimeMillis() % 40 == 0)
 			output();
 		split();
 		// if (worldObj.getTotalWorldTime() % 25 == 0) {
@@ -561,6 +591,27 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		// System.out.println("bottom: " + getCompass(Direction.BOTTOM));
 		// System.out.println("front: " + getCompass(Direction.FRONT));
 		// }
+	}
+
+	private void split() {
+		if (slots == 0 || !split || System.currentTimeMillis() % 4 != 0)
+			return;
+		boolean x = false;
+		for (int i : getInputSlots()) {
+			if (getStackInSlot(i) != null) {
+				x = true;
+				break;
+			}
+		}
+		if (!x)
+			return;
+		for (int i : getInputSlots()) {
+			for (int j : getInputSlots()) {
+				if (i >= j)
+					tryMerge(j, i);
+			}
+		}
+		// worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
 	private void tryMerge(int i1, int i2) {
@@ -606,26 +657,5 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			return new int[] { a / 2, a / 2 };
 		else
 			return new int[] { a / 2 + 1, a / 2 };
-	}
-
-	private void split() {
-		if (slots == 0 || !split || System.currentTimeMillis() % 4 != 0)
-			return;
-		boolean x = false;
-		for (int i : getInputSlots()) {
-			if (getStackInSlot(i) != null) {
-				x = true;
-				break;
-			}
-		}
-		if (!x)
-			return;
-		for (int i : getInputSlots()) {
-			for (int j : getInputSlots()) {
-				if (i >= j)
-					tryMerge(j, i);
-			}
-		}
-		// worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 }
