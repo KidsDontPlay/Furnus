@@ -7,9 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.lwjgl.opengl.GL11;
+
 import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.item.ItemUpgrade;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -557,10 +563,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	public void updateEntity() {
 		if (worldObj.isRemote)
 			return;
-		if (worldObj.getTotalWorldTime() % 40 == 0) {
-			output();
-			input();
-		}
+		output();
+		input();
 		split();
 	}
 
@@ -627,4 +631,5 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		else
 			return new int[] { a / 2 + 1, a / 2 };
 	}
+
 }

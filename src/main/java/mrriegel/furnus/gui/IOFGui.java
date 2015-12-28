@@ -22,7 +22,7 @@ public class IOFGui extends GuiScreen {
 	private static final ResourceLocation GuiTextures = new ResourceLocation(
 			Furnus.MODID + ":textures/gui/iof.png");
 	TileFurnus tile;
-	GuiButton top, front, left, right, bottom, back;
+	Button top, front, left, right, bottom, back;
 	int imageWidth = 101;
 	int imageHeight = 101;
 	int guiLeft, guiTop;
@@ -52,30 +52,24 @@ public class IOFGui extends GuiScreen {
 		super.initGui();
 		guiLeft = (this.width - this.imageWidth) / 2;
 		guiTop = (this.height - this.imageHeight) / 2;
-		top = new GuiButton(0, guiLeft + 40, guiTop + 20, 20, 20, topMode
-				.toString().substring(0, 1).toUpperCase()) {
-
-			@Override
-			public void drawButton(Minecraft p_146112_1_, int p_146112_2_,
-					int p_146112_3_) {
-			}
-		};
+		top = new Button(0, guiLeft + 40, guiTop + 20, 20, 20, topMode
+				.toString().substring(0, 1).toUpperCase());
 		buttonList.add(top);
-//		front = new GuiButton(1, guiLeft + 40, guiTop + 42, 20, 20, frontMode
-//				.toString().substring(0, 1).toUpperCase());
-//		buttonList.add(front);
-//		left = new GuiButton(2, guiLeft + 18, guiTop + 42, 20, 20, leftMode
-//				.toString().substring(0, 1).toUpperCase());
-//		buttonList.add(left);
-//		right = new GuiButton(3, guiLeft + 62, guiTop + 42, 20, 20, rightMode
-//				.toString().substring(0, 1).toUpperCase());
-//		buttonList.add(right);
-//		bottom = new GuiButton(4, guiLeft + 40, guiTop + 64, 20, 20, bottomMode
-//				.toString().substring(0, 1).toUpperCase());
-//		buttonList.add(bottom);
-//		back = new GuiButton(5, guiLeft + 62, guiTop + 64, 20, 20, backMode
-//				.toString().substring(0, 1).toUpperCase());
-//		buttonList.add(back);
+		front = new Button(1, guiLeft + 40, guiTop + 42, 20, 20, frontMode
+				.toString().substring(0, 1).toUpperCase());
+		buttonList.add(front);
+		left = new Button(2, guiLeft + 18, guiTop + 42, 20, 20, leftMode
+				.toString().substring(0, 1).toUpperCase());
+		buttonList.add(left);
+		right = new Button(3, guiLeft + 62, guiTop + 42, 20, 20, rightMode
+				.toString().substring(0, 1).toUpperCase());
+		buttonList.add(right);
+		bottom = new Button(4, guiLeft + 40, guiTop + 64, 20, 20, bottomMode
+				.toString().substring(0, 1).toUpperCase());
+		buttonList.add(bottom);
+		back = new Button(5, guiLeft + 62, guiTop + 64, 20, 20, backMode
+				.toString().substring(0, 1).toUpperCase());
+		buttonList.add(back);
 	}
 
 	@Override
@@ -146,7 +140,6 @@ public class IOFGui extends GuiScreen {
 			return tile.getOutput();
 		if (id.equals("F"))
 			return tile.getFuelput();
-		System.out.println("nullli");
 		return null;
 	}
 
@@ -159,10 +152,7 @@ public class IOFGui extends GuiScreen {
 		guiTop = (this.height - this.imageHeight) / 2;
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.imageWidth,
 				this.imageHeight);
-		// drawTexturedModalRect(top.xPosition - 6, top.yPosition, 101, 0, 20,
-		// 20);
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
-		drawTexturedModalRect(top.xPosition - 6, top.yPosition, 101, 0, 20, 20);
 		mc.fontRenderer.drawString(id.equals("F") ? "Fuel"
 				: id.equals("I") ? "Input" : "Output", guiLeft + 8, guiTop + 6,
 				4210752);
@@ -178,5 +168,53 @@ public class IOFGui extends GuiScreen {
 	public void onGuiClosed() {
 		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.xCoord,
 				tile.yCoord, tile.zCoord));
+	}
+
+	class Button extends GuiButton {
+
+		public Button(int p_i1021_1_, int p_i1021_2_, int p_i1021_3_,
+				int p_i1021_4_, int p_i1021_5_, String p_i1021_6_) {
+			super(p_i1021_1_, p_i1021_2_, p_i1021_3_, p_i1021_4_, p_i1021_5_,
+					p_i1021_6_);
+		}
+
+		@Override
+		public void drawButton(Minecraft p_146112_1_, int p_146112_2_,
+				int p_146112_3_) {
+			if (this.visible) {
+				p_146112_1_.getTextureManager().bindTexture(buttonTextures);
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				this.field_146123_n = p_146112_2_ >= this.xPosition
+						&& p_146112_3_ >= this.yPosition
+						&& p_146112_2_ < this.xPosition + this.width
+						&& p_146112_3_ < this.yPosition + this.height;
+				int k = this.getHoverState(this.field_146123_n);
+				GL11.glEnable(GL11.GL_BLEND);
+				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				this.drawTexturedModalRect(this.xPosition, this.yPosition, 0,
+						46 + k * 20, this.width / 2, this.height);
+				this.drawTexturedModalRect(this.xPosition + this.width / 2,
+						this.yPosition, 200 - this.width / 2, 46 + k * 20,
+						this.width / 2, this.height);
+				p_146112_1_.getTextureManager().bindTexture(GuiTextures);
+				drawTexturedModalRect(xPosition, yPosition, 101, 0+(displayString.equals("N")?0:displayString.equals("X")?20:40), 20, 20);
+				// int l = 14737632;
+				//
+				// if (packedFGColour != 0) {
+				// l = packedFGColour;
+				// } else if (!this.enabled) {
+				// l = 10526880;
+				// } else if (this.field_146123_n) {
+				// l = 16777120;
+				// }
+				//
+				// this.drawCenteredString(p_146112_1_.fontRenderer,
+				// this.displayString, this.xPosition + this.width / 2,
+				//		this.yPosition + (this.height - 8) / 2, l);
+
+			}
+		}
+
 	}
 }
