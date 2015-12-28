@@ -8,11 +8,8 @@ import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -46,11 +43,6 @@ public class Furnus {
 		BlockFurnus.init();
 		ItemUpgrade.init();
 		CraftingRecipes.init();
-//		MinecraftForge.EVENT_BUS.register(this);
-	}
-	@SubscribeEvent
-	public void d(LivingUpdateEvent e){
-		if(e.entityLiving instanceof EntityPlayer)
-		System.out.println(FMLCommonHandler.instance().getEffectiveSide()+": "+((EntityPlayer)e.entityLiving).inventory.getItemStack());
+		// MinecraftForge.EVENT_BUS.register(this);
 	}
 }

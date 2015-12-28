@@ -7,15 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.opengl.GL11;
-
 import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.item.ItemUpgrade;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -24,7 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityBrewingStand;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 import com.google.common.reflect.TypeToken;
@@ -225,6 +218,56 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		this.face = face;
 	}
 
+	@Override
+	public int[] getAccessibleSlotsFromSide(int side) {
+		if (!inout)
+			return new int[] {};
+		ArrayList<Integer> lis = new ArrayList<Integer>();
+		Direction wrongSide = getWrongSide(side);
+		if (input.get(wrongSide) != Mode.X)
+			lis.addAll(getInputSlots());
+		if (output.get(wrongSide) != Mode.X)
+			lis.addAll(getOutputSlots());
+		if (fuelput.get(wrongSide) != Mode.X)
+			lis.add(9);
+		int[] end = new int[lis.size()];
+		for (int i = 0; i < lis.size(); i++)
+			end[i] = lis.get(i);
+		return end;
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack stack, int side) {
+		if (!inout)
+			return false;
+		if (!getInputSlots().contains(slot) && slot != 9)
+			return false;
+		Direction wrongSide = getWrongSide(side);
+		if ((input.get(wrongSide) != Mode.X) && getInputSlots().contains(slot)) {
+			return isItemValidForSlot(slot, stack);
+		}
+		if (fuelput.get(wrongSide) != Mode.X && slot == 9)
+			return isItemValidForSlot(slot, stack);
+		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack stack, int side) {
+		if (!inout)
+			return false;
+		if (!getOutputSlots().contains(slot) && slot != 9)
+			return false;
+		Direction wrongSide = getWrongSide(side);
+		if ((output.get(wrongSide) != Mode.X)
+				&& getOutputSlots().contains(slot)) {
+			return true;
+		}
+		if (fuelput.get(wrongSide) != Mode.X && slot == 9
+				&& stack.getItem() == Items.bucket)
+			return true;
+		return false;
+	}
+
 	private ArrayList<Integer> getOutputSlots() {
 		if (slots == 2)
 			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
@@ -315,109 +358,12 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	@Override
-	public int[] getAccessibleSlotsFromSide(int side) {
-		if (!inout)
-			return new int[] {};
-		ArrayList<Integer> lis = new ArrayList<Integer>();
-		Direction wrongSide = getWrongSide(side);
-		if (input.get(wrongSide) != Mode.X)
-			lis.addAll(getInputSlots());
-		if (output.get(wrongSide) != Mode.X)
-			lis.addAll(getOutputSlots());
-		if (fuelput.get(wrongSide) != Mode.X)
-			lis.add(9);
-		int[] end = new int[lis.size()];
-		for (int i = 0; i < lis.size(); i++)
-			end[i] = lis.get(i);
-		return end;
-	}
-
-	Direction getWrongSide(int side) {
-		if (side == 1)
-			return Direction.TOP;
-		if (side == 0)
-			return Direction.BOTTOM;
-		if (face.equals("N")) {
-			switch (side) {
-			case 2:
-				return Direction.FRONT;
-			case 3:
-				return Direction.BACK;
-			case 4:
-				return Direction.RIGHT;
-			case 5:
-				return Direction.LEFT;
-			}
-		}
-		if (face.equals("S")) {
-			switch (side) {
-			case 2:
-				return Direction.BACK;
-			case 3:
-				return Direction.FRONT;
-			case 4:
-				return Direction.LEFT;
-			case 5:
-				return Direction.RIGHT;
-			}
-		}
-		if (face.equals("E")) {
-			switch (side) {
-			case 2:
-				return Direction.RIGHT;
-			case 3:
-				return Direction.LEFT;
-			case 4:
-				return Direction.BACK;
-			case 5:
-				return Direction.FRONT;
-			}
-		}
-		if (face.equals("W")) {
-			switch (side) {
-			case 2:
-				return Direction.LEFT;
-			case 3:
-				return Direction.RIGHT;
-			case 4:
-				return Direction.FRONT;
-			case 5:
-				return Direction.BACK;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public boolean canInsertItem(int slot, ItemStack stack, int side) {
-		if (!inout)
-			return false;
-		if (!getInputSlots().contains(slot) && slot != 9)
-			return false;
-		Direction wrongSide = getWrongSide(side);
-		if ((input.get(wrongSide) != Mode.X) && getInputSlots().contains(slot)) {
-			return isItemValidForSlot(slot, stack);
-		}
-		if (fuelput.get(wrongSide) != Mode.X && slot == 9)
-			return isItemValidForSlot(slot, stack);
-		return false;
-	}
-
-	@Override
-	public boolean canExtractItem(int slot, ItemStack stack, int side) {
-		if (!inout)
-			return false;
-		if (!getOutputSlots().contains(slot) && slot != 9)
-			return false;
-		Direction wrongSide = getWrongSide(side);
-		if ((output.get(wrongSide) != Mode.X)
-				&& getOutputSlots().contains(slot)) {
-			return true;
-		}
-		if (fuelput.get(wrongSide) != Mode.X && slot == 9
-				&& stack.getItem() == Items.bucket)
-			return true;
-		return false;
+	public void updateEntity() {
+		if (worldObj.isRemote)
+			return;
+		output();
+		input();
+		split();
 	}
 
 	private void output() {
@@ -559,13 +505,60 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		return lis;
 	}
 
-	@Override
-	public void updateEntity() {
-		if (worldObj.isRemote)
-			return;
-		output();
-		input();
-		split();
+	Direction getWrongSide(int side) {
+		if (side == 1)
+			return Direction.TOP;
+		if (side == 0)
+			return Direction.BOTTOM;
+		if (face.equals("N")) {
+			switch (side) {
+			case 2:
+				return Direction.FRONT;
+			case 3:
+				return Direction.BACK;
+			case 4:
+				return Direction.RIGHT;
+			case 5:
+				return Direction.LEFT;
+			}
+		}
+		if (face.equals("S")) {
+			switch (side) {
+			case 2:
+				return Direction.BACK;
+			case 3:
+				return Direction.FRONT;
+			case 4:
+				return Direction.LEFT;
+			case 5:
+				return Direction.RIGHT;
+			}
+		}
+		if (face.equals("E")) {
+			switch (side) {
+			case 2:
+				return Direction.RIGHT;
+			case 3:
+				return Direction.LEFT;
+			case 4:
+				return Direction.BACK;
+			case 5:
+				return Direction.FRONT;
+			}
+		}
+		if (face.equals("W")) {
+			switch (side) {
+			case 2:
+				return Direction.LEFT;
+			case 3:
+				return Direction.RIGHT;
+			case 4:
+				return Direction.FRONT;
+			case 5:
+				return Direction.BACK;
+			}
+		}
+		return null;
 	}
 
 	private void split() {

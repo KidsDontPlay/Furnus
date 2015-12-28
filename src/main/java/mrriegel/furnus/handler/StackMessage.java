@@ -1,12 +1,8 @@
 package mrriegel.furnus.handler;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import io.netty.buffer.ByteBuf;
-import mrriegel.furnus.block.TileFurnus;
-import mrriegel.furnus.block.TileFurnus.Direction;
-import mrriegel.furnus.block.TileFurnus.Mode;
-import mrriegel.furnus.gui.IOFGui;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;

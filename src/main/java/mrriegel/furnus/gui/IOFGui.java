@@ -10,7 +10,6 @@ import mrriegel.furnus.handler.OpenMessage;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.handler.PutMessage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -83,7 +82,6 @@ public class IOFGui extends GuiScreen {
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP
 					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
 					topMode.toString()));
-			System.out.println(top.displayString);
 			break;
 		case 1:
 			frontMode = frontMode.next();
@@ -198,20 +196,12 @@ public class IOFGui extends GuiScreen {
 						this.yPosition, 200 - this.width / 2, 46 + k * 20,
 						this.width / 2, this.height);
 				p_146112_1_.getTextureManager().bindTexture(GuiTextures);
-				drawTexturedModalRect(xPosition, yPosition, 101, 0+(displayString.equals("N")?0:displayString.equals("X")?20:40), 20, 20);
-				// int l = 14737632;
-				//
-				// if (packedFGColour != 0) {
-				// l = packedFGColour;
-				// } else if (!this.enabled) {
-				// l = 10526880;
-				// } else if (this.field_146123_n) {
-				// l = 16777120;
-				// }
-				//
-				// this.drawCenteredString(p_146112_1_.fontRenderer,
-				// this.displayString, this.xPosition + this.width / 2,
-				//		this.yPosition + (this.height - 8) / 2, l);
+				this.drawTexturedModalRect(
+						this.xPosition,
+						this.yPosition,
+						101,
+						0 + (displayString.equals("N") ? 0 : displayString
+								.equals("X") ? 20 : 40), 20, 20);
 
 			}
 		}
