@@ -4,9 +4,13 @@ import java.util.ArrayList;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.handler.PacketHandler;
+import mrriegel.furnus.handler.StackMessage;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -70,11 +74,20 @@ public class FurnusContainer extends Container {
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		if (startSlot != tile.getSlots()
-				&& player.inventory.getItemStack() == null) {
+		if (startSlot != tile.getSlots()) {
 			startSlot = tile.getSlots();
+			ItemStack save = null;
+			if (player.inventory.getItemStack() != null) {
+				save = player.inventory.getItemStack().copy();
+				player.inventory.setItemStack(null);
+			}
 			player.openGui(Furnus.instance, 0, tile.getWorldObj(), tile.xCoord,
 					tile.yCoord, tile.zCoord);
+			if (save != null) {
+				player.inventory.setItemStack(save);
+				PacketHandler.INSTANCE.sendTo(new StackMessage(save),
+						(EntityPlayerMP) player);
+			}
 		}
 	}
 

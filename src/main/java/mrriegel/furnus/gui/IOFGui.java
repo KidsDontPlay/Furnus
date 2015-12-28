@@ -9,8 +9,11 @@ import mrriegel.furnus.block.TileFurnus.Mode;
 import mrriegel.furnus.handler.OpenMessage;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.handler.PutMessage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -50,23 +53,29 @@ public class IOFGui extends GuiScreen {
 		guiLeft = (this.width - this.imageWidth) / 2;
 		guiTop = (this.height - this.imageHeight) / 2;
 		top = new GuiButton(0, guiLeft + 40, guiTop + 20, 20, 20, topMode
-				.toString().substring(0, 1).toUpperCase());
+				.toString().substring(0, 1).toUpperCase()) {
+
+			@Override
+			public void drawButton(Minecraft p_146112_1_, int p_146112_2_,
+					int p_146112_3_) {
+			}
+		};
 		buttonList.add(top);
-		front = new GuiButton(1, guiLeft + 40, guiTop + 42, 20, 20, frontMode
-				.toString().substring(0, 1).toUpperCase());
-		buttonList.add(front);
-		left = new GuiButton(2, guiLeft + 18, guiTop + 42, 20, 20, leftMode
-				.toString().substring(0, 1).toUpperCase());
-		buttonList.add(left);
-		right = new GuiButton(3, guiLeft + 62, guiTop + 42, 20, 20, rightMode
-				.toString().substring(0, 1).toUpperCase());
-		buttonList.add(right);
-		bottom = new GuiButton(4, guiLeft + 40, guiTop + 64, 20, 20, bottomMode
-				.toString().substring(0, 1).toUpperCase());
-		buttonList.add(bottom);
-		back = new GuiButton(5, guiLeft + 62, guiTop + 64, 20, 20, backMode
-				.toString().substring(0, 1).toUpperCase());
-		buttonList.add(back);
+//		front = new GuiButton(1, guiLeft + 40, guiTop + 42, 20, 20, frontMode
+//				.toString().substring(0, 1).toUpperCase());
+//		buttonList.add(front);
+//		left = new GuiButton(2, guiLeft + 18, guiTop + 42, 20, 20, leftMode
+//				.toString().substring(0, 1).toUpperCase());
+//		buttonList.add(left);
+//		right = new GuiButton(3, guiLeft + 62, guiTop + 42, 20, 20, rightMode
+//				.toString().substring(0, 1).toUpperCase());
+//		buttonList.add(right);
+//		bottom = new GuiButton(4, guiLeft + 40, guiTop + 64, 20, 20, bottomMode
+//				.toString().substring(0, 1).toUpperCase());
+//		buttonList.add(bottom);
+//		back = new GuiButton(5, guiLeft + 62, guiTop + 64, 20, 20, backMode
+//				.toString().substring(0, 1).toUpperCase());
+//		buttonList.add(back);
 	}
 
 	@Override
@@ -80,6 +89,7 @@ public class IOFGui extends GuiScreen {
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP
 					.toString(), tile.xCoord, tile.yCoord, tile.zCoord, id,
 					topMode.toString()));
+			System.out.println(top.displayString);
 			break;
 		case 1:
 			frontMode = frontMode.next();
@@ -149,10 +159,10 @@ public class IOFGui extends GuiScreen {
 		guiTop = (this.height - this.imageHeight) / 2;
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.imageWidth,
 				this.imageHeight);
-
+		// drawTexturedModalRect(top.xPosition - 6, top.yPosition, 101, 0, 20,
+		// 20);
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
-		// GL11.glDisable(GL11.GL_BLEND);
-		// drawTexturedModalRect(top.xPosition, top.yPosition, 100, 0, 20, 20);
+		drawTexturedModalRect(top.xPosition - 6, top.yPosition, 101, 0, 20, 20);
 		mc.fontRenderer.drawString(id.equals("F") ? "Fuel"
 				: id.equals("I") ? "Input" : "Output", guiLeft + 8, guiTop + 6,
 				4210752);
