@@ -25,8 +25,9 @@ import com.google.gson.Gson;
 
 public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean burning, eco, inout, split;
-	private int speed, effi, slots, bonus, xp, process, fuel;
+	private int speed, effi, slots, bonus, xp, fuel;
 	Map<Direction, Mode> input, output, fuelput;
+	Map<Integer, Integer> progress;
 	String face;
 
 	public TileFurnus() {
@@ -39,6 +40,9 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			output.put(f, Mode.NORMAL);
 			fuelput.put(f, Mode.X);
 		}
+		progress = new HashMap<Integer, Integer>();
+		for (int i = 0; i < 3; i++)
+			progress.put(i, 0);
 	}
 
 	public enum Mode {
@@ -65,16 +69,17 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		slots = tag.getInteger("slot");
 		bonus = tag.getInteger("bonus");
 		xp = tag.getInteger("xp");
-		process = tag.getInteger("process");
 		fuel = tag.getInteger("fuel");
-		input = new Gson().fromJson(tag.getString("input"),
-				new TypeToken<Map<Direction, Mode>>() {
-				}.getType());
+		input = new Gson().fromJson(tag.getString("input"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
 		output = new Gson().fromJson(tag.getString("output"),
 				new TypeToken<Map<Direction, Mode>>() {
 				}.getType());
 		fuelput = new Gson().fromJson(tag.getString("fuelput"),
 				new TypeToken<Map<Direction, Mode>>() {
+				}.getType());
+		progress = new Gson().fromJson(tag.getString("progress"),
+				new TypeToken<Map<Integer, Integer>>() {
 				}.getType());
 		face = tag.getString("face");
 	}
@@ -90,11 +95,11 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		tag.setInteger("slot", slots);
 		tag.setInteger("bonus", bonus);
 		tag.setInteger("xp", xp);
-		tag.setInteger("process", process);
 		tag.setInteger("fuel", fuel);
 		tag.setString("input", new Gson().toJson(input));
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
+		tag.setString("progress", new Gson().toJson(progress));
 		tag.setString("face", face);
 	}
 
@@ -170,14 +175,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		this.split = split;
 	}
 
-	public int getProcess() {
-		return process;
-	}
-
-	public void setProcess(int process) {
-		this.process = process;
-	}
-
 	public int getFuel() {
 		return fuel;
 	}
@@ -208,6 +205,14 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	public void setFuelput(Map<Direction, Mode> fuelput) {
 		this.fuelput = fuelput;
+	}
+
+	public Map<Integer, Integer> getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Map<Integer, Integer> progress) {
+		this.progress = progress;
 	}
 
 	public String getFace() {
@@ -258,31 +263,26 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		if (!getOutputSlots().contains(slot) && slot != 9)
 			return false;
 		Direction wrongSide = getWrongSide(side);
-		if ((output.get(wrongSide) != Mode.X)
-				&& getOutputSlots().contains(slot)) {
+		if ((output.get(wrongSide) != Mode.X) && getOutputSlots().contains(slot)) {
 			return true;
 		}
-		if (fuelput.get(wrongSide) != Mode.X && slot == 9
-				&& stack.getItem() == Items.bucket)
+		if (fuelput.get(wrongSide) != Mode.X && slot == 9 && stack.getItem() == Items.bucket)
 			return true;
 		return false;
 	}
 
 	private ArrayList<Integer> getOutputSlots() {
 		if (slots == 2)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
-					5, 6, 7, 8 }));
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4, 5, 6, 7, 8 }));
 		if (slots == 1)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4,
-					6, 7 }));
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4, 6, 7 }));
 		else
 			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 6 }));
 	}
 
 	private ArrayList<Integer> getInputSlots() {
 		if (slots == 2)
-			return new ArrayList<Integer>(
-					Arrays.asList(new Integer[] { 0, 1, 2 }));
+			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0, 1, 2 }));
 		if (slots == 1)
 			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0, 1 }));
 		else
@@ -296,8 +296,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
 		if (slot >= 10)
-			return stack.getItem() == ItemUpgrade.upgrade
-					&& UpgradeSlot.in(stack, slot, this);
+			return stack.getItem() == ItemUpgrade.upgrade && UpgradeSlot.in(stack, slot, this);
 		return false;
 	}
 
@@ -364,46 +363,87 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		output();
 		input();
 		split();
+		for (int i = 0; i <= speed; i++) {
+			burn(0);
+			if (slots == 1)
+				burn(1);
+			if (slots == 2)
+				burn(2);
+		}
+	}
+
+	private void burn(int slot) {
+		smeltItem(slot);
+	}
+
+	public void smeltItem(int slot) {
+		if (this.canSmelt(slot)) {
+			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(getStackInSlot(slot));
+
+			if (getStackInSlot(slot + 3) == null) {
+				setInventorySlotContents(slot + 3, itemstack.copy());
+			} else if (getStackInSlot(slot + 3).getItem() == itemstack.getItem()) {
+				getStackInSlot(slot + 3).stackSize += itemstack.stackSize;
+			}
+
+			--this.getStackInSlot(slot).stackSize;
+
+			if (this.getStackInSlot(slot).stackSize <= 0) {
+				setInventorySlotContents(slot, null);
+			}
+		}
+	}
+
+	private boolean canSmelt(int slot) {
+		if (getStackInSlot(slot) == null) {
+			return false;
+		} else {
+			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(getStackInSlot(slot));
+			if (itemstack == null)
+				return false;
+			if (getStackInSlot(slot + 3) == null)
+				return true;
+			if (!getStackInSlot(slot + 3).isItemEqual(itemstack))
+				return false;
+			int result = getStackInSlot(slot + 3).stackSize + itemstack.stackSize;
+			return result <= getInventoryStackLimit()
+					&& result <= getStackInSlot(slot + 3).getMaxStackSize();
+		}
 	}
 
 	private void output() {
-		if (!inout || worldObj.getTotalWorldTime() % (40 - speed * 2) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 4) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {
 				if (getStackInSlot(i) == null
-						|| output.get(getWrongSide(getDirection(this,
-								(TileEntity) ir))) != Mode.AUTO)
+						|| output.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
 					continue;
 
 				if (!(ir instanceof ISidedInventory)) {
 					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToInventoryWithLeftover(
-							getStackInSlot(i).copy(), ir, false);
+					int rest = InventoryHelper.addToInventoryWithLeftover(getStackInSlot(i).copy(),
+							ir, false);
 					if (num == rest)
 						continue;
-					setInventorySlotContents(
-							i,
-							rest > 0 ? InventoryHelper.copyStack(
-									getStackInSlot(i).copy(), rest) : null);
+					setInventorySlotContents(i,
+							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
+									: null);
 					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord,
-							inv.zCoord);
+					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				} else if (ir instanceof ISidedInventory) {
 					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(
-							getStackInSlot(i).copy(), (ISidedInventory) ir,
-							getDirection((TileEntity) ir, this), false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(getStackInSlot(i)
+							.copy(), (ISidedInventory) ir, getDirection((TileEntity) ir, this),
+							false);
 					if (num == rest)
 						continue;
-					setInventorySlotContents(
-							i,
-							rest > 0 ? InventoryHelper.copyStack(
-									getStackInSlot(i).copy(), rest) : null);
+					setInventorySlotContents(i,
+							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
+									: null);
 					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord,
-							inv.zCoord);
+					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				}
 			}
@@ -411,12 +451,11 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void input() {
-		if (!inout || worldObj.getTotalWorldTime() % (40 - speed * 2) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 4) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
-					&& fuelput.get(getWrongSide(getDirection(this,
-							(TileEntity) ir))) != Mode.AUTO)
+					&& fuelput.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
 				continue;
 			int side = getDirection(this, (TileEntity) ir);
 			if (!(ir instanceof ISidedInventory)) {
@@ -424,36 +463,31 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					if (ir.getStackInSlot(i) == null)
 						continue;
 					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(
-							ir.getStackInSlot(i).copy(), this, side, false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i)
+							.copy(), this, side, false);
 					if (num == rest)
 						continue;
-					ir.setInventorySlotContents(
-							i,
-							rest > 0 ? InventoryHelper.copyStack(ir
-									.getStackInSlot(i).copy(), rest) : null);
+					ir.setInventorySlotContents(i,
+							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
+									: null);
 					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord,
-							inv.zCoord);
+					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				}
 			} else if (ir instanceof ISidedInventory) {
-				for (int i : ((ISidedInventory) ir)
-						.getAccessibleSlotsFromSide(side)) {
+				for (int i : ((ISidedInventory) ir).getAccessibleSlotsFromSide(side)) {
 					if (ir.getStackInSlot(i) == null)
 						continue;
 					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(
-							ir.getStackInSlot(i).copy(), this, side, false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i)
+							.copy(), this, side, false);
 					if (num == rest)
 						continue;
-					ir.setInventorySlotContents(
-							i,
-							rest > 0 ? InventoryHelper.copyStack(ir
-									.getStackInSlot(i).copy(), rest) : null);
+					ir.setInventorySlotContents(i,
+							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
+									: null);
 					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord,
-							inv.zCoord);
+					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				}
 			}
@@ -609,10 +643,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 				int s = stack1.stackSize + stack2.stackSize;
 				stack1.stackSize = split(s)[0];
 				stack2.stackSize = split(s)[1];
-				setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1
-						: null);
-				setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2
-						: null);
+				setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1 : null);
+				setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
 				return;
 			}
 		}

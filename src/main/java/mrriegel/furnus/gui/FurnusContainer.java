@@ -39,34 +39,30 @@ public class FurnusContainer extends Container {
 		if (tile.getSlots() > 0) {
 			this.addSlotToContainer(new InputSlot(tile, 1, 20, 21 + 27));
 			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 21 + 27));
-			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107,
-					21 + 27));
+			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 21 + 27));
 		}
 
 		if (tile.getSlots() > 1) {
 			this.addSlotToContainer(new InputSlot(tile, 2, 20, 21 + 54));
 			this.addSlotToContainer(new OutputSlot(player, tile, 5, 77, 21 + 54));
-			this.addSlotToContainer(new OutputSlot(player, tile, 8, 107,
-					21 + 54));
+			this.addSlotToContainer(new OutputSlot(player, tile, 8, 107, 21 + 54));
 		}
 
 		this.addSlotToContainer(new FuelSlot(tile, 9, 20, 21 + 27 * 3));
 
 		int index = 10;
 		for (int i = 0; i < 5; i++) {
-			this.addSlotToContainer(new UpgradeSlot(this, player, tile,
-					index++, 152, 12 + i * 18));
+			this.addSlotToContainer(new UpgradeSlot(this, player, tile, index++, 152, 12 + i * 18));
 		}
 		tileSlots = inventorySlots.size();
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
-				this.addSlotToContainer(new Slot(player.inventory, j + i * 9
-						+ 9, 8 + j * 18, 84 + 47 + i * 18));
+				this.addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 8 + j * 18,
+						84 + 47 + i * 18));
 			}
 		}
 		for (int i = 0; i < 9; ++i) {
-			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18,
-					142 + 47));
+			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18, 142 + 47));
 		}
 	}
 
@@ -80,12 +76,11 @@ public class FurnusContainer extends Container {
 				save = player.inventory.getItemStack().copy();
 				player.inventory.setItemStack(null);
 			}
-			player.openGui(Furnus.instance, 0, tile.getWorldObj(), tile.xCoord,
-					tile.yCoord, tile.zCoord);
+			player.openGui(Furnus.instance, 0, tile.getWorldObj(), tile.xCoord, tile.yCoord,
+					tile.zCoord);
 			if (save != null) {
 				player.inventory.setItemStack(save);
-				PacketHandler.INSTANCE.sendTo(new StackMessage(save),
-						(EntityPlayerMP) player);
+				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);
 			}
 		}
 	}
@@ -168,8 +163,7 @@ public class FurnusContainer extends Container {
 			itemstack = itemstack1.copy();
 
 			if (slotIndex <= tileSlots - 1) {
-				if (!this.mergeItemStack(itemstack1, tileSlots, tileSlots + 36,
-						true)) {
+				if (!this.mergeItemStack(itemstack1, tileSlots, tileSlots + 36, true)) {
 					return null;
 				}
 				slot.onSlotChange(itemstack1, itemstack);
@@ -177,22 +171,17 @@ public class FurnusContainer extends Container {
 				boolean merged = false;
 				if (itemstack1.getItem() == ItemUpgrade.upgrade
 						&& !upgradeIn(itemstack1.getItemDamage())) {
-					if (this.mergeItemStack(
-							itemstack1,
-							getUpgradeSlots()[0],
-							getUpgradeSlots()[getUpgradeSlots().length - 1] + 1,
-							false))
+					if (this.mergeItemStack(itemstack1, getUpgradeSlots()[0],
+							getUpgradeSlots()[getUpgradeSlots().length - 1] + 1, false))
 						merged = true;
 				}
 				if (!merged && TileEntityFurnace.isItemFuel(itemstack1)) {
-					if (this.mergeItemStack(itemstack1, getFuelputSlot(),
-							getFuelputSlot() + 1, false)) {
+					if (this.mergeItemStack(itemstack1, getFuelputSlot(), getFuelputSlot() + 1,
+							false)) {
 						merged = true;
 					}
 				}
-				if (!merged
-						&& FurnaceRecipes.smelting().getSmeltingResult(
-								itemstack1) != null) {
+				if (!merged && FurnaceRecipes.smelting().getSmeltingResult(itemstack1) != null) {
 					for (int i = 0; i < getInputSlots().length; i++)
 						if (this.mergeItemStack(itemstack1, getInputSlots()[i],
 								getInputSlots()[i] + 1, false)) {

@@ -16,8 +16,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class FurnusGUI extends GuiContainer {
-	private static final ResourceLocation texture = new ResourceLocation(
-			Furnus.MODID + ":" + "textures/gui/furnus.png");
+	private static final ResourceLocation texture = new ResourceLocation(Furnus.MODID + ":"
+			+ "textures/gui/furnus.png");
 	GuiButton i, o, f, check;
 	TileFurnus tile;
 
@@ -31,8 +31,7 @@ public class FurnusGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		check = new GuiButton(0, guiLeft + 21, guiTop + 6, 11, 11,
-				tile.isSplit() ? "x" : " ");
+		check = new GuiButton(0, guiLeft + 21, guiTop + 6, 11, 11, tile.isSplit() ? "x" : " ");
 		buttonList.add(check);
 		i = new GuiButton(1, guiLeft + 130, guiTop + 108, 11, 11, "I");
 		buttonList.add(i);
@@ -43,8 +42,8 @@ public class FurnusGUI extends GuiContainer {
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float p_146976_1_,
-			int p_146976_2_, int p_146976_3_) {
+	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_,
+			int p_146976_3_) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.getTextureManager().bindTexture(texture);
 		int k = (width - xSize) / 2;
@@ -52,8 +51,7 @@ public class FurnusGUI extends GuiContainer {
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
 		if (tile.getSlots() > 0)
-			drawString(mc.fontRenderer, "Split", guiLeft + 33, guiTop + 7,
-					14737632);
+			drawString(mc.fontRenderer, "Split", guiLeft + 33, guiTop + 7, 14737632);
 
 	}
 
@@ -83,10 +81,8 @@ public class FurnusGUI extends GuiContainer {
 		}
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
 		int i = Mouse.getX() * this.width / this.mc.displayWidth;
-		int j = this.height - Mouse.getY() * this.height
-				/ this.mc.displayHeight - 1;
-		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3
-				&& j < guiTop + 19) {
+		int j = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
+		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
 			List<String> list = new ArrayList<String>();
 			double speed = (1.d + tile.getSpeed() * 2.);
 			list.add("Speed: " + String.format("%.2f", speed) + "x");
@@ -107,8 +103,8 @@ public class FurnusGUI extends GuiContainer {
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
 		if (p_146284_1_.id != 0)
-			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id,
-					tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
+			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord,
+					tile.yCoord, tile.zCoord);
 		else {
 			if (check.displayString.equals("x"))
 				check.displayString = " ";
@@ -135,6 +131,17 @@ public class FurnusGUI extends GuiContainer {
 		}
 		int d = 14 - tile.getFuel();
 		drawTexturedModalRect(k + 46, l + 103 + d, 176, 0 + d, 14, 14 - d);
+
+		int pro1 = 24 - tile.getProgress().get(0);
+		drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, 24 - pro1, 17);
+		if (tile.getSlots() > 0) {
+			int pro2 = 24 - tile.getProgress().get(1);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, 24 - pro2, 17);
+		}
+		if (tile.getSlots() > 1) {
+			int pro3 = 24 - tile.getProgress().get(2);
+			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, 24 - pro3, 17);
+		}
 
 	}
 

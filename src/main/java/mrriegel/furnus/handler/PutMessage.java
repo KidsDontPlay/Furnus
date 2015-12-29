@@ -10,8 +10,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
-public class PutMessage implements IMessage,
-		IMessageHandler<PutMessage, IMessage> {
+public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessage> {
 	int x, y, z;
 	String kind, mode, i;
 
@@ -31,12 +30,12 @@ public class PutMessage implements IMessage,
 
 	@Override
 	public IMessage onMessage(PutMessage message, MessageContext ctx) {
-		TileFurnus tile = (TileFurnus) ctx.getServerHandler().playerEntity.worldObj
-				.getTileEntity(message.x, message.y, message.z);
+		TileFurnus tile = (TileFurnus) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(
+				message.x, message.y, message.z);
 		IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
 				Mode.valueOf(message.mode));
-		ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(
-				message.x, message.y, message.z);
+		ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(message.x, message.y,
+				message.z);
 		return null;
 	}
 

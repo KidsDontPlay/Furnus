@@ -8,8 +8,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
-public class StackMessage implements IMessage,
-		IMessageHandler<StackMessage, IMessage> {
+public class StackMessage implements IMessage, IMessageHandler<StackMessage, IMessage> {
 	ItemStack stack;
 
 	public StackMessage() {
@@ -22,8 +21,7 @@ public class StackMessage implements IMessage,
 
 	@Override
 	public IMessage onMessage(StackMessage message, MessageContext ctx) {
-		Minecraft.getMinecraft().thePlayer.inventory
-				.setItemStack(message.stack);
+		Minecraft.getMinecraft().thePlayer.inventory.setItemStack(message.stack);
 		return null;
 	}
 

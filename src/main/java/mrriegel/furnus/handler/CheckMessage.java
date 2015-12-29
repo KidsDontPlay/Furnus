@@ -6,8 +6,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
-public class CheckMessage implements IMessage,
-		IMessageHandler<CheckMessage, IMessage> {
+public class CheckMessage implements IMessage, IMessageHandler<CheckMessage, IMessage> {
 	boolean split;
 
 	public CheckMessage() {
@@ -20,8 +19,8 @@ public class CheckMessage implements IMessage,
 
 	@Override
 	public IMessage onMessage(CheckMessage message, MessageContext ctx) {
-		((FurnusContainer) ctx.getServerHandler().playerEntity.openContainer)
-				.getTile().setSplit(message.split);
+		((FurnusContainer) ctx.getServerHandler().playerEntity.openContainer).getTile().setSplit(
+				message.split);
 		// TileFurnus tile=((FurnusContainer)
 		// ctx.getServerHandler().playerEntity.openContainer)
 		// .getTile();

@@ -78,11 +78,10 @@ public class BlockFurnus extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z,
-			EntityLivingBase player, ItemStack stack) {
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player,
+			ItemStack stack) {
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
-		int l = MathHelper
-				.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
+		int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		if (l == 0) {
 			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
 			tile.setFace("N");
@@ -102,9 +101,8 @@ public class BlockFurnus extends BlockContainer {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z,
-			EntityPlayer player, int side, float p_149727_7_,
-			float p_149727_8_, float p_149727_9_) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player,
+			int side, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
 		if (tile.isBurning())
 			tile.setBurning(false);
@@ -126,13 +124,11 @@ public class BlockFurnus extends BlockContainer {
 	}
 
 	@Override
-	public void breakBlock(World world, int x, int y, int z, Block block,
-			int meta) {
+	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
 		for (ItemStack s : tile.getInv()) {
 			if (s != null && !world.isRemote)
-				world.spawnEntityInWorld(new EntityItem(world, x + 0.5d, y + 1,
-						z + 0.5d, s));
+				world.spawnEntityInWorld(new EntityItem(world, x + 0.5d, y + 1, z + 0.5d, s));
 		}
 		super.breakBlock(world, x, y, z, block, meta);
 	}
@@ -155,25 +151,17 @@ public class BlockFurnus extends BlockContainer {
 			float f4 = rand.nextFloat() * 0.6F - 0.3F;
 
 			if (l == 4) {
-				world.spawnParticle("smoke", f - f3, f1, f2 + f4, 0.0D, 0.0D,
-						0.0D);
-				world.spawnParticle("flame", f - f3, f1, f2 + f4, 0.0D, 0.0D,
-						0.0D);
+				world.spawnParticle("smoke", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+				world.spawnParticle("flame", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
 			} else if (l == 5) {
-				world.spawnParticle("smoke", f + f3, f1, f2 + f4, 0.0D, 0.0D,
-						0.0D);
-				world.spawnParticle("flame", f + f3, f1, f2 + f4, 0.0D, 0.0D,
-						0.0D);
+				world.spawnParticle("smoke", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+				world.spawnParticle("flame", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
 			} else if (l == 2) {
-				world.spawnParticle("smoke", f + f4, f1, f2 - f3, 0.0D, 0.0D,
-						0.0D);
-				world.spawnParticle("flame", f + f4, f1, f2 - f3, 0.0D, 0.0D,
-						0.0D);
+				world.spawnParticle("smoke", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
+				world.spawnParticle("flame", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
 			} else if (l == 3) {
-				world.spawnParticle("smoke", f + f4, f1, f2 + f3, 0.0D, 0.0D,
-						0.0D);
-				world.spawnParticle("flame", f + f4, f1, f2 + f3, 0.0D, 0.0D,
-						0.0D);
+				world.spawnParticle("smoke", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
+				world.spawnParticle("flame", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
 			}
 		}
 	}
@@ -184,10 +172,10 @@ public class BlockFurnus extends BlockContainer {
 	}
 
 	@Override
-	public int getComparatorInputOverride(World p_149736_1_, int p_149736_2_,
-			int p_149736_3_, int p_149736_4_, int p_149736_5_) {
-		return Container.calcRedstoneFromInventory((IInventory) p_149736_1_
-				.getTileEntity(p_149736_2_, p_149736_3_, p_149736_4_));
+	public int getComparatorInputOverride(World p_149736_1_, int p_149736_2_, int p_149736_3_,
+			int p_149736_4_, int p_149736_5_) {
+		return Container.calcRedstoneFromInventory((IInventory) p_149736_1_.getTileEntity(
+				p_149736_2_, p_149736_3_, p_149736_4_));
 	}
 
 	public static void init() {

@@ -19,12 +19,10 @@ public class InventoryHelper {
 	/** nicked from reika */
 	public static boolean insert(IInventory inv, ItemStack is, boolean simulate) {
 		ItemStack stack = is.copy();
-		Integer[] slots = getSlotsWith(inv, stack.getItem(),
-				stack.getItemDamage());
+		Integer[] slots = getSlotsWith(inv, stack.getItem(), stack.getItemDamage());
 		int empty = findEmptySlot(inv);
 
-		int max = Math.min(inv.getInventoryStackLimit(),
-				stack.getMaxStackSize());
+		int max = Math.min(inv.getInventoryStackLimit(), stack.getMaxStackSize());
 
 		int addable = 0;
 		ArrayList<Integer> validslots = new ArrayList();
@@ -63,11 +61,10 @@ public class InventoryHelper {
 	}
 
 	/** nicked from reika */
-	public static int addToInventoryWithLeftover(ItemStack stack,
-			IInventory inventory, boolean simulate) {
+	public static int addToInventoryWithLeftover(ItemStack stack, IInventory inventory,
+			boolean simulate) {
 		int left = stack.stackSize;
-		int max = Math.min(inventory.getInventoryStackLimit(),
-				stack.getMaxStackSize());
+		int max = Math.min(inventory.getInventoryStackLimit(), stack.getMaxStackSize());
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
 			ItemStack in = inventory.getStackInSlot(i);
 			if (!inventory.isItemValidForSlot(i, stack))
@@ -75,14 +72,12 @@ public class InventoryHelper {
 			if (in == null) {
 				int add = Math.min(max, left);
 				if (!simulate)
-					inventory
-							.setInventorySlotContents(i, copyStack(stack, add));
+					inventory.setInventorySlotContents(i, copyStack(stack, add));
 				left -= add;
 				if (left <= 0)
 					return 0;
 			} else {
-				if (stack.isItemEqual(in)
-						&& ItemStack.areItemStackTagsEqual(stack, in)) {
+				if (stack.isItemEqual(in) && ItemStack.areItemStackTagsEqual(stack, in)) {
 					int space = max - in.stackSize;
 					int add = Math.min(space, stack.stackSize);
 					if (add > 0) {
@@ -99,27 +94,23 @@ public class InventoryHelper {
 	}
 
 	/** nicked from reika */
-	public static int addToSidedInventoryWithLeftover(ItemStack stack,
-			ISidedInventory inventory, int side, boolean simulate) {
+	public static int addToSidedInventoryWithLeftover(ItemStack stack, ISidedInventory inventory,
+			int side, boolean simulate) {
 		int left = stack.stackSize;
-		int max = Math.min(inventory.getInventoryStackLimit(),
-				stack.getMaxStackSize());
+		int max = Math.min(inventory.getInventoryStackLimit(), stack.getMaxStackSize());
 		for (int i : inventory.getAccessibleSlotsFromSide(side)) {
-			if (!inventory.isItemValidForSlot(i, stack)
-					|| !inventory.canInsertItem(i, stack, side))
+			if (!inventory.isItemValidForSlot(i, stack) || !inventory.canInsertItem(i, stack, side))
 				continue;
 			ItemStack in = inventory.getStackInSlot(i);
 			if (in == null) {
 				int add = Math.min(max, left);
 				if (!simulate)
-					inventory
-							.setInventorySlotContents(i, copyStack(stack, add));
+					inventory.setInventorySlotContents(i, copyStack(stack, add));
 				left -= add;
 				if (left <= 0)
 					return 0;
 			} else {
-				if (stack.isItemEqual(in)
-						&& ItemStack.areItemStackTagsEqual(stack, in)) {
+				if (stack.isItemEqual(in) && ItemStack.areItemStackTagsEqual(stack, in)) {
 					int space = max - in.stackSize;
 					int add = Math.min(space, stack.stackSize);
 					if (add > 0) {
@@ -136,8 +127,7 @@ public class InventoryHelper {
 	}
 
 	private static int findEmptySlot(IInventory inv) {
-		for (int i = 0; i < inv.getSizeInventory()
-				- ((inv instanceof InventoryPlayer) ? 4 : 0); i++) {
+		for (int i = 0; i < inv.getSizeInventory() - ((inv instanceof InventoryPlayer) ? 4 : 0); i++) {
 			ItemStack is = inv.getStackInSlot(i);
 			if (is == null)
 				return i;
@@ -172,8 +162,7 @@ public class InventoryHelper {
 	// insert(inv, stack, stack.stackSize, slot, tag);
 	// }
 
-	public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2,
-			boolean tags) {
+	public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2, boolean tags) {
 		if (stack1 == null && stack2 == null)
 			return true;
 		if (stack1 == null || stack2 == null)
@@ -187,8 +176,7 @@ public class InventoryHelper {
 								.equals(stack2.stackTagCompound)));
 	}
 
-	public static boolean IsEnoughPresent(IInventory inv, ItemStack stack,
-			int num) {
+	public static boolean IsEnoughPresent(IInventory inv, ItemStack stack, int num) {
 		int number = 0;
 		for (int i : getSlotsWith(inv, stack.getItem(), stack.getItemDamage()))
 			number += inv.getStackInSlot(i).stackSize;
@@ -230,20 +218,18 @@ public class InventoryHelper {
 		inv.markDirty();
 	}
 
-	public static void dropAllItems(IInventory inv, double x, double y,
-			double z, World world) {
+	public static void dropAllItems(IInventory inv, double x, double y, double z, World world) {
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			if (inv.getStackInSlot(i) != null) {
 				if (!world.isRemote)
-					world.spawnEntityInWorld(new EntityItem(world, x, y, z, inv
-							.getStackInSlot(i).copy()));
+					world.spawnEntityInWorld(new EntityItem(world, x, y, z, inv.getStackInSlot(i)
+							.copy()));
 			}
 		}
 		clearInventory(inv);
 	}
 
-	public static boolean incrStackInSlot(IInventory inv, int slot,
-			ItemStack stack) {
+	public static boolean incrStackInSlot(IInventory inv, int slot, ItemStack stack) {
 		if (incrStackSize(inv, slot, stack.stackSize))
 			return true;
 		if (canFillSlot(inv, slot, stack)) {
@@ -269,14 +255,12 @@ public class InventoryHelper {
 			return true;
 		if (!areStacksEqual(stack, inv.getStackInSlot(slot), true))
 			return false;
-		if (inv.getStackInSlot(slot).stackSize + stack.stackSize > stack
-				.getMaxStackSize())
+		if (inv.getStackInSlot(slot).stackSize + stack.stackSize > stack.getMaxStackSize())
 			return false;
 		return true;
 	}
 
-	public static boolean consumeInventoryItem(IInventory inv, Item item,
-			int meta, int num) {
+	public static boolean consumeInventoryItem(IInventory inv, Item item, int meta, int num) {
 		Integer[] i = getSlotsWith(inv, item, meta);
 		for (int s : i) {
 			ItemStack stack = inv.getStackInSlot(s);
@@ -294,19 +278,15 @@ public class InventoryHelper {
 		return false;
 	}
 
-	public static boolean consumeInventoryItem(IInventory inv, ItemStack stack,
-			int num) {
-		return consumeInventoryItem(inv, stack.getItem(),
-				stack.getItemDamage(), num);
+	public static boolean consumeInventoryItem(IInventory inv, ItemStack stack, int num) {
+		return consumeInventoryItem(inv, stack.getItem(), stack.getItemDamage(), num);
 	}
 
 	public static Integer[] getSlotsWith(IInventory inv, Item item, int meta) {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
-		for (int i = 0; i < inv.getSizeInventory()
-				- ((inv instanceof InventoryPlayer) ? 4 : 0); ++i) {
+		for (int i = 0; i < inv.getSizeInventory() - ((inv instanceof InventoryPlayer) ? 4 : 0); ++i) {
 			ItemStack stack = inv.getStackInSlot(i);
-			if (stack != null
-					&& stack.getItem().equals(item)
+			if (stack != null && stack.getItem().equals(item)
 					&& (stack.getItemDamage() == meta || meta == OreDictionary.WILDCARD_VALUE)) {
 				ar.add(i);
 			}
@@ -318,8 +298,7 @@ public class InventoryHelper {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		for (int i = 0; i < inv.length; ++i) {
 			ItemStack stack = inv[i];
-			if (stack != null
-					&& stack.getItem().equals(item)
+			if (stack != null && stack.getItem().equals(item)
 					&& (stack.getItemDamage() == meta || meta == OreDictionary.WILDCARD_VALUE)) {
 				ar.add(i);
 			}
@@ -329,8 +308,8 @@ public class InventoryHelper {
 
 	public static ItemStack[] getCrunchItemInventory(ItemStack stack) {
 		if (stack != null && stack.stackTagCompound != null) {
-			NBTTagList invList = stack.stackTagCompound.getTagList(
-					"crunchItem", Constants.NBT.TAG_COMPOUND);
+			NBTTagList invList = stack.stackTagCompound.getTagList("crunchItem",
+					Constants.NBT.TAG_COMPOUND);
 			ItemStack[] ii = new ItemStack[invList.tagCount()];
 			for (int i = 0; i < invList.tagCount(); i++) {
 				NBTTagCompound stackTag = invList.getCompoundTagAt(i);
@@ -356,8 +335,7 @@ public class InventoryHelper {
 	}
 
 	public static boolean isEmpty(IInventory inv) {
-		for (int i = 0; i < inv.getSizeInventory()
-				- ((inv instanceof InventoryPlayer) ? 4 : 0); i++)
+		for (int i = 0; i < inv.getSizeInventory() - ((inv instanceof InventoryPlayer) ? 4 : 0); i++)
 			if (inv.getStackInSlot(i) != null)
 				return false;
 		return true;
