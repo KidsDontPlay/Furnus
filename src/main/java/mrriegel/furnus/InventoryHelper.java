@@ -184,7 +184,7 @@ public class InventoryHelper {
 	}
 
 	public static boolean decrStackSize(IInventory inv, int slot, int num) {
-		ItemStack stack = inv.getStackInSlot(slot);
+		ItemStack stack = inv.getStackInSlot(slot).copy();
 		if (stack == null || stack.stackSize < num)
 			return false;
 		if (stack.stackSize == num) {

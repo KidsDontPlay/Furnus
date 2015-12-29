@@ -1,4 +1,4 @@
-package mrriegel.furnus.handler;
+package mrriegel.furnus.message;
 
 import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.Furnus;

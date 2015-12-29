@@ -9,7 +9,10 @@ import java.util.Map.Entry;
 
 import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.gui.UpgradeSlot;
+import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
+import mrriegel.furnus.message.CheckMessage;
+import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -23,9 +26,11 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+
 public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private boolean burning, eco, inout, split;
-	private int speed, effi, slots, bonus, xp, fuel;
+	private int speed, effi, slots, bonus, xp, fuel, maxFuel;
 	Map<Direction, Mode> input, output, fuelput;
 	Map<Integer, Integer> progress;
 	String face;
@@ -70,6 +75,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		bonus = tag.getInteger("bonus");
 		xp = tag.getInteger("xp");
 		fuel = tag.getInteger("fuel");
+		maxFuel = tag.getInteger("maxFuel");
 		input = new Gson().fromJson(tag.getString("input"), new TypeToken<Map<Direction, Mode>>() {
 		}.getType());
 		output = new Gson().fromJson(tag.getString("output"),
@@ -96,6 +102,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		tag.setInteger("bonus", bonus);
 		tag.setInteger("xp", xp);
 		tag.setInteger("fuel", fuel);
+		tag.setInteger("maxFuel", maxFuel);
 		tag.setString("input", new Gson().toJson(input));
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
@@ -365,15 +372,58 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		split();
 		for (int i = 0; i <= speed; i++) {
 			burn(0);
-			if (slots == 1)
-				burn(1);
-			if (slots == 2)
+			if (slots >= 2)
 				burn(2);
+			if (slots >= 1)
+				burn(1);
 		}
+		if ((fuel > 0 && !eco) || eco)
+			burning = true;
+		else
+			burning = false;
+
+	}
+
+	private void fuelUp() {
+		if (fuel >= 2 || getStackInSlot(9) == null)
+			return;
+		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9));
+		maxFuel = fuelTime;
+		fuel = fuelTime + 1;
+		InventoryHelper.decrStackSize(this, 9, 1);
 	}
 
 	private void burn(int slot) {
-		smeltItem(slot);
+		fuelUp();
+		if (getStackInSlot(slot) == null) {
+			if (progress.get(slot) != 0) {
+				progress.put(slot, 0);
+				sendMessage();
+			}
+			return;
+		}
+		if (fuel >= 1) {
+			if (canSmelt(slot))
+				progress.put(slot, progress.get(slot) + 1);
+			if (progress.get(slot) >= 24 * 8) {
+				smeltItem(slot);
+				progress.put(slot, 0);
+			}
+		} else {
+			if (!eco)
+				progress.put(slot, 0);
+		}
+		boolean empty = false;
+		if (fuel > 0)
+			fuel--;
+		System.out.println("fuel: " + fuel);
+		sendMessage();
+	}
+
+	void sendMessage() {
+		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, xCoord, yCoord, zCoord,
+				fuel, progress), new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord,
+				zCoord, 12));
 	}
 
 	public void smeltItem(int slot) {
@@ -382,8 +432,15 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 			if (getStackInSlot(slot + 3) == null) {
 				setInventorySlotContents(slot + 3, itemstack.copy());
-			} else if (getStackInSlot(slot + 3).getItem() == itemstack.getItem()) {
+			} else if (getStackInSlot(slot + 3).isItemEqual(itemstack)) {
 				getStackInSlot(slot + 3).stackSize += itemstack.stackSize;
+			}
+			if ((worldObj.rand.nextInt(100) < bonus * 20)) {
+				if (getStackInSlot(slot + 6) == null) {
+					setInventorySlotContents(slot + 6, itemstack.copy());
+				} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
+					getStackInSlot(slot + 6).stackSize += itemstack.stackSize;
+				}
 			}
 
 			--this.getStackInSlot(slot).stackSize;
@@ -412,7 +469,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void output() {
-		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 4) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 6) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {
@@ -451,7 +508,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void input() {
-		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 4) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 6) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
@@ -478,6 +535,9 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 				for (int i : ((ISidedInventory) ir).getAccessibleSlotsFromSide(side)) {
 					if (ir.getStackInSlot(i) == null)
 						continue;
+					if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i),
+							getDirection((TileEntity) ir, this)))
+						break;
 					int num = ir.getStackInSlot(i).stackSize;
 					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i)
 							.copy(), this, side, false);

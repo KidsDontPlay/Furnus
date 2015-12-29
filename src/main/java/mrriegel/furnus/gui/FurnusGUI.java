@@ -5,8 +5,8 @@ import java.util.List;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
-import mrriegel.furnus.handler.CheckMessage;
 import mrriegel.furnus.handler.PacketHandler;
+import mrriegel.furnus.message.CheckMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -132,16 +132,11 @@ public class FurnusGUI extends GuiContainer {
 		int d = 14 - tile.getFuel();
 		drawTexturedModalRect(k + 46, l + 103 + d, 176, 0 + d, 14, 14 - d);
 
-		int pro1 = 24 - tile.getProgress().get(0);
-		drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, 24 - pro1, 17);
-		if (tile.getSlots() > 0) {
-			int pro2 = 24 - tile.getProgress().get(1);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14, 24 - pro2, 17);
-		}
-		if (tile.getSlots() > 1) {
-			int pro3 = 24 - tile.getProgress().get(2);
-			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, 24 - pro3, 17);
-		}
+		drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, tile.getProgress().get(0) / 8, 17);
+		if (tile.getSlots() > 0)
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(1) / 8, 17);
+		if (tile.getSlots() > 1)
+			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, tile.getProgress().get(2) / 8, 17);
 
 	}
 

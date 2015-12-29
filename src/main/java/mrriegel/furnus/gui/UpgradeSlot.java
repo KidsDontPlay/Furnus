@@ -36,7 +36,5 @@ public class UpgradeSlot extends Slot {
 		super.onSlotChanged();
 		TileFurnus t = (TileFurnus) inventory;
 		t.updateStats(player);
-		player.worldObj.markBlockForUpdate(t.xCoord, t.yCoord, t.zCoord);
-
 	}
 }
