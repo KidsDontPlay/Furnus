@@ -51,6 +51,7 @@ public class BlockFurnus extends BlockContainer {
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
 		int meta = world.getBlockMetadata(x, y, z);
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+		System.out.println(tile.isBurning()+"");
 		IIcon f = tile.isBurning() ? front_lit : front;
 		if (side == 3 && meta == 0)
 			return f;

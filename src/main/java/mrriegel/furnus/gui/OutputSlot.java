@@ -52,8 +52,10 @@ public class OutputSlot extends Slot {
 		p_75208_1_.onCrafting(this.thePlayer.worldObj, this.thePlayer, this.field_75228_b);
 		if (!this.thePlayer.worldObj.isRemote) {
 			int i = this.field_75228_b;
-			float f = FurnaceRecipes.smelting().func_151398_b(p_75208_1_)
-					+ (.5f * ((FurnusContainer) thePlayer.openContainer).tile.getXp());
+			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : FurnaceRecipes.smelting()
+					.func_151398_b(p_75208_1_)
+					+ FurnaceRecipes.smelting().func_151398_b(p_75208_1_)
+					* ((FurnusContainer) thePlayer.openContainer).tile.getXp() * .25f;
 			int j;
 
 			if (f == 0.0F) {

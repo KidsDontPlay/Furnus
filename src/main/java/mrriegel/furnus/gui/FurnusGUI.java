@@ -91,7 +91,7 @@ public class FurnusGUI extends GuiContainer {
 			list.add("Efficiency: " + String.format("%.2f", effi) + "x");
 			double bonus = (1.d + tile.getBonus() * .25);
 			list.add("Bonus: " + String.format("%.2f", bonus) + "x");
-			double xp = (1.d + tile.getXp() * .5);
+			double xp = (1.d + tile.getXp() * .25);
 			list.add("XP: " + String.format("%.2f", xp) + "x");
 			GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 			GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);

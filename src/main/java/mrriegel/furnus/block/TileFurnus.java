@@ -12,6 +12,8 @@ import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import mrriegel.furnus.message.ProgressMessage;
+import net.minecraft.block.BlockFurnace;
+import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
@@ -21,6 +23,8 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -372,8 +376,19 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	@Override
 	public void updateEntity() {
-		if (worldObj.isRemote)
+
+		if (worldObj.isRemote) {
+			if (fuel > 0 && !burning) {
+				burning = true;
+				worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord,
+						zCoord);
+			} else if (fuel <= 0 && burning) {
+				burning = false;
+				worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord,
+						zCoord);
+			}
 			return;
+		}
 		output();
 		input();
 		split();
@@ -384,10 +399,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			if (slots >= 1)
 				burn(1);
 		}
-		if (fuel > 0)
-			burning = true;
-		else
-			burning = false;
 
 	}
 
@@ -396,11 +407,11 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9));
 		fuel = maxFuel = fuelTime;
-		if (getStackInSlot(9).getItem() != Items.lava_bucket)
+		if (getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)) == null)
 			InventoryHelper.decrStackSize(this, 9, 1);
 		else
-			setInventorySlotContents(9, new ItemStack(Items.bucket));
-		// modcompatible machen
+			setInventorySlotContents(9,
+					getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
 	}
 
 	private void burn(int slot) {
@@ -426,13 +437,21 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			if (!eco)
 				progress.put(slot, 0);
 		}
-		if (fuel > 0 && (progressed || (!eco && canSmelt(slot)))) {
-			// if (slot == 2)
-			// System.out.println("p " + progressed + " cans: " +
-			// canSmelt(slot));
+		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
 			fuel--;
 		}
 		sendMessage();
+	}
+
+	boolean progressing(int slot) {
+		boolean x = false;
+		for (int i = 0; i < 3; i++) {
+			if (i == slot)
+				continue;
+			if (canSmelt(i))
+				x = true;
+		}
+		return x;
 	}
 
 	void sendMessage() {
