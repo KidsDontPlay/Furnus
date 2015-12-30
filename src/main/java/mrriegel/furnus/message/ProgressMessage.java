@@ -36,15 +36,20 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 
 	@Override
 	public IMessage onMessage(ProgressMessage message, MessageContext ctx) {
-		TileFurnus tile = (TileFurnus) Minecraft.getMinecraft().theWorld.getTileEntity(message.x,
-				message.y, message.z);
-		if (tile == null)
+		try {
+			TileFurnus tile = (TileFurnus) Minecraft.getMinecraft().theWorld.getTileEntity(
+					message.x, message.y, message.z);
+			if (tile == null)
+				return null;
+			tile.setProgress(message.progress);
+			tile.setFuel(message.fuel);
+			tile.setMaxFuel(message.maxFuel);
+			tile.setBurning(message.burning);
 			return null;
-		tile.setProgress(message.progress);
-		tile.setFuel(message.fuel);
-		tile.setMaxFuel(message.maxFuel);
-		tile.setBurning(message.burning);
-		return null;
+		} catch (NullPointerException e) {return null;
+		}
+		
+		
 	}
 
 	@Override

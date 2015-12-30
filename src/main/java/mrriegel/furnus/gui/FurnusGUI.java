@@ -85,12 +85,16 @@ public class FurnusGUI extends GuiContainer {
 		int j = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
 			List<String> list = new ArrayList<String>();
-			double speed = (1.d + tile.getSpeed() * 2.);
+			double speed = (1.d + tile.getSpeed() * 1.d);
 			list.add("Speed: " + String.format("%.2f", speed) + "x");
-			double effi = (1.d + tile.getEffi() * .75);
+			int down = 100;
+			down /= (-1d / 13d) * tile.getSpeed() + 1d;
+			down /= (-1d / 10d) * tile.getBonus() + 1d;
+			down *= (-1d / 16d) * tile.getEffi() + 1d;
+			double effi = down / 100d;
 			list.add("Efficiency: " + String.format("%.2f", effi) + "x");
-			double bonus = (1.d + tile.getBonus() * .25);
-			list.add("Bonus: " + String.format("%.2f", bonus) + "x");
+			int bonus = (tile.getBonus() * 10);
+			list.add("Bonus: " + String.format("%d", bonus) + "%");
 			double xp = (1.d + tile.getXp() * .25);
 			list.add("XP: " + String.format("%.2f", xp) + "x");
 			GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
