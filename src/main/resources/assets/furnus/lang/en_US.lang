@@ -1,9 +1,22 @@
 tile.furnus:furnus.name=Furnus
 
-item.furnus:upgrade_0.name=Speed
-item.furnus:upgrade_1.name=Effi
-item.furnus:upgrade_2.name=put
-item.furnus:upgrade_3.name=slots
-item.furnus:upgrade_4.name=bonus
-item.furnus:upgrade_5.name=xp
-item.furnus:upgrade_6.name=eco
+item.furnus:upgrade_0.name=Speed Upgrade
+item.furnus:upgrade_1.name=Efficiency Upgrade
+item.furnus:upgrade_2.name=IO Upgrade
+item.furnus:upgrade_3.name=slot Upgrade
+item.furnus:upgrade_4.name=Bonus Upgrade
+item.furnus:upgrade_5.name=XP Upgrade
+item.furnus:upgrade_6.name=Eco Upgrade
+
+item.furnus:upgrade_0.tip=Increases speed. Decreases efficiency.
+item.furnus:upgrade_1.tip=Increases Efficiency.
+item.furnus:upgrade_2.tip=Enable Automation.
+item.furnus:upgrade_3.tip=Adds one additional input slot (max. 2).
+item.furnus:upgrade_4.tip=Increases chance of more output. Decreases efficiency.
+item.furnus:upgrade_5.tip=Increases XP output.
+item.furnus:upgrade_6.tip=Saves fuel.
+
+gui.furnus.speed=Speed
+gui.furnus.effi=Efficiency
+gui.furnus.bonus=Bonus
+gui.furnus.xp=XP

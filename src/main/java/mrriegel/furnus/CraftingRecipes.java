@@ -22,7 +22,7 @@ public class CraftingRecipes {
 				.addShapedRecipe(new ItemStack(ItemUpgrade.upgrade, 1, 2), "chc", " i ", "cpc",
 						'c', Items.clay_ball, 'i', Items.iron_ingot, 'h', Blocks.hopper, 'p',
 						Blocks.piston);
-		GameRegistry.addShapedRecipe(new ItemStack(ItemUpgrade.upgrade, 1, 3), "cdc", "hih", "cdc",
+		GameRegistry.addShapedRecipe(new ItemStack(ItemUpgrade.upgrade, 1, 3), "chc", "hih", "chc",
 				'c', Items.clay_ball, 'i', Items.iron_ingot, 'h', Items.diamond);
 		GameRegistry.addShapedRecipe(new ItemStack(ItemUpgrade.upgrade, 1, 4), "cgc", "rir", "crc",
 				'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Items.emerald, 'r',

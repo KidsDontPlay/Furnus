@@ -6,6 +6,7 @@ import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
@@ -108,7 +110,6 @@ public class BlockFurnus extends BlockContainer {
 			return true;
 		} else {
 			player.openGui(Furnus.instance, 0, world, x, y, z);
-
 			return true;
 		}
 	}
@@ -123,8 +124,12 @@ public class BlockFurnus extends BlockContainer {
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
 		for (ItemStack s : tile.getInv()) {
-			if (s != null && !world.isRemote)
-				world.spawnEntityInWorld(new EntityItem(world, x + 0.5d, y + 1, z + 0.5d, s));
+			if (s != null && !world.isRemote) {
+				EntityItem ei = new EntityItem(world, x + 0.5d, y + 1, z + 0.5d, s.copy());
+				if (s.hasTagCompound())
+					ei.getEntityItem().setTagCompound((NBTTagCompound) s.getTagCompound().copy());
+				world.spawnEntityInWorld(ei);
+			}
 		}
 		super.breakBlock(world, x, y, z, block, meta);
 	}

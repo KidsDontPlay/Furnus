@@ -473,7 +473,11 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 				if (getStackInSlot(slot + 6) == null) {
 					setInventorySlotContents(slot + 6, itemstack.copy());
 				} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
-					getStackInSlot(slot + 6).stackSize += itemstack.stackSize;
+					if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack
+							.getMaxStackSize())
+						getStackInSlot(slot + 6).stackSize += itemstack.stackSize;
+					else
+						getStackInSlot(slot + 6).stackSize = itemstack.getMaxStackSize();
 				}
 			}
 
@@ -709,12 +713,18 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		}
 	}
 
+	private boolean fit(ItemStack stack, int slot) {
+		return getStackInSlot(slot + 3) == null
+				|| FurnaceRecipes.smelting().getSmeltingResult(stack)
+						.isItemEqual(getStackInSlot(slot + 3));
+	}
+
 	private void tryMerge(int i1, int i2) {
 		ItemStack stack1 = getStackInSlot(i1), stack2 = getStackInSlot(i2);
 		if (stack1 == null && stack2 == null)
 			return;
 		if (stack1 == null) {
-			if (stack2.stackSize <= 1)
+			if (stack2.stackSize <= 1 || !fit(stack2, i1))
 				return;
 			stack1 = stack2.copy();
 			stack1.stackSize = split(stack2.stackSize)[0];
@@ -723,7 +733,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
 			return;
 		} else if (stack2 == null) {
-			if (stack1.stackSize <= 1)
+			if (stack1.stackSize <= 1 || !fit(stack1, i2))
 				return;
 			stack2 = stack1.copy();
 			stack2.stackSize = split(stack1.stackSize)[0];

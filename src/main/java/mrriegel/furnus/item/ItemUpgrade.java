@@ -6,9 +6,11 @@ import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -25,8 +27,8 @@ public class ItemUpgrade extends Item {
 		this.setUnlocalizedName(Furnus.MODID + ":upgrade");
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister reg) {
 		icons = new IIcon[7];
 		for (int i = 0; i < 7; i++) {
@@ -34,8 +36,8 @@ public class ItemUpgrade extends Item {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int meta) {
 		if (meta > 6)
 			meta = 0;
@@ -49,6 +51,15 @@ public class ItemUpgrade extends Item {
 		for (int i = 0; i < 7; i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_,
+			boolean p_77624_4_) {
+		super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
+		p_77624_3_.add(StatCollector.translateToLocal("item.furnus:upgrade_"
+				+ p_77624_1_.getItemDamage() + ".tip"));
 	}
 
 	@Override

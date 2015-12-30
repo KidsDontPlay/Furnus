@@ -10,7 +10,6 @@ public class CheckMessage implements IMessage, IMessageHandler<CheckMessage, IMe
 	boolean split;
 
 	public CheckMessage() {
-
 	}
 
 	public CheckMessage(boolean split) {
@@ -21,11 +20,6 @@ public class CheckMessage implements IMessage, IMessageHandler<CheckMessage, IMe
 	public IMessage onMessage(CheckMessage message, MessageContext ctx) {
 		((FurnusContainer) ctx.getServerHandler().playerEntity.openContainer).getTile().setSplit(
 				message.split);
-		// TileFurnus tile=((FurnusContainer)
-		// ctx.getServerHandler().playerEntity.openContainer)
-		// .getTile();
-		// ctx.getServerHandler().playerEntity.openGui(Furnus.instance, 0,
-		// tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
 		return null;
 	}
 

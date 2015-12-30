@@ -12,14 +12,6 @@ public class InputSlot extends Slot {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		Slot e = ((Slot) obj);
-		return e.xDisplayPosition == xDisplayPosition && e.yDisplayPosition == yDisplayPosition;
-	}
-
-	@Override
 	public boolean isItemValid(ItemStack p_75214_1_) {
 		return FurnaceRecipes.smelting().getSmeltingResult(p_75214_1_) != null;
 	}

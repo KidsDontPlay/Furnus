@@ -147,21 +147,6 @@ public class InventoryHelper {
 		return tmp;
 	}
 
-	// public static void insert(IInventory inv, ItemStack stack, int size,
-	// int slot, NBTTagCompound tag) {
-	// ItemStack itemstack = new ItemStack(stack.getItem(), size,
-	// stack.getItemDamage());
-	// if (tag != null) {
-	// itemstack.stackTagCompound = (NBTTagCompound) tag.copy();
-	// }
-	// inv.setInventorySlotContents(slot, itemstack);
-	// }
-	//
-	// public static void insert(IInventory inv, ItemStack stack, int slot,
-	// NBTTagCompound tag) {
-	// insert(inv, stack, stack.stackSize, slot, tag);
-	// }
-
 	public static boolean areStacksEqual(ItemStack stack1, ItemStack stack2, boolean tags) {
 		if (stack1 == null && stack2 == null)
 			return true;
@@ -174,13 +159,6 @@ public class InventoryHelper {
 					&& ((stack1.stackTagCompound == null && stack2.stackTagCompound == null) || (stack1.stackTagCompound != null
 							&& stack2.stackTagCompound != null && stack1.stackTagCompound
 								.equals(stack2.stackTagCompound)));
-	}
-
-	public static boolean IsEnoughPresent(IInventory inv, ItemStack stack, int num) {
-		int number = 0;
-		for (int i : getSlotsWith(inv, stack.getItem(), stack.getItemDamage()))
-			number += inv.getStackInSlot(i).stackSize;
-		return number >= num;
 	}
 
 	public static boolean decrStackSize(IInventory inv, int slot, int num) {
@@ -207,26 +185,6 @@ public class InventoryHelper {
 		inv.setInventorySlotContents(slot, stack);
 		inv.markDirty();
 		return true;
-	}
-
-	public static void clearInventory(IInventory inv) {
-		for (int k = 0; k < inv.getSizeInventory(); k++) {
-			if (inv.getStackInSlot(k) != null)
-				inv.setInventorySlotContents(k, (ItemStack) null);
-
-		}
-		inv.markDirty();
-	}
-
-	public static void dropAllItems(IInventory inv, double x, double y, double z, World world) {
-		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			if (inv.getStackInSlot(i) != null) {
-				if (!world.isRemote)
-					world.spawnEntityInWorld(new EntityItem(world, x, y, z, inv.getStackInSlot(i)
-							.copy()));
-			}
-		}
-		clearInventory(inv);
 	}
 
 	public static boolean incrStackInSlot(IInventory inv, int slot, ItemStack stack) {
@@ -260,28 +218,6 @@ public class InventoryHelper {
 		return true;
 	}
 
-	public static boolean consumeInventoryItem(IInventory inv, Item item, int meta, int num) {
-		Integer[] i = getSlotsWith(inv, item, meta);
-		for (int s : i) {
-			ItemStack stack = inv.getStackInSlot(s);
-			if (stack.stackSize > num) {
-				return decrStackSize(inv, s, num);
-			} else if (stack.stackSize == num) {
-				inv.setInventorySlotContents(s, null);
-				return true;
-			} else {
-				if (s != i[i.length - 1])
-					inv.setInventorySlotContents(s, null);
-				num -= stack.stackSize;
-			}
-		}
-		return false;
-	}
-
-	public static boolean consumeInventoryItem(IInventory inv, ItemStack stack, int num) {
-		return consumeInventoryItem(inv, stack.getItem(), stack.getItemDamage(), num);
-	}
-
 	public static Integer[] getSlotsWith(IInventory inv, Item item, int meta) {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		for (int i = 0; i < inv.getSizeInventory() - ((inv instanceof InventoryPlayer) ? 4 : 0); ++i) {
@@ -304,40 +240,5 @@ public class InventoryHelper {
 			}
 		}
 		return ar.toArray(new Integer[ar.size()]);
-	}
-
-	public static ItemStack[] getCrunchItemInventory(ItemStack stack) {
-		if (stack != null && stack.stackTagCompound != null) {
-			NBTTagList invList = stack.stackTagCompound.getTagList("crunchItem",
-					Constants.NBT.TAG_COMPOUND);
-			ItemStack[] ii = new ItemStack[invList.tagCount()];
-			for (int i = 0; i < invList.tagCount(); i++) {
-				NBTTagCompound stackTag = invList.getCompoundTagAt(i);
-				int slot = stackTag.getByte("Slot");
-				ii[i] = ItemStack.loadItemStackFromNBT(stackTag);
-			}
-			return ii;
-		}
-		return null;
-	}
-
-	public static ArrayList<ItemStack> getOneSizedStacks(IInventory inv) {
-		ArrayList<ItemStack> ar = new ArrayList<ItemStack>();
-		for (int i = 0; i < inv.getSizeInventory(); i++)
-			if (inv.getStackInSlot(i) != null) {
-				for (int j = 0; j < inv.getStackInSlot(i).stackSize; j++) {
-					ItemStack s = inv.getStackInSlot(i).copy();
-					s.stackSize = 1;
-					ar.add(s);
-				}
-			}
-		return ar;
-	}
-
-	public static boolean isEmpty(IInventory inv) {
-		for (int i = 0; i < inv.getSizeInventory() - ((inv instanceof InventoryPlayer) ? 4 : 0); i++)
-			if (inv.getStackInSlot(i) != null)
-				return false;
-		return true;
 	}
 }

@@ -32,22 +32,51 @@ public class FurnusContainer extends Container {
 	void initSlots() {
 		inventoryItemStacks = new ArrayList();
 		inventorySlots = new ArrayList();
-		this.addSlotToContainer(new InputSlot(tile, 0, 20, 21));
-		this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 21));
-		this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 21));
-
-		if (tile.getSlots() > 0) {
-			this.addSlotToContainer(new InputSlot(tile, 1, 20, 21 + 27));
-			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 21 + 27));
-			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 21 + 27));
+		// this.addSlotToContainer(new InputSlot(tile, 0, 20, 49 - 27));
+		// this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 49 -
+		// 27));
+		// this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 49 -
+		// 27));
+		//
+		// if (tile.getSlots() > 0) {
+		// this.addSlotToContainer(new InputSlot(tile, 1, 20, 49));
+		// this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 49));
+		// this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 49));
+		// }
+		//
+		// if (tile.getSlots() > 1) {
+		// this.addSlotToContainer(new InputSlot(tile, 2, 20, 49 + 27));
+		// this.addSlotToContainer(new OutputSlot(player, tile, 5, 77, 49 +
+		// 27));
+		// this.addSlotToContainer(new OutputSlot(player, tile, 8, 107, 49 +
+		// 27));
+		// }
+		switch (tile.getSlots()) {
+		case 0:
+			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48));
+			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48));
+			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48));
+			break;
+		case 1:
+			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48 - 13));
+			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48 + 14));
+			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48 + 14));
+			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48 + 14));
+			break;
+		case 2:
+			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48 - 27));
+			this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 48 - 27));
+			this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 48 - 27));
+			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48));
+			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48));
+			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48));
+			this.addSlotToContainer(new InputSlot(tile, 2, 20, 48 + 27));
+			this.addSlotToContainer(new OutputSlot(player, tile, 5, 77, 48 + 27));
+			this.addSlotToContainer(new OutputSlot(player, tile, 8, 107, 48 + 27));
+			break;
 		}
-
-		if (tile.getSlots() > 1) {
-			this.addSlotToContainer(new InputSlot(tile, 2, 20, 21 + 54));
-			this.addSlotToContainer(new OutputSlot(player, tile, 5, 77, 21 + 54));
-			this.addSlotToContainer(new OutputSlot(player, tile, 8, 107, 21 + 54));
-		}
-
 		this.addSlotToContainer(new FuelSlot(tile, 9, 20, 21 + 27 * 3));
 
 		int index = 10;
@@ -142,13 +171,13 @@ public class FurnusContainer extends Container {
 		return null;
 	}
 
-	boolean upgradeIn(int meta) {
+	boolean upgradeIn(ItemStack stack) {
 		for (int i : getUpgradeSlots()) {
 			ItemStack s = getSlot(i).getStack();
 			if (s == null)
 				continue;
-			if (s.getItemDamage() == meta)
-				return s.stackSize == s.getMaxStackSize();
+			if (s.getItemDamage() == stack.getItemDamage())
+				return s.stackSize + stack.stackSize > s.getMaxStackSize();
 		}
 		return false;
 	}
@@ -169,8 +198,7 @@ public class FurnusContainer extends Container {
 				slot.onSlotChange(itemstack1, itemstack);
 			} else {
 				boolean merged = false;
-				if (itemstack1.getItem() == ItemUpgrade.upgrade
-						&& !upgradeIn(itemstack1.getItemDamage())) {
+				if (itemstack1.getItem() == ItemUpgrade.upgrade && !upgradeIn(itemstack1)) {
 					if (this.mergeItemStack(itemstack1, getUpgradeSlots()[0],
 							getUpgradeSlots()[getUpgradeSlots().length - 1] + 1, false))
 						merged = true;

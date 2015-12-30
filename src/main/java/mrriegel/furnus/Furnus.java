@@ -30,10 +30,10 @@ public class Furnus {
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		File configFile = event.getSuggestedConfigurationFile();
-		ConfigurationHandler.config = new Configuration(configFile);
-		ConfigurationHandler.config.load();
-		ConfigurationHandler.refreshConfig();
+		// File configFile = event.getSuggestedConfigurationFile();
+		// ConfigurationHandler.config = new Configuration(configFile);
+		// ConfigurationHandler.config.load();
+		// ConfigurationHandler.refreshConfig();
 		PacketHandler.init();
 	}
 
@@ -43,6 +43,5 @@ public class Furnus {
 		BlockFurnus.init();
 		ItemUpgrade.init();
 		CraftingRecipes.init();
-		// MinecraftForge.EVENT_BUS.register(this);
 	}
 }

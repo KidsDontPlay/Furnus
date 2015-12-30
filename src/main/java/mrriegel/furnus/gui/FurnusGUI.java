@@ -15,6 +15,7 @@ import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -89,17 +90,21 @@ public class FurnusGUI extends GuiContainer {
 		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
 			List<String> list = new ArrayList<String>();
 			double speed = (1.d + tile.getSpeed() * 1.d);
-			list.add("Speed: " + String.format("%.2f", speed) + "x");
+			list.add(StatCollector.translateToLocal("gui.furnus.speed") + ": "
+					+ String.format("%.2f", speed) + "x");
 			int down = 100;
 			down /= (-1d / 13d) * tile.getSpeed() + 1d;
 			down /= (-1d / 10d) * tile.getBonus() + 1d;
 			down *= (-1d / 16d) * tile.getEffi() + 1d;
 			double effi = down / 100d;
-			list.add("Efficiency: " + String.format("%.2f", effi) + "x");
+			list.add(StatCollector.translateToLocal("gui.furnus.effi") + ": "
+					+ String.format("%.2f", effi) + "x");
 			int bonus = (tile.getBonus() * 10);
-			list.add("Bonus: " + String.format("%d", bonus) + "%");
+			list.add(StatCollector.translateToLocal("gui.furnus.bonus") + ": "
+					+ String.format("%d", bonus) + "%");
 			double xp = (1.d + tile.getXp() * .25);
-			list.add("XP: " + String.format("%.2f", xp) + "x");
+			list.add(StatCollector.translateToLocal("gui.furnus.xp") + ": "
+					+ String.format("%.2f", xp) + "x");
 			GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 			GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
 			this.drawHoveringText(list, i, j, fontRendererObj);
@@ -125,27 +130,72 @@ public class FurnusGUI extends GuiContainer {
 	}
 
 	private void drawMore(int k, int l) {
-		if (tile.getSlots() > 0) {
+		// drawTexturedModalRect(k + 19, l + 47 - 27, 176, 31, 18, 18);
+		// drawTexturedModalRect(k + 43, l + 49 - 27, 176, 75, 22, 15);
+		// drawTexturedModalRect(k + 72, l + 43 - 27, 176, 49, 26, 26);
+		// drawTexturedModalRect(k + 106, l + 47 - 27, 176, 31, 18, 18);
+		// if (tile.getSlots() > 0) {
+		// drawTexturedModalRect(k + 19, l + 47, 176, 31, 18, 18);
+		// drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
+		// drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
+		// drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
+		// }
+		// if (tile.getSlots() > 1) {
+		// drawTexturedModalRect(k + 19, l + 47 + 27, 176, 31, 18, 18);
+		// drawTexturedModalRect(k + 43, l + 49 + 27, 176, 75, 22, 15);
+		// drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
+		// drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
+		// }
+		switch (tile.getSlots()) {
+		case 0:
 			drawTexturedModalRect(k + 19, l + 47, 176, 31, 18, 18);
 			drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
-		}
-		if (tile.getSlots() > 1) {
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(1) / 8, 17);
+			break;
+		case 1:
+			drawTexturedModalRect(k + 19, l + 47 - 13, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 43, l + 49 - 13, 176, 75, 22, 15);
+			drawTexturedModalRect(k + 72, l + 43 - 13, 176, 49, 26, 26);
+			drawTexturedModalRect(k + 106, l + 47 - 13, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 19, l + 47 + 14, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 43, l + 49 + 14, 176, 75, 22, 15);
+			drawTexturedModalRect(k + 72, l + 43 + 14, 176, 49, 26, 26);
+			drawTexturedModalRect(k + 106, l + 47 + 14, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14, tile.getProgress().get(1) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14, tile.getProgress().get(1) / 8, 17);
+			break;
+		case 2:
+			drawTexturedModalRect(k + 19, l + 47 - 27, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 43, l + 49 - 27, 176, 75, 22, 15);
+			drawTexturedModalRect(k + 72, l + 43 - 27, 176, 49, 26, 26);
+			drawTexturedModalRect(k + 106, l + 47 - 27, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 19, l + 47, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
+			drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
+			drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
 			drawTexturedModalRect(k + 19, l + 47 + 27, 176, 31, 18, 18);
 			drawTexturedModalRect(k + 43, l + 49 + 27, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
+			drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, tile.getProgress().get(0) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(1) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, tile.getProgress().get(2) / 8, 17);
+			break;
 		}
 		int percent = (int) (((float) tile.getFuel()) / ((float) tile.getMaxFuel()) * 100f);
 		int d = 13 - ((int) (14 * (percent / 100.0f)));
 		drawTexturedModalRect(k + 45, l + 102 + d, 176, 0 + d, 14, 14 - d);
 
-		drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, tile.getProgress().get(0) / 8, 17);
-		if (tile.getSlots() > 0)
-			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(1) / 8, 17);
-		if (tile.getSlots() > 1)
-			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, tile.getProgress().get(2) / 8, 17);
+		// drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14,
+		// tile.getProgress().get(0) / 8, 17);
+		// if (tile.getSlots() > 0)
+		// drawTexturedModalRect(k + 42, l + 49, 176, 14,
+		// tile.getProgress().get(1) / 8, 17);
+		// if (tile.getSlots() > 1)
+		// drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14,
+		// tile.getProgress().get(2) / 8, 17);
 
 	}
 
