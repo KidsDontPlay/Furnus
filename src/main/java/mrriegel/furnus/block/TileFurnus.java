@@ -11,7 +11,6 @@ import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
-import mrriegel.furnus.message.CheckMessage;
 import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -188,6 +187,14 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	public void setFuel(int fuel) {
 		this.fuel = fuel;
+	}
+
+	public int getMaxFuel() {
+		return maxFuel;
+	}
+
+	public void setMaxFuel(int maxFuel) {
+		this.maxFuel = maxFuel;
 	}
 
 	public Map<Direction, Mode> getInput() {
@@ -377,53 +384,61 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			if (slots >= 1)
 				burn(1);
 		}
-		if ((fuel > 0 && !eco) || eco)
+		if (fuel > 0)
 			burning = true;
 		else
 			burning = false;
 
 	}
 
-	private void fuelUp() {
-		if (fuel >= 2 || getStackInSlot(9) == null)
+	private void fuelUp(int slot) {
+		if (fuel >= 2 || getStackInSlot(9) == null || !canSmelt(slot))
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9));
-		maxFuel = fuelTime;
-		fuel = fuelTime + 1;
-		InventoryHelper.decrStackSize(this, 9, 1);
+		fuel = maxFuel = fuelTime;
+		if (getStackInSlot(9).getItem() != Items.lava_bucket)
+			InventoryHelper.decrStackSize(this, 9, 1);
+		else
+			setInventorySlotContents(9, new ItemStack(Items.bucket));
+		// modcompatible machen
 	}
 
 	private void burn(int slot) {
-		fuelUp();
 		if (getStackInSlot(slot) == null) {
 			if (progress.get(slot) != 0) {
 				progress.put(slot, 0);
 				sendMessage();
 			}
-			return;
 		}
+		fuelUp(slot);
+
+		boolean progressed = false;
 		if (fuel >= 1) {
-			if (canSmelt(slot))
+			if (canSmelt(slot)) {
 				progress.put(slot, progress.get(slot) + 1);
-			if (progress.get(slot) >= 24 * 8) {
-				smeltItem(slot);
-				progress.put(slot, 0);
+				progressed = true;
+				if (progress.get(slot) >= 200) {
+					smeltItem(slot);
+					progress.put(slot, 0);
+				}
 			}
 		} else {
 			if (!eco)
 				progress.put(slot, 0);
 		}
-		boolean empty = false;
-		if (fuel > 0)
+		if (fuel > 0 && (progressed || (!eco && canSmelt(slot)))) {
+			// if (slot == 2)
+			// System.out.println("p " + progressed + " cans: " +
+			// canSmelt(slot));
 			fuel--;
-		System.out.println("fuel: " + fuel);
+		}
 		sendMessage();
 	}
 
 	void sendMessage() {
 		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, xCoord, yCoord, zCoord,
-				fuel, progress), new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord,
-				zCoord, 12));
+				fuel, maxFuel, progress), new TargetPoint(worldObj.provider.dimensionId, xCoord,
+				yCoord, zCoord, 12));
 	}
 
 	public void smeltItem(int slot) {

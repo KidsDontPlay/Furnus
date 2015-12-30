@@ -9,6 +9,7 @@ import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
@@ -129,8 +130,9 @@ public class FurnusGUI extends GuiContainer {
 			drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
 		}
-		int d = 14 - tile.getFuel();
-		drawTexturedModalRect(k + 46, l + 103 + d, 176, 0 + d, 14, 14 - d);
+		int percent = (int) (((float) tile.getFuel()) / ((float) tile.getMaxFuel()) * 100f);
+		int d = 13 - ((int) (14 * (percent / 100.0f)));
+		drawTexturedModalRect(k + 45, l + 102 + d, 176, 0 + d, 14, 14 - d);
 
 		drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, tile.getProgress().get(0) / 8, 17);
 		if (tile.getSlots() > 0)
