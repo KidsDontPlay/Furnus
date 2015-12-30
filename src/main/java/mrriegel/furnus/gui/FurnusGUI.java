@@ -7,9 +7,12 @@ import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiFurnace;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 
@@ -19,7 +22,7 @@ import org.lwjgl.opengl.GL11;
 public class FurnusGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(Furnus.MODID + ":"
 			+ "textures/gui/furnus.png");
-	GuiButton i, o, f, check;
+	Button i, o, f, check;
 	TileFurnus tile;
 
 	public FurnusGUI(Container p_i1072_1_) {
@@ -32,13 +35,13 @@ public class FurnusGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		check = new GuiButton(0, guiLeft + 21, guiTop + 6, 11, 11, tile.isSplit() ? "x" : " ");
+		check = new Button(0, guiLeft + 46, guiTop + 4, tile.isSplit() ? "X" : " ");
 		buttonList.add(check);
-		i = new GuiButton(1, guiLeft + 130, guiTop + 108, 11, 11, "I");
+		i = new Button(1, guiLeft + 115, guiTop + 108, "I");
 		buttonList.add(i);
-		o = new GuiButton(2, guiLeft + 144, guiTop + 108, 11, 11, "O");
+		o = new Button(2, guiLeft + 134, guiTop + 108, "O");
 		buttonList.add(o);
-		f = new GuiButton(3, guiLeft + 158, guiTop + 108, 11, 11, "F");
+		f = new Button(3, guiLeft + 153, guiTop + 108, "F");
 		buttonList.add(f);
 	}
 
@@ -52,7 +55,7 @@ public class FurnusGUI extends GuiContainer {
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
 		if (tile.getSlots() > 0)
-			drawString(mc.fontRenderer, "Split", guiLeft + 33, guiTop + 7, 14737632);
+			drawString(mc.fontRenderer, "Split", guiLeft + 22, guiTop + 7, 14737632);
 
 	}
 
@@ -111,11 +114,11 @@ public class FurnusGUI extends GuiContainer {
 			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord,
 					tile.yCoord, tile.zCoord);
 		else {
-			if (check.displayString.equals("x"))
+			if (check.displayString.equals("X"))
 				check.displayString = " ";
 			else
-				check.displayString = "x";
-			boolean chek = check.displayString.equals("x");
+				check.displayString = "X";
+			boolean chek = check.displayString.equals("X");
 			tile.setSplit(chek);
 			PacketHandler.INSTANCE.sendToServer(new CheckMessage(chek));
 		}
@@ -143,6 +146,45 @@ public class FurnusGUI extends GuiContainer {
 			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(1) / 8, 17);
 		if (tile.getSlots() > 1)
 			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, tile.getProgress().get(2) / 8, 17);
+
+	}
+
+	class Button extends GuiButton {
+
+		public Button(int p_i1021_1_, int p_i1021_2_, int p_i1021_3_, String p_i1021_6_) {
+			super(p_i1021_1_, p_i1021_2_, p_i1021_3_, 16, 16, p_i1021_6_);
+		}
+
+		@Override
+		public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
+			if (this.visible) {
+				FontRenderer fontrenderer = p_146112_1_.fontRenderer;
+				p_146112_1_.getTextureManager().bindTexture(texture);
+				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+				this.field_146123_n = p_146112_2_ >= this.xPosition
+						&& p_146112_3_ >= this.yPosition
+						&& p_146112_2_ < this.xPosition + this.width
+						&& p_146112_3_ < this.yPosition + this.height;
+				int k = this.getHoverState(this.field_146123_n);
+				GL11.glEnable(GL11.GL_BLEND);
+				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				this.drawTexturedModalRect(this.xPosition, this.yPosition, 160 + 16 * k, 90, 16, 16);
+				this.mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
+				int l = 14737632;
+
+				if (packedFGColour != 0) {
+					l = packedFGColour;
+				} else if (!this.enabled) {
+					l = 10526880;
+				} else if (this.field_146123_n) {
+					l = 16777120;
+				}
+
+				this.drawCenteredString(fontrenderer, this.displayString, this.xPosition
+						+ this.width / 2, this.yPosition + (this.height - 8) / 2, l);
+			}
+		}
 
 	}
 

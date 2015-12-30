@@ -402,7 +402,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	private void fuelUp(int slot) {
 		if (fuel >= 51 || getStackInSlot(9) == null || !canSmelt(slot))
 			return;
-		System.out.println("fuel: " + fuel);
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
 		fuel += fuelTime;
 		maxFuel = fuelTime;
@@ -438,7 +437,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			down /= (-1d / 13d) * speed + 1d;
 			down /= (-1d / 10d) * bonus + 1d;
 			down *= (-1d / 16d) * effi + 1d;
-			System.out.println("down: " + down);
 			fuel -= down;
 		}
 
@@ -505,7 +503,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void output() {
-		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 6) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % (60 - (speed + slots * 2) * 4) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {
@@ -544,7 +542,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void input() {
-		if (!inout || worldObj.getTotalWorldTime() % (60 - speed * 6) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % 60 != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
@@ -709,7 +707,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					tryMerge(j, i);
 			}
 		}
-		// worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
 	private void tryMerge(int i1, int i2) {
