@@ -32,25 +32,6 @@ public class FurnusContainer extends Container {
 	void initSlots() {
 		inventoryItemStacks = new ArrayList();
 		inventorySlots = new ArrayList();
-		// this.addSlotToContainer(new InputSlot(tile, 0, 20, 49 - 27));
-		// this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 49 -
-		// 27));
-		// this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 49 -
-		// 27));
-		//
-		// if (tile.getSlots() > 0) {
-		// this.addSlotToContainer(new InputSlot(tile, 1, 20, 49));
-		// this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 49));
-		// this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 49));
-		// }
-		//
-		// if (tile.getSlots() > 1) {
-		// this.addSlotToContainer(new InputSlot(tile, 2, 20, 49 + 27));
-		// this.addSlotToContainer(new OutputSlot(player, tile, 5, 77, 49 +
-		// 27));
-		// this.addSlotToContainer(new OutputSlot(player, tile, 8, 107, 49 +
-		// 27));
-		// }
 		switch (tile.getSlots()) {
 		case 0:
 			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48));
@@ -171,15 +152,15 @@ public class FurnusContainer extends Container {
 		return null;
 	}
 
-	boolean upgradeIn(ItemStack stack) {
+	int getSlotWithUpgrade(int meta) {
 		for (int i : getUpgradeSlots()) {
 			ItemStack s = getSlot(i).getStack();
 			if (s == null)
 				continue;
-			if (s.getItemDamage() == stack.getItemDamage())
-				return s.stackSize + stack.stackSize > s.getMaxStackSize();
+			if (s.getItemDamage() == meta)
+				return i;
 		}
-		return false;
+		return -1;
 	}
 
 	@Override
@@ -198,10 +179,17 @@ public class FurnusContainer extends Container {
 				slot.onSlotChange(itemstack1, itemstack);
 			} else {
 				boolean merged = false;
-				if (itemstack1.getItem() == ItemUpgrade.upgrade && !upgradeIn(itemstack1)) {
-					if (this.mergeItemStack(itemstack1, getUpgradeSlots()[0],
-							getUpgradeSlots()[getUpgradeSlots().length - 1] + 1, false))
-						merged = true;
+				if (itemstack1.getItem() == ItemUpgrade.upgrade) {
+					if (getSlotWithUpgrade(itemstack1.getItemDamage()) == -1) {
+						if (this.mergeItemStack(itemstack1, getUpgradeSlots()[0],
+								getUpgradeSlots()[getUpgradeSlots().length - 1] + 1, false))
+							merged = true;
+					} else {
+						if (this.mergeItemStack(itemstack1,
+								getSlotWithUpgrade(itemstack1.getItemDamage()),
+								getSlotWithUpgrade(itemstack1.getItemDamage()) + 1, false))
+							merged = true;
+					}
 				}
 				if (!merged && TileEntityFurnace.isItemFuel(itemstack1)) {
 					if (this.mergeItemStack(itemstack1, getFuelputSlot(), getFuelputSlot() + 1,

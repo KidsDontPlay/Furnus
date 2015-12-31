@@ -56,7 +56,8 @@ public class FurnusGUI extends GuiContainer {
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
 		if (tile.getSlots() > 0)
-			drawString(mc.fontRenderer, "Split", guiLeft + 22, guiTop + 7, 14737632);
+			drawString(mc.fontRenderer, StatCollector.translateToLocal("gui.furnus.split"),
+					guiLeft + 22, guiTop + 7, 14737632);
 
 	}
 
@@ -130,29 +131,14 @@ public class FurnusGUI extends GuiContainer {
 	}
 
 	private void drawMore(int k, int l) {
-		// drawTexturedModalRect(k + 19, l + 47 - 27, 176, 31, 18, 18);
-		// drawTexturedModalRect(k + 43, l + 49 - 27, 176, 75, 22, 15);
-		// drawTexturedModalRect(k + 72, l + 43 - 27, 176, 49, 26, 26);
-		// drawTexturedModalRect(k + 106, l + 47 - 27, 176, 31, 18, 18);
-		// if (tile.getSlots() > 0) {
-		// drawTexturedModalRect(k + 19, l + 47, 176, 31, 18, 18);
-		// drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
-		// drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
-		// drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
-		// }
-		// if (tile.getSlots() > 1) {
-		// drawTexturedModalRect(k + 19, l + 47 + 27, 176, 31, 18, 18);
-		// drawTexturedModalRect(k + 43, l + 49 + 27, 176, 75, 22, 15);
-		// drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
-		// drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
-		// }
 		switch (tile.getSlots()) {
 		case 0:
 			drawTexturedModalRect(k + 19, l + 47, 176, 31, 18, 18);
 			drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(0) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14,
+					(int) (tile.getProgress().get(0) / (200. / 24.)), 17);
 			break;
 		case 1:
 			drawTexturedModalRect(k + 19, l + 47 - 13, 176, 31, 18, 18);
@@ -163,8 +149,10 @@ public class FurnusGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49 + 14, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 14, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 14, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14, tile.getProgress().get(0) / 8, 17);
-			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14, tile.getProgress().get(1) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14,
+					(int) (tile.getProgress().get(0) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14,
+					(int) (tile.getProgress().get(1) / (200. / 24.)), 17);
 			break;
 		case 2:
 			drawTexturedModalRect(k + 19, l + 47 - 27, 176, 31, 18, 18);
@@ -179,24 +167,17 @@ public class FurnusGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49 + 27, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, tile.getProgress().get(0) / 8, 17);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(1) / 8, 17);
-			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, tile.getProgress().get(2) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14,
+					(int) (tile.getProgress().get(0) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14,
+					(int) (tile.getProgress().get(1) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14,
+					(int) (tile.getProgress().get(2) / (200. / 24.)), 17);
 			break;
 		}
 		int percent = (int) (((float) tile.getFuel()) / ((float) tile.getMaxFuel()) * 100f);
 		int d = 13 - ((int) (14 * (percent / 100.0f)));
 		drawTexturedModalRect(k + 45, l + 102 + d, 176, 0 + d, 14, 14 - d);
-
-		// drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14,
-		// tile.getProgress().get(0) / 8, 17);
-		// if (tile.getSlots() > 0)
-		// drawTexturedModalRect(k + 42, l + 49, 176, 14,
-		// tile.getProgress().get(1) / 8, 17);
-		// if (tile.getSlots() > 1)
-		// drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14,
-		// tile.getProgress().get(2) / 8, 17);
-
 	}
 
 	class Button extends GuiButton {

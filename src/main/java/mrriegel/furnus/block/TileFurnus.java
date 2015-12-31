@@ -16,6 +16,7 @@ import net.minecraft.block.BlockFurnace;
 import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -284,7 +285,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		if ((output.get(wrongSide) != Mode.X) && getOutputSlots().contains(slot)) {
 			return true;
 		}
-		if (fuelput.get(wrongSide) != Mode.X && slot == 9 && stack.getItem() == Items.bucket)
+		if (fuelput.get(wrongSide) != Mode.X && slot == 9 && !TileEntityFurnace.isItemFuel(stack))
 			return true;
 		return false;
 	}
@@ -382,6 +383,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		output();
 		input();
 		split();
+		move();
 		if (fuel > 0 && !burning) {
 			burning = true;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
@@ -707,16 +709,22 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			return;
 		for (int i : getInputSlots()) {
 			for (int j : getInputSlots())
-				if (i >= j) 
+				if (i >= j)
 					tryMerge(j, i);
 		}
+
+	}
+
+	private void move() {
+		if (slots == 0 || split || worldObj.getTotalWorldTime() % 5 != 0)
+			return;
 		for (int i : getInputSlots()) {
 			for (int j : getInputSlots())
-				if (i >= j) 
-					if(getStackInSlot(j)==null&&getStackInSlot(i)!=null&&!canSmelt(i)&&fit(getStackInSlot(i), j))
-					{setInventorySlotContents(j, getStackInSlot(i).copy());
+				if (getStackInSlot(j) == null && getStackInSlot(i) != null && !canSmelt(i)
+						&& fit(getStackInSlot(i), j)) {
+					setInventorySlotContents(j, getStackInSlot(i).copy());
 					setInventorySlotContents(i, null);
-					zu testen!!}
+				}
 		}
 	}
 

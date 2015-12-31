@@ -6,7 +6,6 @@ import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,6 +13,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -84,6 +84,8 @@ public class BlockFurnus extends BlockContainer {
 			ItemStack stack) {
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
 		int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
+		// if (stack.getTagCompound() != null)
+		// tile.readFromNBT(stack.getTagCompound());
 		if (l == 0) {
 			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
 			tile.setFace("N");
@@ -133,6 +135,35 @@ public class BlockFurnus extends BlockContainer {
 		}
 		super.breakBlock(world, x, y, z, block, meta);
 	}
+
+	// @Override
+	// public void onBlockHarvested(World world, int x, int y, int z, int meta,
+	// EntityPlayer player) {
+	// if (!player.capabilities.isCreativeMode) {
+	// this.dropBlockAsItem(world, x, y, z, meta, 0);
+	// }
+	// }
+
+	// @Override
+	// public ArrayList<ItemStack> getDrops(World world, int x, int y, int z,
+	// int metadata, int fortune) {
+	// ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
+	//
+	// TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+	// if (tile != null) {
+	// ItemStack stack = new ItemStack(this.getItemDropped(metadata, world.rand,
+	// fortune), 1,
+	// this.damageDropped(metadata));
+	//
+	// if (stack.getTagCompound() == null) {
+	// stack.setTagCompound(new NBTTagCompound());
+	// }
+	// tile.writeToNBT(stack.getTagCompound());
+	//
+	// drops.add(stack);
+	// }
+	// return drops;
+	// }
 
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
