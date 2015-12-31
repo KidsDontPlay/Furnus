@@ -12,11 +12,7 @@ import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import mrriegel.furnus.message.ProgressMessage;
-import net.minecraft.block.BlockFurnace;
-import net.minecraft.command.PlayerNotFoundException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ContainerFurnace;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -24,8 +20,6 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -446,14 +440,13 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	boolean progressing(int slot) {
-		boolean x = false;
 		for (int i = 0; i < 3; i++) {
 			if (i == slot)
 				continue;
 			if (canSmelt(i))
-				x = true;
+				return true;
 		}
-		return x;
+		return false;
 	}
 
 	void sendMessage() {

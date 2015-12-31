@@ -1,14 +1,15 @@
 package mrriegel.furnus.message;
 
+import io.netty.buffer.ByteBuf;
+
 import java.util.Map;
+
+import mrriegel.furnus.block.TileFurnus;
+import net.minecraft.client.Minecraft;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-import io.netty.buffer.ByteBuf;
-import mrriegel.furnus.block.TileFurnus;
-import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -46,10 +47,10 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 			tile.setMaxFuel(message.maxFuel);
 			tile.setBurning(message.burning);
 			return null;
-		} catch (NullPointerException e) {return null;
+		} catch (NullPointerException e) {
+			return null;
 		}
-		
-		
+
 	}
 
 	@Override
