@@ -152,7 +152,7 @@ public class FurnusGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(1) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, tile.getProgress().get(0) / 8, 17);
 			break;
 		case 1:
 			drawTexturedModalRect(k + 19, l + 47 - 13, 176, 31, 18, 18);
@@ -163,7 +163,7 @@ public class FurnusGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49 + 14, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 14, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 14, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14, tile.getProgress().get(1) / 8, 17);
+			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14, tile.getProgress().get(0) / 8, 17);
 			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14, tile.getProgress().get(1) / 8, 17);
 			break;
 		case 2:

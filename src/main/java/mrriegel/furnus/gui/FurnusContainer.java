@@ -53,14 +53,14 @@ public class FurnusContainer extends Container {
 		// }
 		switch (tile.getSlots()) {
 		case 0:
-			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48));
-			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48));
-			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48));
+			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48));
+			this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 48));
+			this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 48));
 			break;
 		case 1:
-			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48 - 13));
-			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48 - 13));
-			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48 - 13));
+			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 48 - 13));
 			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48 + 14));
 			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48 + 14));
 			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48 + 14));

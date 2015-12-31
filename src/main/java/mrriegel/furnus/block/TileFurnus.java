@@ -706,10 +706,17 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		if (!x)
 			return;
 		for (int i : getInputSlots()) {
-			for (int j : getInputSlots()) {
-				if (i >= j)
+			for (int j : getInputSlots())
+				if (i >= j) 
 					tryMerge(j, i);
-			}
+		}
+		for (int i : getInputSlots()) {
+			for (int j : getInputSlots())
+				if (i >= j) 
+					if(getStackInSlot(j)==null&&getStackInSlot(i)!=null&&!canSmelt(i)&&fit(getStackInSlot(i), j))
+					{setInventorySlotContents(j, getStackInSlot(i).copy());
+					setInventorySlotContents(i, null);
+					zu testen!!}
 		}
 	}
 
