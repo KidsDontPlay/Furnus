@@ -401,7 +401,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void fuelUp(int slot) {
-		if (fuel >= 51 || getStackInSlot(9) == null || !canSmelt(slot))
+		if (fuel >= 51 || getStackInSlot(9) == null
+				|| !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canSmelt(slot))
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
 		fuel += fuelTime;
