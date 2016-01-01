@@ -1,5 +1,6 @@
 package mrriegel.furnus.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -9,6 +10,8 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.common.util.Constants;
 
 public abstract class CrunchTEInventory extends TileEntity implements IInventory {
@@ -74,12 +77,13 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 	public Packet getDescriptionPacket() {
 		NBTTagCompound syncData = new NBTTagCompound();
 		this.writeSyncableDataToNBT(syncData);
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, syncData);
+		return new S35PacketUpdateTileEntity(new BlockPos(this.getPos().getX(), this.getPos()
+				.getY(), this.getPos().getZ()), 1, syncData);
 	}
 
 	@Override
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-		readSyncableDataFromNBT(pkt.func_148857_g());
+		readSyncableDataFromNBT(pkt.getNbtCompound());
 	}
 
 	@Override
@@ -118,17 +122,6 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 	}
 
 	@Override
-	public ItemStack getStackInSlotOnClosing(int slot) {
-		if (this.inv[slot] != null) {
-			ItemStack itemstack = this.inv[slot];
-			this.inv[slot] = null;
-			return itemstack;
-		} else {
-			return null;
-		}
-	}
-
-	@Override
 	public void setInventorySlotContents(int slot, ItemStack stack) {
 		this.inv[slot] = stack;
 		if (stack != null && stack.stackSize > this.getInventoryStackLimit()) {
@@ -138,38 +131,68 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 	}
 
 	@Override
-	public String getInventoryName() {
-		return worldObj.getBlock(xCoord, yCoord, zCoord).getLocalizedName();
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
-	}
-
-	@Override
 	public int getInventoryStackLimit() {
 		return this.stackLimit;
 	}
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
-		return this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this ? false
-				: p_70300_1_.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D,
-						this.zCoord + 0.5D) <= 64.0D;
+		return this.worldObj.getTileEntity(new BlockPos(this.getPos().getX(), this.getPos().getY(),
+				this.getPos().getZ())) != this ? false : p_70300_1_.getDistanceSq(this.getPos()
+				.getX() + 0.5D, this.getPos().getY() + 0.5D, this.getPos().getZ() + 0.5D) <= 64.0D;
 
-	}
-
-	@Override
-	public void openInventory() {
-	}
-
-	@Override
-	public void closeInventory() {
 	}
 
 	@Override
 	public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
 		return true;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		if (this.inv[index] != null) {
+			ItemStack itemstack = this.inv[index];
+			this.inv[index] = null;
+			return itemstack;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public String getName() {
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return false;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return null;
 	}
 }

@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
@@ -55,7 +56,7 @@ public class FurnusGUI extends GuiContainer {
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
 		if (tile.getSlots() > 0)
-			mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.furnus.split"),
+			mc.fontRendererObj.drawString(StatCollector.translateToLocal("gui.furnus.split"),
 					guiLeft + 22, guiTop + 7, 4210752);
 
 	}
@@ -116,8 +117,8 @@ public class FurnusGUI extends GuiContainer {
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
 		if (p_146284_1_.id != 0)
-			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord,
-					tile.yCoord, tile.zCoord);
+			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorld(), tile.getPos()
+					.getX(), tile.getPos().getY(), tile.getPos().getZ());
 		else {
 			if (check.displayString.equals("X"))
 				check.displayString = " ";
@@ -188,14 +189,13 @@ public class FurnusGUI extends GuiContainer {
 		@Override
 		public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
 			if (this.visible) {
-				FontRenderer fontrenderer = p_146112_1_.fontRenderer;
+				FontRenderer fontrenderer = p_146112_1_.fontRendererObj;
 				p_146112_1_.getTextureManager().bindTexture(texture);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.field_146123_n = p_146112_2_ >= this.xPosition
-						&& p_146112_3_ >= this.yPosition
+				this.hovered = p_146112_2_ >= this.xPosition && p_146112_3_ >= this.yPosition
 						&& p_146112_2_ < this.xPosition + this.width
 						&& p_146112_3_ < this.yPosition + this.height;
-				int k = this.getHoverState(this.field_146123_n);
+				int k = this.getHoverState(this.hovered);
 				GL11.glEnable(GL11.GL_BLEND);
 				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -207,7 +207,7 @@ public class FurnusGUI extends GuiContainer {
 					l = packedFGColour;
 				} else if (!this.enabled) {
 					l = 10526880;
-				} else if (this.field_146123_n) {
+				} else if (this.hovered) {
 					l = 16777120;
 				}
 

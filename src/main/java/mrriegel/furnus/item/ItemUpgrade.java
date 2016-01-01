@@ -4,46 +4,43 @@ import java.util.List;
 
 import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemUpgrade extends Item {
-
-	@SideOnly(Side.CLIENT)
-	private IIcon[] icons;;
 
 	public ItemUpgrade() {
 		super();
 		this.setCreativeTab(CreativeTab.tab1);
 		this.setHasSubtypes(true);
 		this.setUnlocalizedName(Furnus.MODID + ":upgrade");
+		Items.wooden_sword.canItemEditBlocks();
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister reg) {
-		icons = new IIcon[7];
-		for (int i = 0; i < 7; i++) {
-			this.icons[i] = reg.registerIcon(Furnus.MODID + ":upgrade_" + i);
-		}
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int meta) {
-		if (meta > 6)
-			meta = 0;
-
-		return this.icons[meta];
-	}
+	// @Override
+	// @SideOnly(Side.CLIENT)
+	// public void registerIcons(IIconRegister reg) {
+	// icons = new IIcon[7];
+	// for (int i = 0; i < 7; i++) {
+	// this.icons[i] = reg.registerIcon(Furnus.MODID + ":upgrade_" + i);
+	// }
+	// }
+	//
+	// @Override
+	// @SideOnly(Side.CLIENT)
+	// public IIcon getIconFromDamage(int meta) {
+	// if (meta > 6)
+	// meta = 0;
+	//
+	// return this.icons[meta];
+	// }
 
 	@Override
 	@SideOnly(Side.CLIENT)

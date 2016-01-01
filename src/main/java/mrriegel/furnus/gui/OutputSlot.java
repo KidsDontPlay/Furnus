@@ -5,11 +5,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.SlotFurnaceOutput;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.stats.AchievementList;
 import net.minecraft.util.MathHelper;
-import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class OutputSlot extends Slot {
 	private EntityPlayer thePlayer;
@@ -48,13 +49,13 @@ public class OutputSlot extends Slot {
 	}
 
 	@Override
-	protected void onCrafting(ItemStack p_75208_1_) {
-		p_75208_1_.onCrafting(this.thePlayer.worldObj, this.thePlayer, this.field_75228_b);
+	protected void onCrafting(ItemStack stack) {
+		stack.onCrafting(this.thePlayer.worldObj, this.thePlayer, this.field_75228_b);
 		if (!this.thePlayer.worldObj.isRemote) {
 			int i = this.field_75228_b;
-			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : FurnaceRecipes.smelting()
-					.func_151398_b(p_75208_1_)
-					+ FurnaceRecipes.smelting().func_151398_b(p_75208_1_)
+			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : FurnaceRecipes.instance()
+					.getSmeltingExperience(stack)
+					+ FurnaceRecipes.instance().getSmeltingExperience(stack)
 					* ((FurnusContainer) thePlayer.openContainer).tile.getXp() * .25f;
 			int j;
 
@@ -79,11 +80,11 @@ public class OutputSlot extends Slot {
 
 		this.field_75228_b = 0;
 
-		FMLCommonHandler.instance().firePlayerSmeltedEvent(thePlayer, p_75208_1_);
-		if (p_75208_1_.getItem() == Items.iron_ingot) {
+		FMLCommonHandler.instance().firePlayerSmeltedEvent(thePlayer, stack);
+		if (stack.getItem() == Items.iron_ingot) {
 			this.thePlayer.addStat(AchievementList.acquireIron, 1);
 		}
-		if (p_75208_1_.getItem() == Items.cooked_fished) {
+		if (stack.getItem() == Items.cooked_fish) {
 			this.thePlayer.addStat(AchievementList.cookFish, 1);
 		}
 	}

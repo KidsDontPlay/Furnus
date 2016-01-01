@@ -13,6 +13,6 @@ public class InputSlot extends Slot {
 
 	@Override
 	public boolean isItemValid(ItemStack p_75214_1_) {
-		return FurnaceRecipes.smelting().getSmeltingResult(p_75214_1_) != null;
+		return FurnaceRecipes.instance().getSmeltingResult(p_75214_1_) != null;
 	}
 }

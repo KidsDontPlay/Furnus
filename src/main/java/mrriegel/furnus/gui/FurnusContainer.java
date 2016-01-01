@@ -86,8 +86,8 @@ public class FurnusContainer extends Container {
 				save = player.inventory.getItemStack().copy();
 				player.inventory.setItemStack(null);
 			}
-			player.openGui(Furnus.instance, 0, tile.getWorldObj(), tile.xCoord, tile.yCoord,
-					tile.zCoord);
+			player.openGui(Furnus.instance, 0, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(),
+					tile.getPos().getZ());
 			if (save != null) {
 				player.inventory.setItemStack(save);
 				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);
@@ -197,7 +197,7 @@ public class FurnusContainer extends Container {
 						merged = true;
 					}
 				}
-				if (!merged && FurnaceRecipes.smelting().getSmeltingResult(itemstack1) != null) {
+				if (!merged && FurnaceRecipes.instance().getSmeltingResult(itemstack1) != null) {
 					for (int i = 0; i < getInputSlots().length; i++)
 						if (this.mergeItemStack(itemstack1, getInputSlots()[i],
 								getInputSlots()[i] + 1, false)) {

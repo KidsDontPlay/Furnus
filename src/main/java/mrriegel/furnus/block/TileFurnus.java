@@ -20,13 +20,16 @@ import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ITickable;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-
-public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
+public class TileFurnus extends CrunchTEInventory implements ISidedInventory, ITickable {
 	private boolean burning, eco, inout, split;
 	private int speed, effi, slots, bonus, xp, fuel, maxFuel;
 	Map<Direction, Mode> input, output, fuelput;
@@ -242,7 +245,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	@Override
-	public int[] getAccessibleSlotsFromSide(int side) {
+	public int[] getSlotsForFace(EnumFacing side) {
 		if (!inout)
 			return new int[] {};
 		ArrayList<Integer> lis = new ArrayList<Integer>();
@@ -260,7 +263,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	@Override
-	public boolean canInsertItem(int slot, ItemStack stack, int side) {
+	public boolean canInsertItem(int slot, ItemStack stack, EnumFacing side) {
 		if (!inout)
 			return false;
 		if (!getInputSlots().contains(slot) && slot != 9)
@@ -275,7 +278,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	@Override
-	public boolean canExtractItem(int slot, ItemStack stack, int side) {
+	public boolean canExtractItem(int slot, ItemStack stack, EnumFacing side) {
 		if (!inout)
 			return false;
 		if (!getOutputSlots().contains(slot) && slot != 9)
@@ -310,7 +313,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 2)
-			return FurnaceRecipes.smelting().getSmeltingResult(stack) != null;
+			return FurnaceRecipes.instance().getSmeltingResult(stack) != null;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
 		if (slot >= 10)
@@ -370,12 +373,13 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			setInventorySlotContents(i, null);
 
 		}
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()));
 
 	}
 
 	@Override
-	public void updateEntity() {
+	public void update() {
+		// TileEntityFurnace
 		if (worldObj.isRemote) {
 			return;
 		}
@@ -385,10 +389,12 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		move();
 		if (fuel > 0 && !burning) {
 			burning = true;
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos()
+					.getZ()));
 		} else if (fuel <= 0 && burning) {
 			burning = false;
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos()
+					.getZ()));
 		}
 		for (int i = 0; i <= speed; i++) {
 			burn(0);
@@ -455,14 +461,15 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	void sendMessage() {
-		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, xCoord, yCoord, zCoord,
-				fuel, maxFuel, progress), new TargetPoint(worldObj.provider.dimensionId, xCoord,
-				yCoord, zCoord, 12));
+		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(),
+				getPos().getY(), getPos().getZ(), fuel, maxFuel, progress), new TargetPoint(
+				worldObj.provider.getDimensionId(), getPos().getX(), getPos().getY(), getPos()
+						.getZ(), 12));
 	}
 
 	public void smeltItem(int slot) {
 		if (this.canSmelt(slot)) {
-			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(getStackInSlot(slot));
+			ItemStack itemstack = FurnaceRecipes.instance().getSmeltingResult(getStackInSlot(slot));
 
 			if (getStackInSlot(slot + 3) == null) {
 				setInventorySlotContents(slot + 3, itemstack.copy());
@@ -493,7 +500,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		if (getStackInSlot(slot) == null) {
 			return false;
 		} else {
-			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(getStackInSlot(slot));
+			ItemStack itemstack = FurnaceRecipes.instance().getSmeltingResult(getStackInSlot(slot));
 			if (itemstack == null)
 				return false;
 			if (getStackInSlot(slot + 3) == null)
@@ -524,8 +531,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					setInventorySlotContents(i,
 							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
 									: null);
-					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				} else if (ir instanceof ISidedInventory) {
 					int num = getStackInSlot(i).stackSize;
@@ -537,8 +542,6 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					setInventorySlotContents(i,
 							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
 									: null);
-					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				}
 			}
@@ -552,7 +555,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
 					&& fuelput.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
 				continue;
-			int side = getDirection(this, (TileEntity) ir);
+			EnumFacing side = getDirection(this, (TileEntity) ir);
 			if (!(ir instanceof ISidedInventory)) {
 				for (int i = 0; i < ir.getSizeInventory(); i++) {
 					if (ir.getStackInSlot(i) == null)
@@ -565,12 +568,10 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					ir.setInventorySlotContents(i,
 							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
 									: null);
-					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				}
 			} else if (ir instanceof ISidedInventory) {
-				for (int i : ((ISidedInventory) ir).getAccessibleSlotsFromSide(side)) {
+				for (int i : ((ISidedInventory) ir).getSlotsForFace(side)) {
 					if (ir.getStackInSlot(i) == null)
 						continue;
 					if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i),
@@ -584,109 +585,113 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 					ir.setInventorySlotContents(i,
 							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
 									: null);
-					TileEntity inv = (TileEntity) ir;
-					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				}
 			}
 		}
 	}
 
-	private int getDirection(TileEntity von, TileEntity zu) {
-		if (von.yCoord == zu.yCoord + 1)
-			return 0;
-		if (von.yCoord == zu.yCoord - 1)
-			return 1;
-		if (von.zCoord == zu.zCoord + 1)
-			return 2;
-		if (von.zCoord == zu.zCoord - 1)
-			return 3;
-		if (von.xCoord == zu.xCoord + 1)
-			return 4;
-		if (von.xCoord == zu.xCoord - 1)
-			return 5;
-		return -1;
+	private EnumFacing getDirection(TileEntity von, TileEntity zu) {
+		if (von.getPos().getY() == zu.getPos().getY() + 1)
+			return EnumFacing.DOWN;
+		if (von.getPos().getY() == zu.getPos().getY() - 1)
+			return EnumFacing.UP;
+		if (von.getPos().getZ() == zu.getPos().getZ() + 1)
+			return EnumFacing.NORTH;
+		if (von.getPos().getZ() == zu.getPos().getZ() - 1)
+			return EnumFacing.SOUTH;
+		if (von.getPos().getX() == zu.getPos().getX() + 1)
+			return EnumFacing.WEST;
+		if (von.getPos().getX() == zu.getPos().getX() - 1)
+			return EnumFacing.EAST;
+		return null;
 	}
 
 	private List<IInventory> getIInventories() {
 		ArrayList<IInventory> lis = new ArrayList<IInventory>();
-		TileEntity a = worldObj.getTileEntity(xCoord, yCoord + 1, zCoord);
+		TileEntity a = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() + 1,
+				getPos().getZ()));
 		if (a != null && a instanceof IInventory)
 			lis.add((IInventory) a);
 
-		TileEntity b = worldObj.getTileEntity(xCoord, yCoord - 1, zCoord);
+		TileEntity b = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() - 1,
+				getPos().getZ()));
 		if (b != null && b instanceof IInventory)
 			lis.add((IInventory) b);
 
-		TileEntity c = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
+		TileEntity c = worldObj.getTileEntity(new BlockPos(getPos().getX() + 1, getPos().getY(),
+				getPos().getZ()));
 		if (c != null && c instanceof IInventory)
 			lis.add((IInventory) c);
 
-		TileEntity d = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
+		TileEntity d = worldObj.getTileEntity(new BlockPos(getPos().getX() - 1, getPos().getY(),
+				getPos().getZ()));
 		if (d != null && d instanceof IInventory)
 			lis.add((IInventory) d);
 
-		TileEntity e = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
+		TileEntity e = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(),
+				getPos().getZ() + 1));
 		if (e != null && e instanceof IInventory)
 			lis.add((IInventory) e);
 
-		TileEntity f = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
+		TileEntity f = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(),
+				getPos().getZ() - 1));
 		if (f != null && f instanceof IInventory)
 			lis.add((IInventory) f);
 
 		return lis;
 	}
 
-	Direction getWrongSide(int side) {
-		if (side == 1)
+	Direction getWrongSide(EnumFacing side) {
+		if (side == EnumFacing.UP)
 			return Direction.TOP;
-		if (side == 0)
+		if (side == EnumFacing.DOWN)
 			return Direction.BOTTOM;
 		if (face.equals("N")) {
 			switch (side) {
-			case 2:
+			case NORTH:
 				return Direction.FRONT;
-			case 3:
+			case SOUTH:
 				return Direction.BACK;
-			case 4:
+			case WEST:
 				return Direction.RIGHT;
-			case 5:
+			case EAST:
 				return Direction.LEFT;
 			}
 		}
 		if (face.equals("S")) {
 			switch (side) {
-			case 2:
+			case NORTH:
 				return Direction.BACK;
-			case 3:
+			case SOUTH:
 				return Direction.FRONT;
-			case 4:
+			case WEST:
 				return Direction.LEFT;
-			case 5:
+			case EAST:
 				return Direction.RIGHT;
 			}
 		}
 		if (face.equals("E")) {
 			switch (side) {
-			case 2:
+			case NORTH:
 				return Direction.RIGHT;
-			case 3:
+			case SOUTH:
 				return Direction.LEFT;
-			case 4:
+			case WEST:
 				return Direction.BACK;
-			case 5:
+			case EAST:
 				return Direction.FRONT;
 			}
 		}
 		if (face.equals("W")) {
 			switch (side) {
-			case 2:
+			case NORTH:
 				return Direction.LEFT;
-			case 3:
+			case SOUTH:
 				return Direction.RIGHT;
-			case 4:
+			case WEST:
 				return Direction.FRONT;
-			case 5:
+			case EAST:
 				return Direction.BACK;
 			}
 		}
@@ -728,7 +733,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 
 	private boolean fit(ItemStack stack, int slot) {
 		return getStackInSlot(slot + 3) == null
-				|| FurnaceRecipes.smelting().getSmeltingResult(stack)
+				|| FurnaceRecipes.instance().getSmeltingResult(stack)
 						.isItemEqual(getStackInSlot(slot + 3));
 	}
 

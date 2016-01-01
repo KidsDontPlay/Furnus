@@ -6,8 +6,8 @@ import mrriegel.furnus.message.OpenMessage;
 import mrriegel.furnus.message.ProgressMessage;
 import mrriegel.furnus.message.PutMessage;
 import mrriegel.furnus.message.StackMessage;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketHandler {
 	public static final SimpleNetworkWrapper INSTANCE = new SimpleNetworkWrapper(Furnus.MODID);

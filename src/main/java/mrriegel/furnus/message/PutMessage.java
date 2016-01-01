@@ -5,10 +5,11 @@ import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TileFurnus.Direction;
 import mrriegel.furnus.block.TileFurnus.Mode;
 import mrriegel.furnus.gui.IOFGui;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.util.BlockPos;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessage> {
 	int x, y, z;
@@ -31,7 +32,7 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 	@Override
 	public IMessage onMessage(PutMessage message, MessageContext ctx) {
 		TileFurnus tile = (TileFurnus) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(
-				message.x, message.y, message.z);
+				new BlockPos(message.x, message.y, message.z));
 		IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
 				Mode.valueOf(message.mode));
 		return null;

@@ -80,42 +80,42 @@ public class IOFGui extends GuiScreen {
 			top.displayString = topMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.TOP, topMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP.toString(),
-					tile.xCoord, tile.yCoord, tile.zCoord, id, topMode.toString()));
+					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, topMode.toString()));
 			break;
 		case 1:
 			frontMode = frontMode.next();
 			front.displayString = frontMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.FRONT, frontMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.FRONT.toString(),
-					tile.xCoord, tile.yCoord, tile.zCoord, id, frontMode.toString()));
+					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, frontMode.toString()));
 			break;
 		case 2:
 			leftMode = leftMode.next();
 			left.displayString = leftMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.LEFT, leftMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.LEFT.toString(),
-					tile.xCoord, tile.yCoord, tile.zCoord, id, leftMode.toString()));
+					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, leftMode.toString()));
 			break;
 		case 3:
 			rightMode = rightMode.next();
 			right.displayString = rightMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.RIGHT, rightMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.RIGHT.toString(),
-					tile.xCoord, tile.yCoord, tile.zCoord, id, rightMode.toString()));
+					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, rightMode.toString()));
 			break;
 		case 4:
 			bottomMode = bottomMode.next();
 			bottom.displayString = bottomMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.BOTTOM, bottomMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BOTTOM.toString(),
-					tile.xCoord, tile.yCoord, tile.zCoord, id, bottomMode.toString()));
+					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, bottomMode.toString()));
 			break;
 		case 5:
 			backMode = backMode.next();
 			back.displayString = backMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.BACK, backMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BACK.toString(),
-					tile.xCoord, tile.yCoord, tile.zCoord, id, backMode.toString()));
+					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, backMode.toString()));
 			break;
 		}
 	}
@@ -140,7 +140,7 @@ public class IOFGui extends GuiScreen {
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.imageWidth, this.imageHeight);
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
 		String pre = "gui.furnus.";
-		mc.fontRenderer.drawString(
+		mc.fontRendererObj.drawString(
 				id.equals("F") ? StatCollector.translateToLocal(pre + "fuel")
 						: id.equals("I") ? StatCollector.translateToLocal(pre + "input")
 								: StatCollector.translateToLocal(pre + "output"), guiLeft + 8,
@@ -155,7 +155,7 @@ public class IOFGui extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.xCoord, tile.yCoord, tile.zCoord));
+		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ()));
 	}
 
 	class Button extends GuiButton {
@@ -170,11 +170,11 @@ public class IOFGui extends GuiScreen {
 			if (this.visible) {
 				p_146112_1_.getTextureManager().bindTexture(buttonTextures);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.field_146123_n = p_146112_2_ >= this.xPosition
+				this.hovered = p_146112_2_ >= this.xPosition
 						&& p_146112_3_ >= this.yPosition
 						&& p_146112_2_ < this.xPosition + this.width
 						&& p_146112_3_ < this.yPosition + this.height;
-				int k = this.getHoverState(this.field_146123_n);
+				int k = this.getHoverState(this.hovered);
 				GL11.glEnable(GL11.GL_BLEND);
 				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

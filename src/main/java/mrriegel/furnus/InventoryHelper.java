@@ -7,6 +7,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class InventoryHelper {
@@ -90,10 +91,10 @@ public class InventoryHelper {
 
 	/** nicked from reika */
 	public static int addToSidedInventoryWithLeftover(ItemStack stack, ISidedInventory inventory,
-			int side, boolean simulate) {
+			EnumFacing side, boolean simulate) {
 		int left = stack.stackSize;
 		int max = Math.min(inventory.getInventoryStackLimit(), stack.getMaxStackSize());
-		for (int i : inventory.getAccessibleSlotsFromSide(side)) {
+		for (int i : inventory.getSlotsForFace(side)) {
 			if (!inventory.isItemValidForSlot(i, stack) || !inventory.canInsertItem(i, stack, side))
 				continue;
 			ItemStack in = inventory.getStackInSlot(i);
@@ -151,9 +152,9 @@ public class InventoryHelper {
 			return stack1.isItemEqual(stack2);
 		else
 			return stack1.isItemEqual(stack2)
-					&& ((stack1.stackTagCompound == null && stack2.stackTagCompound == null) || (stack1.stackTagCompound != null
-							&& stack2.stackTagCompound != null && stack1.stackTagCompound
-								.equals(stack2.stackTagCompound)));
+					&& ((stack1.getTagCompound() == null && stack2.getTagCompound() == null) || (stack1
+							.getTagCompound() != null && stack2.getTagCompound() != null && stack1
+							.getTagCompound().equals(stack2.getTagCompound())));
 	}
 
 	public static boolean decrStackSize(IInventory inv, int slot, int num) {

@@ -8,5 +8,8 @@
 /.classpath
 /.project
 /bin
+/run
 /eclipse
+
+*.launch
 
