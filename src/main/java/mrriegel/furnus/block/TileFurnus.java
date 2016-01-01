@@ -379,7 +379,10 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory, IT
 
 	@Override
 	public void update() {
-		// TileEntityFurnace
+		if (worldObj.getTotalWorldTime() % 30 == 9) {
+			System.out.println(pos);
+			System.out.println("face: " + face);
+		}
 		if (worldObj.isRemote) {
 			return;
 		}

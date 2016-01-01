@@ -6,25 +6,20 @@ import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockFurnace;
-import net.minecraft.block.BlockGlowstone;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -39,48 +34,74 @@ public class BlockFurnus extends BlockContainer {
 	public BlockFurnus() {
 		super(Material.rock);
 		this.setHardness(4.0F);
-		// this.setDefaultState(this.blockState.getBaseState().withProperty(FACING,
-		// EnumFacing.NORTH));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		this.setCreativeTab(CreativeTab.tab1);
 		this.setUnlocalizedName(Furnus.MODID + ":" + "furnus");
 	}
 
-//	@Override
-//	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-//		setDefaultFacing(worldIn, pos, state);
-//	}
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IBlockState getStateForEntityRender(IBlockState state) {
+		return this.getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		EnumFacing enumfacing = EnumFacing.getFront(meta);
+
+		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
+			enumfacing = EnumFacing.NORTH;
+		}
+
+		return this.getDefaultState().withProperty(FACING, enumfacing);
+	}
+
+	@Override
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(FACING).getIndex();
+	}
+
+	@Override
+	protected BlockState createBlockState() {
+		return new BlockState(this, new IProperty[] { FACING });
+	}
+
+	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+		this.setDefaultFacing(worldIn, pos, state);
+	}
 
 	private void setDefaultFacing(World worldIn, BlockPos pos, IBlockState state) {
-		{
-			if (!worldIn.isRemote) {
-				System.out.println("zzzz " + state.getProperties());
-				System.out.println("ssss " + FACING);
-				Block block = worldIn.getBlockState(pos.north()).getBlock();
-				Block block1 = worldIn.getBlockState(pos.south()).getBlock();
-				Block block2 = worldIn.getBlockState(pos.west()).getBlock();
-				Block block3 = worldIn.getBlockState(pos.east()).getBlock();
-				EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
-				TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
-				if (enumfacing == EnumFacing.NORTH && block.isFullBlock() && !block1.isFullBlock()) {
-					enumfacing = EnumFacing.SOUTH;
-					// tile.setFace("S");
-				} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock()
-						&& !block.isFullBlock()) {
-					enumfacing = EnumFacing.NORTH;
-					// tile.setFace("N");
-				} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock()
-						&& !block3.isFullBlock()) {
-					enumfacing = EnumFacing.EAST;
-					// tile.setFace("E");
-				} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock()
-						&& !block2.isFullBlock()) {
-					enumfacing = EnumFacing.WEST;
-					// tile.setFace("W");
-				}
-
-				worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
+		if (!worldIn.isRemote) {
+			Block block = worldIn.getBlockState(pos.north()).getBlock();
+			Block block1 = worldIn.getBlockState(pos.south()).getBlock();
+			Block block2 = worldIn.getBlockState(pos.west()).getBlock();
+			Block block3 = worldIn.getBlockState(pos.east()).getBlock();
+			EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
+			System.out.println("state: " + state);
+			TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
+			tile.setFace(enumfacing.toString().substring(0, 1).toUpperCase());
+			if (enumfacing == EnumFacing.NORTH && block.isFullBlock() && !block1.isFullBlock()) {
+				enumfacing = EnumFacing.SOUTH;
+			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock()
+					&& !block.isFullBlock()) {
+				enumfacing = EnumFacing.NORTH;
+			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock()
+					&& !block3.isFullBlock()) {
+				enumfacing = EnumFacing.EAST;
+			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock()
+					&& !block2.isFullBlock()) {
+				enumfacing = EnumFacing.WEST;
 			}
+
+			worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
+			worldIn.markBlockForUpdate(pos);
 		}
+	}
+
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX,
+			float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		return this.getDefaultState().withProperty(FACING,
+				placer.getHorizontalFacing().getOpposite());
 	}
 
 	@Override
@@ -114,17 +135,19 @@ public class BlockFurnus extends BlockContainer {
 		return tile.isBurning() ? 13 : 0;
 	}
 
+	@Override
 	public int getRenderType() {
 		return 3;
 	}
 
+	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 		TileFurnus tileentity = (TileFurnus) worldIn.getTileEntity(pos);
 
 		InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
 		worldIn.updateComparatorOutputLevel(pos, this);
-
 		super.breakBlock(worldIn, pos, state);
+		System.out.println("breako");
 	}
 
 	@Override
@@ -138,10 +161,10 @@ public class BlockFurnus extends BlockContainer {
 	public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
 		TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
 		if (tile.isBurning()) {
-			EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
-			double d0 = (double) pos.getX() + 0.5D;
-			double d1 = (double) pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
-			double d2 = (double) pos.getZ() + 0.5D;
+			EnumFacing enumfacing = state.getValue(FACING);
+			double d0 = pos.getX() + 0.5D;
+			double d1 = pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
+			double d2 = pos.getZ() + 0.5D;
 			double d3 = 0.52D;
 			double d4 = rand.nextDouble() * 0.6D - 0.3D;
 
