@@ -39,17 +39,22 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		output = new HashMap<Direction, Mode>();
 		fuelput = new HashMap<Direction, Mode>();
 		for (Direction f : Direction.values()) {
-			input.put(f, Mode.NORMAL);
-			output.put(f, Mode.NORMAL);
+			input.put(f, Mode.X);
+			output.put(f, Mode.X);
 			fuelput.put(f, Mode.X);
 		}
+		input.put(Direction.TOP, Mode.ENABLED);
+		for (Direction f : Direction.values())
+			if (f != Direction.TOP && f != Direction.BOTTOM)
+				fuelput.put(f, Mode.ENABLED);
+		output.put(Direction.BOTTOM, Mode.ENABLED);
 		progress = new HashMap<Integer, Integer>();
 		for (int i = 0; i < 3; i++)
 			progress.put(i, 0);
 	}
 
 	public enum Mode {
-		NORMAL, AUTO, X;
+		ENABLED, AUTO, X;
 		private static Mode[] vals = values();
 
 		public Mode next() {
@@ -415,7 +420,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 		fuelUp(slot);
 
 		boolean progressed = false;
-		if (fuel >= 0) {
+		if (fuel > 0) {
 			if (canSmelt(slot)) {
 				progress.put(slot, progress.get(slot) + 1);
 				progressed = true;
@@ -502,7 +507,7 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory {
 	}
 
 	private void output() {
-		if (!inout || worldObj.getTotalWorldTime() % (60 - (speed + slots * 2) * 4) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % (50 - (speed + slots * 2) * 4) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {

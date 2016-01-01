@@ -34,9 +34,6 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 				message.x, message.y, message.z);
 		IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
 				Mode.valueOf(message.mode));
-		// ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(message.x,
-		// message.y,
-		// message.z);
 		return null;
 	}
 

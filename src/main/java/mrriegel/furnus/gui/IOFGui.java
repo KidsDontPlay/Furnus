@@ -14,6 +14,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 
 import org.lwjgl.opengl.GL11;
 
@@ -138,8 +139,12 @@ public class IOFGui extends GuiScreen {
 		guiTop = (this.height - this.imageHeight) / 2;
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.imageWidth, this.imageHeight);
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
-		mc.fontRenderer.drawString(id.equals("F") ? "Fuel" : id.equals("I") ? "Input" : "Output",
-				guiLeft + 8, guiTop + 6, 4210752);
+		String pre = "gui.furnus.";
+		mc.fontRenderer.drawString(
+				id.equals("F") ? StatCollector.translateToLocal(pre + "fuel")
+						: id.equals("I") ? StatCollector.translateToLocal(pre + "input")
+								: StatCollector.translateToLocal(pre + "output"), guiLeft + 8,
+				guiTop + 6, 4210752);
 
 	}
 
@@ -178,9 +183,13 @@ public class IOFGui extends GuiScreen {
 				this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition,
 						200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
 				p_146112_1_.getTextureManager().bindTexture(GuiTextures);
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, 101,
-						0 + (displayString.equals("N") ? 0 : displayString.equals("X") ? 20 : 40),
-						20, 20);
+				this.drawTexturedModalRect(
+						this.xPosition,
+						this.yPosition,
+						101,
+						0 + (displayString.equals(Mode.ENABLED.toString().substring(0, 1)
+								.toUpperCase()) ? 0 : displayString.equals(Mode.X.toString()
+								.substring(0, 1).toUpperCase()) ? 20 : 40), 20, 20);
 
 			}
 		}

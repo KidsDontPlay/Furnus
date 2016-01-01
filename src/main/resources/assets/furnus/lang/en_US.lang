@@ -21,3 +21,7 @@ gui.furnus.effi=Fuel consumption
 gui.furnus.bonus=Bonus
 gui.furnus.xp=XP
 gui.furnus.split=Split
+
+gui.furnus.input=Input
+gui.furnus.output=Output
+gui.furnus.fuel=Fuel

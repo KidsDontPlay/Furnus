@@ -55,8 +55,8 @@ public class FurnusGUI extends GuiContainer {
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
 		if (tile.getSlots() > 0)
-			drawString(mc.fontRenderer, StatCollector.translateToLocal("gui.furnus.split"),
-					guiLeft + 22, guiTop + 7, 14737632);
+			mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.furnus.split"),
+					guiLeft + 22, guiTop + 7, 4210752);
 
 	}
 
