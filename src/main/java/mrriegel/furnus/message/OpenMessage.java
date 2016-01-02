@@ -2,6 +2,8 @@ package mrriegel.furnus.message;
 
 import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.Furnus;
+import net.minecraft.util.IThreadListener;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -20,9 +22,16 @@ public class OpenMessage implements IMessage, IMessageHandler<OpenMessage, IMess
 	}
 
 	@Override
-	public IMessage onMessage(OpenMessage message, MessageContext ctx) {
-		ctx.getServerHandler().playerEntity.openGui(Furnus.instance, 0,
-				ctx.getServerHandler().playerEntity.worldObj, message.x, message.y, message.z);
+	public IMessage onMessage(final OpenMessage message, final MessageContext ctx) {
+		IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				ctx.getServerHandler().playerEntity.openGui(Furnus.instance, 0,
+						ctx.getServerHandler().playerEntity.worldObj, message.x, message.y,
+						message.z);
+			}
+		});
 		return null;
 	}
 

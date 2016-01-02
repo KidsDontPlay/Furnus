@@ -6,6 +6,8 @@ import mrriegel.furnus.block.TileFurnus.Direction;
 import mrriegel.furnus.block.TileFurnus.Mode;
 import mrriegel.furnus.gui.IOFGui;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.IThreadListener;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -30,11 +32,17 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 	}
 
 	@Override
-	public IMessage onMessage(PutMessage message, MessageContext ctx) {
-		TileFurnus tile = (TileFurnus) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(
-				new BlockPos(message.x, message.y, message.z));
-		IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
-				Mode.valueOf(message.mode));
+	public IMessage onMessage(final PutMessage message, final MessageContext ctx) {
+		IThreadListener mainThread = (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				TileFurnus tile = (TileFurnus) ctx.getServerHandler().playerEntity.worldObj
+						.getTileEntity(new BlockPos(message.x, message.y, message.z));
+				IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
+						Mode.valueOf(message.mode));
+			}
+		});
 		return null;
 	}
 

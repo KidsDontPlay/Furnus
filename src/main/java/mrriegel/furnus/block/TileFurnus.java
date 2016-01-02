@@ -24,6 +24,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.util.ITickable;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import com.google.common.reflect.TypeToken;
@@ -379,10 +380,10 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory, IT
 
 	@Override
 	public void update() {
-//		if (worldObj.getTotalWorldTime() % 30 == 9) {
-//			System.out.println(pos);
-//			System.out.println("face: " + face);
-//		}
+		// if (worldObj.getTotalWorldTime() % 30 == 9) {
+		// System.out.println(pos);
+		// System.out.println("face: " + face);
+		// }
 		if (worldObj.isRemote) {
 			return;
 		}
@@ -394,12 +395,16 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory, IT
 			burning = true;
 			worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos()
 					.getZ()));
-			BlockFurnus.setState(burning, worldObj, pos);
+			// BlockFurnus.setState(burning, worldObj, pos);
+			worldObj.setBlockState(pos, worldObj.getBlockState(pos), 2);
+			((World) worldObj).markBlockRangeForRenderUpdate(pos, pos);
 		} else if (fuel <= 0 && burning) {
 			burning = false;
 			worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos()
 					.getZ()));
-			BlockFurnus.setState(burning, worldObj, pos);
+			// BlockFurnus.setState(burning, worldObj, pos);
+			worldObj.setBlockState(pos, worldObj.getBlockState(pos), 2);
+			((World) worldObj).markBlockRangeForRenderUpdate(pos, pos);
 		}
 		for (int i = 0; i <= speed; i++) {
 			burn(0);
@@ -412,7 +417,8 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory, IT
 	}
 
 	private void fuelUp(int slot) {
-		if (fuel >= 51 || getStackInSlot(9) == null || !canSmelt(slot))
+		if (fuel >= 51 || getStackInSlot(9) == null
+				|| !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canSmelt(slot))
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
 		fuel += fuelTime;

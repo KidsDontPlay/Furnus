@@ -7,6 +7,8 @@ import java.util.Map;
 import mrriegel.furnus.block.TileFurnus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.IThreadListener;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -36,21 +38,27 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 	}
 
 	@Override
-	public IMessage onMessage(ProgressMessage message, MessageContext ctx) {
-		try {
-			TileFurnus tile = (TileFurnus) Minecraft.getMinecraft().theWorld.getTileEntity(
-					new BlockPos(message.x, message.y, message.z));
-			if (tile == null)
-				return null;
-			tile.setProgress(message.progress);
-			tile.setFuel(message.fuel);
-			tile.setMaxFuel(message.maxFuel);
-			tile.setBurning(message.burning);
-			return null;
-		} catch (NullPointerException e) {
-			return null;
-		}
-
+	public IMessage onMessage(final ProgressMessage message, MessageContext ctx) {
+		IThreadListener mainThread = Minecraft.getMinecraft();
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					TileFurnus tile = (TileFurnus) Minecraft.getMinecraft().theWorld
+							.getTileEntity(new BlockPos(message.x, message.y, message.z));
+					if (tile == null)
+						return;
+					tile.setProgress(message.progress);
+					tile.setFuel(message.fuel);
+					tile.setMaxFuel(message.maxFuel);
+					tile.setBurning(message.burning);
+					return;
+				} catch (NullPointerException e) {
+					return;
+				}
+			}
+		});
+		return null;
 	}
 
 	@Override

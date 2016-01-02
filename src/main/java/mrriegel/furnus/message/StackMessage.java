@@ -3,6 +3,8 @@ package mrriegel.furnus.message;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IThreadListener;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -20,8 +22,14 @@ public class StackMessage implements IMessage, IMessageHandler<StackMessage, IMe
 	}
 
 	@Override
-	public IMessage onMessage(StackMessage message, MessageContext ctx) {
-		Minecraft.getMinecraft().thePlayer.inventory.setItemStack(message.stack);
+	public IMessage onMessage(final StackMessage message, MessageContext ctx) {
+		IThreadListener mainThread = Minecraft.getMinecraft();
+		mainThread.addScheduledTask(new Runnable() {
+			@Override
+			public void run() {
+				Minecraft.getMinecraft().thePlayer.inventory.setItemStack(message.stack);
+			}
+		});
 		return null;
 	}
 
