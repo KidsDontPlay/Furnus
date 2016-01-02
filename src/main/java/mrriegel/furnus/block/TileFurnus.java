@@ -379,10 +379,10 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory, IT
 
 	@Override
 	public void update() {
-		if (worldObj.getTotalWorldTime() % 30 == 9) {
-			System.out.println(pos);
-			System.out.println("face: " + face);
-		}
+//		if (worldObj.getTotalWorldTime() % 30 == 9) {
+//			System.out.println(pos);
+//			System.out.println("face: " + face);
+//		}
 		if (worldObj.isRemote) {
 			return;
 		}
@@ -394,10 +394,12 @@ public class TileFurnus extends CrunchTEInventory implements ISidedInventory, IT
 			burning = true;
 			worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos()
 					.getZ()));
+			BlockFurnus.setState(burning, worldObj, pos);
 		} else if (fuel <= 0 && burning) {
 			burning = false;
 			worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos()
 					.getZ()));
+			BlockFurnus.setState(burning, worldObj, pos);
 		}
 		for (int i = 0; i <= speed; i++) {
 			burn(0);

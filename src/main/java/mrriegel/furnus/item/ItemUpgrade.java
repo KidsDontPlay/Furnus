@@ -21,7 +21,6 @@ public class ItemUpgrade extends Item {
 		this.setCreativeTab(CreativeTab.tab1);
 		this.setHasSubtypes(true);
 		this.setUnlocalizedName(Furnus.MODID + ":upgrade");
-		Items.wooden_sword.canItemEditBlocks();
 	}
 
 	// @Override

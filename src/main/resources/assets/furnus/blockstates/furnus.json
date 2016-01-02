@@ -1,0 +1,19 @@
+{
+    "variants" : {
+        "facing=north" : {
+            "model" : "furnus:furnus"
+        }, 
+        "facing=south" : {
+            "model" : "furnus:furnus", 
+            "y" : 180
+        }, 
+        "facing=west" : {
+            "model" : "furnus:furnus", 
+            "y" : 270
+        }, 
+        "facing=east" : {
+            "model" : "furnus:furnus", 
+            "y" : 90
+        }
+    }
+}

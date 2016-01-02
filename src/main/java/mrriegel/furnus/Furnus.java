@@ -5,7 +5,10 @@ import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -48,7 +51,20 @@ public class Furnus {
 				.getMinecraft()
 				.getRenderItem()
 				.getItemModelMesher()
-				.register(ItemUpgrade.upgrade, 0,
-						new ModelResourceLocation(Furnus.MODID + ":" + "upgrade", "inventory"));
+				.register(Item.getItemFromBlock(BlockFurnus.furnus), 0,
+						new ModelResourceLocation(Furnus.MODID + ":" + "furnus", "inventory"));
+		for (int i = 0; i < 7; i++) {
+			ModelBakery.registerItemVariants(ItemUpgrade.upgrade, new ResourceLocation(Furnus.MODID
+					+ ":" + "upgrade_" + i));
+			Minecraft
+					.getMinecraft()
+					.getRenderItem()
+					.getItemModelMesher()
+					.register(
+							ItemUpgrade.upgrade,
+							i,
+							new ModelResourceLocation(Furnus.MODID + ":" + "upgrade_" + i,
+									"inventory"));
+		}
 	}
 }

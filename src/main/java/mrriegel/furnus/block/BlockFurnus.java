@@ -6,6 +6,7 @@ import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -13,6 +14,7 @@ import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
@@ -30,6 +32,7 @@ public class BlockFurnus extends BlockContainer {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing",
 			EnumFacing.Plane.HORIZONTAL);
 	public static final Block furnus = new BlockFurnus();
+	public static final Block furnus_lit = new BlockFurnus();
 
 	public BlockFurnus() {
 		super(Material.rock);
@@ -52,7 +55,6 @@ public class BlockFurnus extends BlockContainer {
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
-
 		return this.getDefaultState().withProperty(FACING, enumfacing);
 	}
 
@@ -66,6 +68,35 @@ public class BlockFurnus extends BlockContainer {
 		return new BlockState(this, new IProperty[] { FACING });
 	}
 
+	public static void setState(boolean active, World worldIn, BlockPos pos) {
+		IBlockState iblockstate = worldIn.getBlockState(pos);
+		TileEntity tileentity = worldIn.getTileEntity(pos);
+		System.out.println("stae: " + BlockFurnus.furnus.getDefaultState());
+		System.out.println("us: "
+				+ BlockFurnus.furnus_lit.getDefaultState().withProperty(FACING,
+						iblockstate.getValue(FACING)));
+		System.out.println("ace: "
+				+ Blocks.furnace.getDefaultState().withProperty(FACING,
+						iblockstate.getValue(FACING)));
+		if (active) {
+			worldIn.setBlockState(
+					pos,
+					BlockFurnus.furnus_lit.getDefaultState().withProperty(FACING,
+							iblockstate.getValue(FACING)), 3);
+		} else {
+			worldIn.setBlockState(
+					pos,
+					BlockFurnus.furnus.getDefaultState().withProperty(FACING,
+							iblockstate.getValue(FACING)), 3);
+		}
+
+		if (tileentity != null) {
+			tileentity.validate();
+			worldIn.setTileEntity(pos, tileentity);
+		}
+	}
+
+	@Override
 	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
 		this.setDefaultFacing(worldIn, pos, state);
 	}
@@ -76,8 +107,7 @@ public class BlockFurnus extends BlockContainer {
 			Block block1 = worldIn.getBlockState(pos.south()).getBlock();
 			Block block2 = worldIn.getBlockState(pos.west()).getBlock();
 			Block block3 = worldIn.getBlockState(pos.east()).getBlock();
-			EnumFacing enumfacing = (EnumFacing) state.getValue(FACING);
-			System.out.println("state: " + state);
+			EnumFacing enumfacing = state.getValue(FACING);
 			TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
 			tile.setFace(enumfacing.toString().substring(0, 1).toUpperCase());
 			if (enumfacing == EnumFacing.NORTH && block.isFullBlock() && !block1.isFullBlock()) {
@@ -98,6 +128,7 @@ public class BlockFurnus extends BlockContainer {
 		}
 	}
 
+	@Override
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX,
 			float hitY, float hitZ, int meta, EntityLivingBase placer) {
 		return this.getDefaultState().withProperty(FACING,
@@ -143,11 +174,9 @@ public class BlockFurnus extends BlockContainer {
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
 		TileFurnus tileentity = (TileFurnus) worldIn.getTileEntity(pos);
-
 		InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
 		worldIn.updateComparatorOutputLevel(pos, this);
 		super.breakBlock(worldIn, pos, state);
-		System.out.println("breako");
 	}
 
 	@Override
@@ -208,6 +237,7 @@ public class BlockFurnus extends BlockContainer {
 
 	public static void init() {
 		GameRegistry.registerBlock(furnus, "furnus");
+		GameRegistry.registerBlock(furnus_lit, "furnus_lit");
 		GameRegistry.registerTileEntity(TileFurnus.class, "tileFurnus");
 	}
 
