@@ -1,6 +1,5 @@
 package mrriegel.furnus.block;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -34,6 +33,7 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 		return inv;
 	}
 
+	@Override
 	public void clear() {
 		inv = new ItemStack[INVSIZE];
 	}

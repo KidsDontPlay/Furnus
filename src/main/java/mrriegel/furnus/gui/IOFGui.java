@@ -79,43 +79,49 @@ public class IOFGui extends GuiScreen {
 			topMode = topMode.next();
 			top.displayString = topMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.TOP, topMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP.toString(),
-					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, topMode.toString()));
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP.toString(), tile
+					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, topMode
+					.toString()));
 			break;
 		case 1:
 			frontMode = frontMode.next();
 			front.displayString = frontMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.FRONT, frontMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.FRONT.toString(),
-					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, frontMode.toString()));
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.FRONT.toString(), tile
+					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, frontMode
+					.toString()));
 			break;
 		case 2:
 			leftMode = leftMode.next();
 			left.displayString = leftMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.LEFT, leftMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.LEFT.toString(),
-					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, leftMode.toString()));
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.LEFT.toString(), tile
+					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, leftMode
+					.toString()));
 			break;
 		case 3:
 			rightMode = rightMode.next();
 			right.displayString = rightMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.RIGHT, rightMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.RIGHT.toString(),
-					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, rightMode.toString()));
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.RIGHT.toString(), tile
+					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, rightMode
+					.toString()));
 			break;
 		case 4:
 			bottomMode = bottomMode.next();
 			bottom.displayString = bottomMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.BOTTOM, bottomMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BOTTOM.toString(),
-					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, bottomMode.toString()));
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BOTTOM.toString(), tile
+					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, bottomMode
+					.toString()));
 			break;
 		case 5:
 			backMode = backMode.next();
 			back.displayString = backMode.toString().substring(0, 1).toUpperCase();
 			getMap(id, tile).put(Direction.BACK, backMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BACK.toString(),
-					tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, backMode.toString()));
+			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BACK.toString(), tile
+					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, backMode
+					.toString()));
 			break;
 		}
 	}
@@ -155,7 +161,8 @@ public class IOFGui extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ()));
+		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.getPos().getX(), tile.getPos()
+				.getY(), tile.getPos().getZ()));
 	}
 
 	class Button extends GuiButton {
@@ -170,8 +177,7 @@ public class IOFGui extends GuiScreen {
 			if (this.visible) {
 				p_146112_1_.getTextureManager().bindTexture(buttonTextures);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.hovered = p_146112_2_ >= this.xPosition
-						&& p_146112_3_ >= this.yPosition
+				this.hovered = p_146112_2_ >= this.xPosition && p_146112_3_ >= this.yPosition
 						&& p_146112_2_ < this.xPosition + this.width
 						&& p_146112_3_ < this.yPosition + this.height;
 				int k = this.getHoverState(this.hovered);

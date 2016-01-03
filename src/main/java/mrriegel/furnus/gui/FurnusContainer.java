@@ -21,12 +21,14 @@ public class FurnusContainer extends Container {
 	EntityPlayer player;
 	int startSlot;
 	int tileSlots;
+	boolean burn;
 
 	public FurnusContainer(InventoryPlayer inventory, TileFurnus tileEntity) {
 		tile = tileEntity;
 		player = inventory.player;
 		initSlots();
 		startSlot = tile.getSlots();
+		burn = tile.isBurning();
 	}
 
 	void initSlots() {
@@ -79,15 +81,16 @@ public class FurnusContainer extends Container {
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		if (startSlot != tile.getSlots()) {
+		if (startSlot != tile.getSlots() || burn != tile.isBurning()) {
 			startSlot = tile.getSlots();
+			burn = tile.isBurning();
 			ItemStack save = null;
 			if (player.inventory.getItemStack() != null) {
 				save = player.inventory.getItemStack().copy();
 				player.inventory.setItemStack(null);
 			}
-			player.openGui(Furnus.instance, 0, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(),
-					tile.getPos().getZ());
+			player.openGui(Furnus.instance, 0, tile.getWorld(), tile.getPos().getX(), tile.getPos()
+					.getY(), tile.getPos().getZ());
 			if (save != null) {
 				player.inventory.setItemStack(save);
 				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);
@@ -166,7 +169,7 @@ public class FurnusContainer extends Container {
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex) {
 		ItemStack itemstack = null;
-		Slot slot = (Slot) this.inventorySlots.get(slotIndex);
+		Slot slot = this.inventorySlots.get(slotIndex);
 
 		if (slot != null && slot.getHasStack()) {
 			ItemStack itemstack1 = slot.getStack();

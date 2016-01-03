@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -20,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -28,12 +30,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockFurnus extends BlockContainer {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing",
 			EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyBool STATE = PropertyBool.create("state");
 	public static final Block furnus = new BlockFurnus();
 
 	public BlockFurnus() {
 		super(Material.rock);
 		this.setHardness(4.0F);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
+				.withProperty(STATE, false));
 		this.setCreativeTab(CreativeTab.tab1);
 		this.setUnlocalizedName(Furnus.MODID + ":" + "furnus");
 	}
@@ -46,59 +50,36 @@ public class BlockFurnus extends BlockContainer {
 
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getFront(meta);
+		EnumFacing enumfacing = EnumFacing.getFront(meta % 6);
 
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
-		return this.getDefaultState().withProperty(FACING, enumfacing);
+		return this.getDefaultState().withProperty(FACING, enumfacing)
+				.withProperty(STATE, meta > 5);
 	}
 
 	@Override
 	public int getMetaFromState(IBlockState state) {
-		return state.getValue(FACING).getIndex();
+		int p = state.getValue(STATE) ? 0 : 6;
+		return state.getValue(FACING).getIndex() + p;
 	}
 
 	@Override
 	protected BlockState createBlockState() {
-		return new BlockState(this, new IProperty[] { FACING });
+		return new BlockState(this, new IProperty[] { FACING, STATE });
 	}
 
-	// public static void setState(boolean active, World worldIn, BlockPos pos)
-	// {
-	// IBlockState iblockstate = worldIn.getBlockState(pos);
-	// TileEntity tileentity = worldIn.getTileEntity(pos);
-	// System.out.println("us: "
-	// + BlockFurnus.furnus_lit.getDefaultState().withProperty(FACING,
-	// iblockstate.getValue(FACING)));
-	// System.out.println("ace: "
-	// + Blocks.furnace.getDefaultState().withProperty(FACING,
-	// iblockstate.getValue(FACING)));
-	// if (active) {
-	// worldIn.setBlockState(
-	// pos,
-	// BlockFurnus.furnus_lit.getDefaultState().withProperty(FACING,
-	// iblockstate.getValue(FACING)), 3);
-	// worldIn.setBlockState(
-	// pos,
-	// BlockFurnus.furnus_lit.getDefaultState().withProperty(FACING,
-	// iblockstate.getValue(FACING)), 3);
-	// } else {
-	// worldIn.setBlockState(
-	// pos,
-	// BlockFurnus.furnus.getDefaultState().withProperty(FACING,
-	// iblockstate.getValue(FACING)), 3);
-	// worldIn.setBlockState(
-	// pos,
-	// BlockFurnus.furnus.getDefaultState().withProperty(FACING,
-	// iblockstate.getValue(FACING)), 3);
-	// }
-	//
-	// if (tileentity != null) {
-	// tileentity.validate();
-	// worldIn.setTileEntity(pos, tileentity);
-	// }
-	// }
+	public void setFurnusState(World world, BlockPos pos, IBlockState state, boolean on) {
+		TileEntity tileentity = world.getTileEntity(pos);
+		world.setBlockState(pos, state.withProperty(STATE, on), 2);
+		if (tileentity != null) {
+			tileentity.validate();
+			world.setTileEntity(pos, tileentity);
+		}
+		world.markBlockForUpdate(pos);
+
+	}
 
 	@Override
 	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
@@ -135,18 +116,21 @@ public class BlockFurnus extends BlockContainer {
 	@Override
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX,
 			float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		return this.getDefaultState().withProperty(FACING,
-				placer.getHorizontalFacing().getOpposite());
+		return this.getDefaultState()
+				.withProperty(FACING, placer.getHorizontalFacing().getOpposite())
+				.withProperty(STATE, false);
 	}
 
 	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state,
 			EntityLivingBase placer, ItemStack stack) {
 		worldIn.setBlockState(pos,
-				state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
+				state.withProperty(FACING, placer.getHorizontalFacing().getOpposite())
+						.withProperty(STATE, false), 2);
 		TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
 		tile.setFace(placer.getHorizontalFacing().getOpposite().toString().substring(0, 1)
 				.toUpperCase());
+		worldIn.markBlockForUpdate(pos);
 
 	}
 
@@ -162,13 +146,10 @@ public class BlockFurnus extends BlockContainer {
 		}
 	}
 
-	// @Override
-	// public int getLightValue(IBlockAccess world, BlockPos pos) {
-	// TileFurnus tile = (TileFurnus) world.getTileEntity(pos);
-	// if (tile == null)
-	// return 0;
-	// return tile.isBurning() ? 13 : 0;
-	// }
+	@Override
+	public int getLightValue(IBlockAccess world, BlockPos pos) {
+		return world.getBlockState(pos).getValue(STATE) ? 13 : 0;
+	}
 
 	@Override
 	public int getRenderType() {
@@ -200,32 +181,32 @@ public class BlockFurnus extends BlockContainer {
 			double d2 = pos.getZ() + 0.5D;
 			double d3 = 0.52D;
 			double d4 = rand.nextDouble() * 0.6D - 0.3D;
-			for (int i = 0; i < 3; i++)
-				switch (enumfacing) {
-				case WEST:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D,
-							0.0D, 0.0D, new int[0]);
-					break;
-				case EAST:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D,
-							0.0D, 0.0D, new int[0]);
-					break;
-				case NORTH:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D,
-							0.0D, 0.0D, new int[0]);
-					break;
-				case SOUTH:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D,
-							0.0D, 0.0D, new int[0]);
-				}
+
+			switch (enumfacing) {
+			case WEST:
+				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4, 0.0D,
+						0.0D, 0.0D, new int[0]);
+				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D, 0.0D,
+						0.0D, new int[0]);
+				break;
+			case EAST:
+				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4, 0.0D,
+						0.0D, 0.0D, new int[0]);
+				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D, 0.0D,
+						0.0D, new int[0]);
+				break;
+			case NORTH:
+				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3, 0.0D,
+						0.0D, 0.0D, new int[0]);
+				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D, 0.0D,
+						0.0D, new int[0]);
+				break;
+			case SOUTH:
+				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3, 0.0D,
+						0.0D, 0.0D, new int[0]);
+				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D, 0.0D,
+						0.0D, new int[0]);
+			}
 		}
 	}
 
