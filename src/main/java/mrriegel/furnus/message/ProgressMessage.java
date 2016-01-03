@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.Map;
 
-import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.AbstractMachine;
 import net.minecraft.client.Minecraft;
 
 import com.google.common.reflect.TypeToken;
@@ -38,8 +38,8 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 	@Override
 	public IMessage onMessage(ProgressMessage message, MessageContext ctx) {
 		try {
-			TileFurnus tile = (TileFurnus) Minecraft.getMinecraft().theWorld.getTileEntity(
-					message.x, message.y, message.z);
+			AbstractMachine tile = (AbstractMachine) Minecraft.getMinecraft().theWorld
+					.getTileEntity(message.x, message.y, message.z);
 			if (tile == null)
 				return null;
 			tile.setProgress(message.progress);

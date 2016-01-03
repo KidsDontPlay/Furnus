@@ -1,6 +1,6 @@
 package mrriegel.furnus.gui;
 
-import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -19,10 +19,10 @@ public class UpgradeSlot extends Slot {
 	@Override
 	public boolean isItemValid(ItemStack p_75214_1_) {
 		return p_75214_1_.getItem() == ItemUpgrade.upgrade
-				&& in(p_75214_1_, getSlotIndex(), (TileFurnus) inventory);
+				&& in(p_75214_1_, getSlotIndex(), (AbstractMachine) inventory);
 	}
 
-	public static boolean in(ItemStack stack, int slot, TileFurnus t) {
+	public static boolean in(ItemStack stack, int slot, AbstractMachine t) {
 		for (int i = 10; i < 15; i++) {
 			if (t.getStackInSlot(i) != null
 					&& t.getStackInSlot(i).getItemDamage() == stack.getItemDamage() && i != slot)
@@ -34,7 +34,7 @@ public class UpgradeSlot extends Slot {
 	@Override
 	public void onSlotChanged() {
 		super.onSlotChanged();
-		TileFurnus t = (TileFurnus) inventory;
+		AbstractMachine t = (AbstractMachine) inventory;
 		t.updateStats(player);
 	}
 }

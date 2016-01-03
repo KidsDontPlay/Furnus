@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrriegel.furnus.Furnus;
-import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
 import net.minecraft.client.Minecraft;
@@ -23,7 +23,7 @@ public class FurnusGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(Furnus.MODID + ":"
 			+ "textures/gui/furnus.png");
 	Button i, o, f, check;
-	TileFurnus tile;
+	AbstractMachine tile;
 
 	public FurnusGUI(Container p_i1072_1_) {
 		super(p_i1072_1_);
