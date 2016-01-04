@@ -3,16 +3,16 @@ package mrriegel.furnus.gui;
 import java.util.Map;
 
 import mrriegel.furnus.Furnus;
-import mrriegel.furnus.block.TileFurnus;
-import mrriegel.furnus.block.TileFurnus.Direction;
-import mrriegel.furnus.block.TileFurnus.Mode;
+import mrriegel.furnus.block.AbstractMachine;
+import mrriegel.furnus.block.AbstractMachine.Direction;
+import mrriegel.furnus.block.AbstractMachine.Mode;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.OpenMessage;
 import mrriegel.furnus.message.PutMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11;
 public class IOFGui extends GuiScreen {
 	private static final ResourceLocation GuiTextures = new ResourceLocation(Furnus.MODID
 			+ ":textures/gui/iof.png");
-	TileFurnus tile;
+	AbstractMachine tile;
 	Button top, front, left, right, bottom, back;
 	int imageWidth = 101;
 	int imageHeight = 101;
@@ -30,7 +30,7 @@ public class IOFGui extends GuiScreen {
 
 	Mode topMode, frontMode, leftMode, rightMode, bottomMode, backMode;
 
-	public IOFGui(TileFurnus tileEntity, int iD) {
+	public IOFGui(AbstractMachine tileEntity, int iD) {
 		tile = tileEntity;
 		if (iD == 1)
 			id = "I";
@@ -126,7 +126,7 @@ public class IOFGui extends GuiScreen {
 		}
 	}
 
-	public static Map<Direction, Mode> getMap(String id, TileFurnus tile) {
+	public static Map<Direction, Mode> getMap(String id, AbstractMachine tile) {
 		if (id.equals("I"))
 			return tile.getInput();
 		if (id.equals("O"))
@@ -181,9 +181,9 @@ public class IOFGui extends GuiScreen {
 						&& p_146112_2_ < this.xPosition + this.width
 						&& p_146112_3_ < this.yPosition + this.height;
 				int k = this.getHoverState(this.hovered);
-				GL11.glEnable(GL11.GL_BLEND);
-				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GlStateManager.enableBlend();
+				GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+				GlStateManager.blendFunc(770, 771);
 				this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46 + k * 20,
 						this.width / 2, this.height);
 				this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition,

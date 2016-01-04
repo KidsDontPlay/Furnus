@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mrriegel.furnus.Furnus;
-import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
@@ -23,7 +23,7 @@ public class FurnusGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(Furnus.MODID + ":"
 			+ "textures/gui/furnus.png");
 	Button i, o, f, check;
-	TileFurnus tile;
+	AbstractMachine tile;
 
 	public FurnusGUI(Container p_i1072_1_) {
 		super(p_i1072_1_);
@@ -115,9 +115,10 @@ public class FurnusGUI extends GuiContainer {
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
-		if (p_146284_1_.id != 0)
+		if (p_146284_1_.id != 0){
+			mc.thePlayer.closeScreen();
 			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorld(), tile.getPos()
-					.getX(), tile.getPos().getY(), tile.getPos().getZ());
+					.getX(), tile.getPos().getY(), tile.getPos().getZ());}
 		else {
 			if (check.displayString.equals("X"))
 				check.displayString = " ";
@@ -195,9 +196,9 @@ public class FurnusGUI extends GuiContainer {
 						&& p_146112_2_ < this.xPosition + this.width
 						&& p_146112_3_ < this.yPosition + this.height;
 				int k = this.getHoverState(this.hovered);
-				GL11.glEnable(GL11.GL_BLEND);
-				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GlStateManager.enableBlend();
+	            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+	            GlStateManager.blendFunc(770, 771);
 				this.drawTexturedModalRect(this.xPosition, this.yPosition, 160 + 16 * k, 90, 16, 16);
 				this.mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
 				int l = 14737632;

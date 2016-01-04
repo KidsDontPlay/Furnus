@@ -25,7 +25,7 @@ group= "mrriegel.furnus" // http://maven.apache.org/guides/mini/guide-naming-con
 archivesBaseName = "Furnus"
 
 minecraft {
-    version = "1.8.9-11.15.0.1669"
+    version = "1.8.9-11.15.0.1683"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.

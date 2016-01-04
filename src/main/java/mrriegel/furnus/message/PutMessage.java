@@ -1,9 +1,9 @@
 package mrriegel.furnus.message;
 
 import io.netty.buffer.ByteBuf;
-import mrriegel.furnus.block.TileFurnus;
-import mrriegel.furnus.block.TileFurnus.Direction;
-import mrriegel.furnus.block.TileFurnus.Mode;
+import mrriegel.furnus.block.AbstractMachine;
+import mrriegel.furnus.block.AbstractMachine.Direction;
+import mrriegel.furnus.block.AbstractMachine.Mode;
 import mrriegel.furnus.gui.IOFGui;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;
@@ -37,7 +37,7 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				TileFurnus tile = (TileFurnus) ctx.getServerHandler().playerEntity.worldObj
+				AbstractMachine tile = (AbstractMachine) ctx.getServerHandler().playerEntity.worldObj
 						.getTileEntity(new BlockPos(message.x, message.y, message.z));
 				IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
 						Mode.valueOf(message.mode));

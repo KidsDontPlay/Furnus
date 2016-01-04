@@ -7,6 +7,7 @@ import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import mrriegel.furnus.message.StackMessage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
