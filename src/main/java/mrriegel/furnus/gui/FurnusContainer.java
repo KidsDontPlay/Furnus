@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import mrriegel.furnus.message.StackMessage;
@@ -86,8 +87,8 @@ public class FurnusContainer extends Container {
 				save = player.inventory.getItemStack().copy();
 				player.inventory.setItemStack(null);
 			}
-			player.openGui(Furnus.instance, 0, tile.getWorldObj(), tile.xCoord, tile.yCoord,
-					tile.zCoord);
+			player.openGui(Furnus.instance, GuiHandler.FURNUS, tile.getWorldObj(), tile.xCoord,
+					tile.yCoord, tile.zCoord);
 			if (save != null) {
 				player.inventory.setItemStack(save);
 				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);

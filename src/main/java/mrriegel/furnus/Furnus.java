@@ -1,9 +1,13 @@
 package mrriegel.furnus;
 
+import java.io.File;
+
 import mrriegel.furnus.block.BlockFurnus;
+import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
+import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -22,10 +26,10 @@ public class Furnus {
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		// File configFile = event.getSuggestedConfigurationFile();
-		// ConfigurationHandler.config = new Configuration(configFile);
-		// ConfigurationHandler.config.load();
-		// ConfigurationHandler.refreshConfig();
+		File configFile = event.getSuggestedConfigurationFile();
+		ConfigurationHandler.config = new Configuration(configFile);
+		ConfigurationHandler.config.load();
+		ConfigurationHandler.refreshConfig();
 		PacketHandler.init();
 	}
 

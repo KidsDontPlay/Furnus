@@ -5,6 +5,7 @@ import java.util.List;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
+import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
 import net.minecraft.client.Minecraft;
@@ -89,20 +90,18 @@ public class FurnusGUI extends GuiContainer {
 		int j = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
 			List<String> list = new ArrayList<String>();
-			double speed = (1.d + tile.getSpeed() * 1.d);
+			double speed = (1.d + tile.getSpeed() * 1.d * ConfigurationHandler.speedMulti);
 			list.add(StatCollector.translateToLocal("gui.furnus.speed") + ": "
 					+ String.format("%.2f", speed) + "x");
-			int down = 100;
-			down /= (-1d / 13d) * tile.getSpeed() + 1d;
-			down /= (-1d / 10d) * tile.getBonus() + 1d;
-			down *= (-1d / 16d) * tile.getEffi() + 1d;
-			double effi = down / 100d;
+			double effi = (tile.getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.)
+					+ tile.getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
+					/ (tile.getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
 			list.add(StatCollector.translateToLocal("gui.furnus.effi") + ": "
 					+ String.format("%.2f", effi) + "x");
-			int bonus = (tile.getBonus() * 10);
+			int bonus = (tile.getBonus() * (int) (ConfigurationHandler.bonusMulti * 100.));
 			list.add(StatCollector.translateToLocal("gui.furnus.bonus") + ": "
 					+ String.format("%d", bonus) + "%");
-			double xp = (1.d + tile.getXp() * .25);
+			double xp = (1.d + tile.getXp() * ConfigurationHandler.xpMulti);
 			list.add(StatCollector.translateToLocal("gui.furnus.xp") + ": "
 					+ String.format("%.2f", xp) + "x");
 			GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
@@ -115,10 +114,11 @@ public class FurnusGUI extends GuiContainer {
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
-		if (p_146284_1_.id != 0)
+		if (p_146284_1_.id != 0) {
+			mc.thePlayer.closeScreen();
 			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord,
 					tile.yCoord, tile.zCoord);
-		else {
+		} else {
 			if (check.displayString.equals("X"))
 				check.displayString = " ";
 			else

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mrriegel.furnus.InventoryHelper;
+import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,9 +32,9 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	protected boolean burning, eco, inout, split;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel;
-	Map<Direction, Mode> input, output, fuelput;
-	Map<Integer, Integer> progress;
-	String face;
+	protected Map<Direction, Mode> input, output, fuelput;
+	protected Map<Integer, Integer> progress;
+	protected String face;
 
 	public AbstractMachine() {
 		super(15);
@@ -384,7 +385,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			burning = false;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
-		for (int i = 0; i <= speed; i++) {
+		for (int i = 0; i <= speed * ConfigurationHandler.speedMulti; i++) {
 			burn(0);
 			if (slots >= 2)
 				burn(2);
@@ -395,7 +396,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	protected void fuelUp(int slot) {
-		if (fuel >= 51 || getStackInSlot(9) == null
+		if (fuel >= 1 || getStackInSlot(9) == null
 				|| !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canProcess(slot))
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
@@ -429,11 +430,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progress.put(slot, 0);
 		}
 		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
-			int down = 100;
-			down /= (-1d / 13d) * speed + 1d;
-			down /= (-1d / 10d) * bonus + 1d;
-			down *= (-1d / 16d) * effi + 1d;
-			fuel -= down;
+			double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus()
+					* (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
+					/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+			fuel -= effi * 100;
 		}
 
 		sendMessage();

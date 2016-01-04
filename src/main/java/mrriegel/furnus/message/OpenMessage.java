@@ -2,6 +2,7 @@ package mrriegel.furnus.message;
 
 import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.handler.GuiHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -21,7 +22,7 @@ public class OpenMessage implements IMessage, IMessageHandler<OpenMessage, IMess
 
 	@Override
 	public IMessage onMessage(OpenMessage message, MessageContext ctx) {
-		ctx.getServerHandler().playerEntity.openGui(Furnus.instance, 0,
+		ctx.getServerHandler().playerEntity.openGui(Furnus.instance, GuiHandler.FURNUS,
 				ctx.getServerHandler().playerEntity.worldObj, message.x, message.y, message.z);
 		return null;
 	}

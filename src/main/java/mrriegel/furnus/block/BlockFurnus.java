@@ -4,6 +4,7 @@ import java.util.Random;
 
 import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.handler.GuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -83,8 +84,6 @@ public class BlockFurnus extends BlockContainer {
 			ItemStack stack) {
 		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
 		int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
-		// if (stack.getTagCompound() != null)
-		// tile.readFromNBT(stack.getTagCompound());
 		if (l == 0) {
 			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
 			tile.setFace("N");
@@ -101,6 +100,7 @@ public class BlockFurnus extends BlockContainer {
 			world.setBlockMetadataWithNotify(x, y, z, 4, 2);
 			tile.setFace("W");
 		}
+		world.markBlockForUpdate(x, y, z);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class BlockFurnus extends BlockContainer {
 		if (world.isRemote) {
 			return true;
 		} else {
-			player.openGui(Furnus.instance, 0, world, x, y, z);
+			player.openGui(Furnus.instance, GuiHandler.FURNUS, world, x, y, z);
 			return true;
 		}
 	}
@@ -135,35 +135,6 @@ public class BlockFurnus extends BlockContainer {
 		super.breakBlock(world, x, y, z, block, meta);
 	}
 
-	// @Override
-	// public void onBlockHarvested(World world, int x, int y, int z, int meta,
-	// EntityPlayer player) {
-	// if (!player.capabilities.isCreativeMode) {
-	// this.dropBlockAsItem(world, x, y, z, meta, 0);
-	// }
-	// }
-
-	// @Override
-	// public ArrayList<ItemStack> getDrops(World world, int x, int y, int z,
-	// int metadata, int fortune) {
-	// ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
-	//
-	// TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
-	// if (tile != null) {
-	// ItemStack stack = new ItemStack(this.getItemDropped(metadata, world.rand,
-	// fortune), 1,
-	// this.damageDropped(metadata));
-	//
-	// if (stack.getTagCompound() == null) {
-	// stack.setTagCompound(new NBTTagCompound());
-	// }
-	// tile.writeToNBT(stack.getTagCompound());
-	//
-	// drops.add(stack);
-	// }
-	// return drops;
-	// }
-
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
 		return new TileFurnus();
@@ -180,20 +151,20 @@ public class BlockFurnus extends BlockContainer {
 			float f2 = z + 0.5F;
 			float f3 = 0.52F;
 			float f4 = rand.nextFloat() * 0.6F - 0.3F;
-
-			if (l == 4) {
-				world.spawnParticle("smoke", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-				world.spawnParticle("flame", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-			} else if (l == 5) {
-				world.spawnParticle("smoke", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-				world.spawnParticle("flame", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-			} else if (l == 2) {
-				world.spawnParticle("smoke", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
-				world.spawnParticle("flame", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
-			} else if (l == 3) {
-				world.spawnParticle("smoke", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
-				world.spawnParticle("flame", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
-			}
+			for (int i = 0; i < tile.getSpeed() + 1; i++)
+				if (l == 4) {
+					world.spawnParticle("smoke", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+					world.spawnParticle("flame", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+				} else if (l == 5) {
+					world.spawnParticle("smoke", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+					world.spawnParticle("flame", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+				} else if (l == 2) {
+					world.spawnParticle("smoke", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
+					world.spawnParticle("flame", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
+				} else if (l == 3) {
+					world.spawnParticle("smoke", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
+					world.spawnParticle("flame", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
+				}
 		}
 	}
 

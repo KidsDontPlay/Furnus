@@ -1,5 +1,6 @@
 package mrriegel.furnus.gui;
 
+import mrriegel.furnus.handler.ConfigurationHandler;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -55,7 +56,8 @@ public class OutputSlot extends Slot {
 			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : FurnaceRecipes.smelting()
 					.func_151398_b(p_75208_1_)
 					+ FurnaceRecipes.smelting().func_151398_b(p_75208_1_)
-					* ((FurnusContainer) thePlayer.openContainer).tile.getXp() * .25f;
+					* ((FurnusContainer) thePlayer.openContainer).tile.getXp()
+					* (float) ConfigurationHandler.xpMulti;
 			int j;
 
 			if (f == 0.0F) {
