@@ -5,6 +5,8 @@ import java.util.List;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
+import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
@@ -20,15 +22,18 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-public class FurnusGUI extends GuiContainer {
-	private static final ResourceLocation texture = new ResourceLocation(Furnus.MODID + ":"
-			+ "textures/gui/furnus.png");
+public class MachineGUI extends GuiContainer {
+	private static ResourceLocation texture;
 	Button i, o, f, check;
 	AbstractMachine tile;
 
-	public FurnusGUI(Container p_i1072_1_) {
+	public MachineGUI(Container p_i1072_1_) {
 		super(p_i1072_1_);
-		tile = ((FurnusContainer) inventorySlots).getTile();
+		tile = ((MachineContainer) inventorySlots).getTile();
+		if (tile instanceof TileFurnus)
+			texture = new ResourceLocation(Furnus.MODID + ":" + "textures/gui/furnus.png");
+		else if (tile instanceof TilePulvus)
+			texture = new ResourceLocation(Furnus.MODID + ":" + "textures/gui/pulvus.png");
 		this.ySize = 213;
 		this.xSize = 176;
 	}
@@ -114,11 +119,7 @@ public class FurnusGUI extends GuiContainer {
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
-		if (p_146284_1_.id != 0) {
-			mc.thePlayer.closeScreen();
-			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorld(), tile.getPos()
-					.getX(), tile.getPos().getY(), tile.getPos().getZ());
-		} else {
+		if (p_146284_1_.id == 0) {
 			if (check.displayString.equals("X"))
 				check.displayString = " ";
 			else
@@ -126,6 +127,10 @@ public class FurnusGUI extends GuiContainer {
 			boolean chek = check.displayString.equals("X");
 			tile.setSplit(chek);
 			PacketHandler.INSTANCE.sendToServer(new CheckMessage(chek));
+		} else {
+			mc.thePlayer.closeScreen();
+			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorld(), tile.getPos()
+					.getX(), tile.getPos().getY(), tile.getPos().getZ());
 		}
 	}
 

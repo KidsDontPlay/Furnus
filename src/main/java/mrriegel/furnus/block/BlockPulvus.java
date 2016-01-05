@@ -27,18 +27,18 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockFurnus extends BlockContainer {
+public class BlockPulvus extends BlockContainer {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing",
 			EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool STATE = PropertyBool.create("state");
 
-	public BlockFurnus() {
+	public BlockPulvus() {
 		super(Material.rock);
 		this.setHardness(4.0F);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
 				.withProperty(STATE, false));
 		this.setCreativeTab(CreativeTab.tab1);
-		this.setUnlocalizedName(Furnus.MODID + ":" + "furnus");
+		this.setUnlocalizedName(Furnus.MODID + ":" + "pulvus");
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class BlockFurnus extends BlockContainer {
 		return new BlockState(this, new IProperty[] { FACING, STATE });
 	}
 
-	public void setFurnusState(World world, BlockPos pos, IBlockState state, boolean on) {
+	public void setPulvusState(World world, BlockPos pos, IBlockState state, boolean on) {
 		TileEntity tileentity = world.getTileEntity(pos);
 		world.setBlockState(pos, state.withProperty(STATE, on), 2);
 		if (tileentity != null) {
@@ -92,7 +92,7 @@ public class BlockFurnus extends BlockContainer {
 			Block block2 = worldIn.getBlockState(pos.west()).getBlock();
 			Block block3 = worldIn.getBlockState(pos.east()).getBlock();
 			EnumFacing enumfacing = state.getValue(FACING);
-			TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
+			TilePulvus tile = (TilePulvus) worldIn.getTileEntity(pos);
 			tile.setFace(enumfacing.toString().substring(0, 1).toUpperCase());
 			if (enumfacing == EnumFacing.NORTH && block.isFullBlock() && !block1.isFullBlock()) {
 				enumfacing = EnumFacing.SOUTH;
@@ -126,7 +126,7 @@ public class BlockFurnus extends BlockContainer {
 		worldIn.setBlockState(pos,
 				state.withProperty(FACING, placer.getHorizontalFacing().getOpposite())
 						.withProperty(STATE, false), 2);
-		TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
+		TilePulvus tile = (TilePulvus) worldIn.getTileEntity(pos);
 		tile.setFace(placer.getHorizontalFacing().getOpposite().toString().substring(0, 1)
 				.toUpperCase());
 		worldIn.markBlockForUpdate(pos);
@@ -136,11 +136,11 @@ public class BlockFurnus extends BlockContainer {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
 			EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
-		TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
+		TilePulvus tile = (TilePulvus) worldIn.getTileEntity(pos);
 		if (worldIn.isRemote) {
 			return true;
 		} else {
-			playerIn.openGui(Furnus.instance, GuiHandler.FURNUS, worldIn, pos.getX(), pos.getY(),
+			playerIn.openGui(Furnus.instance, GuiHandler.PULVUS, worldIn, pos.getX(), pos.getY(),
 					pos.getZ());
 			return true;
 		}
@@ -158,7 +158,7 @@ public class BlockFurnus extends BlockContainer {
 
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		TileFurnus tileentity = (TileFurnus) worldIn.getTileEntity(pos);
+		TilePulvus tileentity = (TilePulvus) worldIn.getTileEntity(pos);
 		InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
 		worldIn.updateComparatorOutputLevel(pos, this);
 		super.breakBlock(worldIn, pos, state);
@@ -166,14 +166,14 @@ public class BlockFurnus extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
-		return new TileFurnus();
+		return new TilePulvus();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("incomplete-switch")
 	public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-		TileFurnus tile = (TileFurnus) worldIn.getTileEntity(pos);
+		TilePulvus tile = (TilePulvus) worldIn.getTileEntity(pos);
 		if (tile.isBurning()) {
 			EnumFacing enumfacing = state.getValue(FACING);
 			double d0 = pos.getX() + 0.5D;

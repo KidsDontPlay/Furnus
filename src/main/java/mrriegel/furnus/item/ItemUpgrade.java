@@ -10,7 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -22,24 +21,6 @@ public class ItemUpgrade extends Item {
 		this.setHasSubtypes(true);
 		this.setUnlocalizedName(Furnus.MODID + ":upgrade");
 	}
-
-	// @Override
-	// @SideOnly(Side.CLIENT)
-	// public void registerIcons(IIconRegister reg) {
-	// icons = new IIcon[7];
-	// for (int i = 0; i < 7; i++) {
-	// this.icons[i] = reg.registerIcon(Furnus.MODID + ":upgrade_" + i);
-	// }
-	// }
-	//
-	// @Override
-	// @SideOnly(Side.CLIENT)
-	// public IIcon getIconFromDamage(int meta) {
-	// if (meta > 6)
-	// meta = 0;
-	//
-	// return this.icons[meta];
-	// }
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -82,12 +63,6 @@ public class ItemUpgrade extends Item {
 			return 1;
 		}
 		return -1;
-	}
-
-	public static final Item upgrade = new ItemUpgrade();
-
-	public static void init() {
-		GameRegistry.registerItem(upgrade, "upgrade");
 	}
 
 }

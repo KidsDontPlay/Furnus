@@ -6,6 +6,9 @@ import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.AbstractMachine.Direction;
 import mrriegel.furnus.block.AbstractMachine.Mode;
+import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TilePulvus;
+import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.OpenMessage;
 import mrriegel.furnus.message.PutMessage;
@@ -161,8 +164,10 @@ public class IOFGui extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
+		int id = tile instanceof TileFurnus ? GuiHandler.FURNUS
+				: tile instanceof TilePulvus ? GuiHandler.PULVUS : -1;
 		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.getPos().getX(), tile.getPos()
-				.getY(), tile.getPos().getZ()));
+				.getY(), tile.getPos().getZ(), id));
 	}
 
 	class Button extends GuiButton {

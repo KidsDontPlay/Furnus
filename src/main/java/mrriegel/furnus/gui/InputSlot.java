@@ -1,5 +1,8 @@
 package mrriegel.furnus.gui;
 
+import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TilePulvus;
+import mrriegel.furnus.handler.CrunchHandler;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -13,6 +16,10 @@ public class InputSlot extends Slot {
 
 	@Override
 	public boolean isItemValid(ItemStack p_75214_1_) {
-		return FurnaceRecipes.instance().getSmeltingResult(p_75214_1_) != null;
+		if (inventory instanceof TileFurnus)
+			return FurnaceRecipes.instance().getSmeltingResult(p_75214_1_) != null;
+		if (inventory instanceof TilePulvus)
+			return CrunchHandler.instance().getResult(p_75214_1_) != null;
+		return false;
 	}
 }

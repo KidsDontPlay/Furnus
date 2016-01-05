@@ -1,7 +1,7 @@
 package mrriegel.furnus.message;
 
 import io.netty.buffer.ByteBuf;
-import mrriegel.furnus.gui.FurnusContainer;
+import mrriegel.furnus.gui.MachineContainer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -24,7 +24,7 @@ public class CheckMessage implements IMessage, IMessageHandler<CheckMessage, IMe
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				((FurnusContainer) ctx.getServerHandler().playerEntity.openContainer).getTile()
+				((MachineContainer) ctx.getServerHandler().playerEntity.openContainer).getTile()
 						.setSplit(message.split);
 			}
 		});
