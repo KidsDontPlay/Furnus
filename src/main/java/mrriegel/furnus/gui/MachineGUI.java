@@ -5,6 +5,8 @@ import java.util.List;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
+import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
@@ -21,14 +23,18 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class MachineGUI extends GuiContainer {
-	private static final ResourceLocation texture = new ResourceLocation(Furnus.MODID + ":"
-			+ "textures/gui/furnus.png");
+	private static ResourceLocation texture;
 	Button i, o, f, check;
 	AbstractMachine tile;
 
 	public MachineGUI(Container p_i1072_1_) {
 		super(p_i1072_1_);
 		tile = ((MachineContainer) inventorySlots).getTile();
+		tile = ((MachineContainer) inventorySlots).getTile();
+		if (tile instanceof TileFurnus)
+			texture = new ResourceLocation(Furnus.MODID + ":" + "textures/gui/furnus.png");
+		else if (tile instanceof TilePulvus)
+			texture = new ResourceLocation(Furnus.MODID + ":" + "textures/gui/pulvus.png");
 		this.ySize = 213;
 		this.xSize = 176;
 	}
