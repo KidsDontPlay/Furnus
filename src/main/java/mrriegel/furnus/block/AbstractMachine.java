@@ -382,15 +382,22 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		move();
 		if (fuel > 0 && !burning) {
 			burning = true;
+			if (this instanceof TileFurnus)
+				((BlockFurnus) getBlockType()).setFurnusState(worldObj, getPos(),
+						worldObj.getBlockState(getPos()), burning);
+			else if (this instanceof TilePulvus)
+				((BlockPulvus) getBlockType()).setPulvusState(worldObj, getPos(),
+						worldObj.getBlockState(getPos()), burning);
 		} else if (fuel <= 0 && burning) {
 			burning = false;
+			if (this instanceof TileFurnus)
+				((BlockFurnus) getBlockType()).setFurnusState(worldObj, getPos(),
+						worldObj.getBlockState(getPos()), burning);
+			else if (this instanceof TilePulvus)
+				((BlockPulvus) getBlockType()).setPulvusState(worldObj, getPos(),
+						worldObj.getBlockState(getPos()), burning);
 		}
-		if (this instanceof TileFurnus)
-			((BlockFurnus) getBlockType()).setFurnusState(worldObj, getPos(),
-					worldObj.getBlockState(getPos()), burning);
-		else if (this instanceof TilePulvus)
-			((BlockPulvus) getBlockType()).setPulvusState(worldObj, getPos(),
-					worldObj.getBlockState(getPos()), burning);
+
 		for (int i = 0; i <= speed * ConfigurationHandler.speedMulti; i++) {
 			burn(0);
 			if (slots >= 2)
