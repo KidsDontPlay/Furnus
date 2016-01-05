@@ -24,32 +24,32 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockFurnus extends BlockContainer {
+public class BlockPulvus extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	private IIcon top, side, front, front_lit, bottom;
 
-	public BlockFurnus() {
+	public BlockPulvus() {
 		super(Material.rock);
 		this.setHardness(4.0F);
 		this.setCreativeTab(CreativeTab.tab1);
-		this.setBlockName(Furnus.MODID + ":" + "furnus");
+		this.setBlockName(Furnus.MODID + ":" + "pulvus");
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister reg) {
-		top = reg.registerIcon(Furnus.MODID + ":furnus_top");
-		side = reg.registerIcon(Furnus.MODID + ":furnus_side");
-		front = reg.registerIcon(Furnus.MODID + ":furnus_front");
-		front_lit = reg.registerIcon(Furnus.MODID + ":furnus_front_lit");
-		bottom = reg.registerIcon(Furnus.MODID + ":furnus_bottom");
+		top = reg.registerIcon(Furnus.MODID + ":pulvus_top");
+		side = reg.registerIcon(Furnus.MODID + ":pulvus_side");
+		front = reg.registerIcon(Furnus.MODID + ":pulvus_front");
+		front_lit = reg.registerIcon(Furnus.MODID + ":pulvus_front_lit");
+		bottom = reg.registerIcon(Furnus.MODID + ":pulvus_bottom");
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
 		int meta = world.getBlockMetadata(x, y, z);
-		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+		TilePulvus tile = (TilePulvus) world.getTileEntity(x, y, z);
 		IIcon f = tile.isBurning() ? front_lit : front;
 		if (side == 3 && meta == 0)
 			return f;
@@ -79,7 +79,7 @@ public class BlockFurnus extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player,
 			ItemStack stack) {
-		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+		TilePulvus tile = (TilePulvus) world.getTileEntity(x, y, z);
 		int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		if (l == 0) {
 			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
@@ -103,24 +103,24 @@ public class BlockFurnus extends BlockContainer {
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player,
 			int side, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+		TilePulvus tile = (TilePulvus) world.getTileEntity(x, y, z);
 		if (world.isRemote) {
 			return true;
 		} else {
-			player.openGui(Furnus.instance, GuiHandler.FURNUS, world, x, y, z);
+			player.openGui(Furnus.instance, GuiHandler.PULVUS, world, x, y, z);
 			return true;
 		}
 	}
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
-		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+		TilePulvus tile = (TilePulvus) world.getTileEntity(x, y, z);
 		return tile.isBurning() ? 13 : 0;
 	}
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+		TilePulvus tile = (TilePulvus) world.getTileEntity(x, y, z);
 		for (ItemStack s : tile.getInv()) {
 			if (s != null && !world.isRemote) {
 				EntityItem ei = new EntityItem(world, x + 0.5d, y + 1, z + 0.5d, s.copy());
@@ -134,13 +134,13 @@ public class BlockFurnus extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World p_149915_1_, int p_149915_2_) {
-		return new TileFurnus();
+		return new TilePulvus();
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
-		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+		TilePulvus tile = (TilePulvus) world.getTileEntity(x, y, z);
 		if (tile.isBurning()) {
 			int l = world.getBlockMetadata(x, y, z);
 			float f = x + 0.5F;

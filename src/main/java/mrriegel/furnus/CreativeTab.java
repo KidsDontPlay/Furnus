@@ -1,6 +1,6 @@
 package mrriegel.furnus;
 
-import mrriegel.furnus.block.BlockFurnus;
+import mrriegel.furnus.block.ModBlocks;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
@@ -9,7 +9,7 @@ public class CreativeTab {
 
 		@Override
 		public Item getTabIconItem() {
-			return Item.getItemFromBlock(BlockFurnus.furnus);
+			return Item.getItemFromBlock(ModBlocks.furnus);
 		}
 
 		@Override

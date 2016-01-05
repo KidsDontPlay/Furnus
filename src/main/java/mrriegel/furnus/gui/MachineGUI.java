@@ -20,15 +20,15 @@ import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-public class FurnusGUI extends GuiContainer {
+public class MachineGUI extends GuiContainer {
 	private static final ResourceLocation texture = new ResourceLocation(Furnus.MODID + ":"
 			+ "textures/gui/furnus.png");
 	Button i, o, f, check;
 	AbstractMachine tile;
 
-	public FurnusGUI(Container p_i1072_1_) {
+	public MachineGUI(Container p_i1072_1_) {
 		super(p_i1072_1_);
-		tile = ((FurnusContainer) inventorySlots).getTile();
+		tile = ((MachineContainer) inventorySlots).getTile();
 		this.ySize = 213;
 		this.xSize = 176;
 	}
@@ -114,11 +114,7 @@ public class FurnusGUI extends GuiContainer {
 
 	@Override
 	protected void actionPerformed(GuiButton p_146284_1_) {
-		if (p_146284_1_.id != 0) {
-			mc.thePlayer.closeScreen();
-			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord,
-					tile.yCoord, tile.zCoord);
-		} else {
+		if (p_146284_1_.id == 0) {
 			if (check.displayString.equals("X"))
 				check.displayString = " ";
 			else
@@ -126,6 +122,10 @@ public class FurnusGUI extends GuiContainer {
 			boolean chek = check.displayString.equals("X");
 			tile.setSplit(chek);
 			PacketHandler.INSTANCE.sendToServer(new CheckMessage(chek));
+		} else {
+			mc.thePlayer.closeScreen();
+			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord,
+					tile.yCoord, tile.zCoord);
 		}
 	}
 

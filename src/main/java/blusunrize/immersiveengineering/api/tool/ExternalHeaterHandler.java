@@ -79,7 +79,7 @@ public class ExternalHeaterHandler {
 	 * @return a HeatableAdapter for the given TileEntity class
 	 */
 	public static HeatableAdapter getHeatableAdapter(Class<? extends TileEntity> c) {
-		HeatableAdapter adapter = (HeatableAdapter) adapterMap.get(c);
+		HeatableAdapter adapter = adapterMap.get(c);
 		if (adapter == null && c != TileEntity.class && c.getSuperclass() != TileEntity.class) {
 			adapter = getHeatableAdapter((Class<? extends TileEntity>) c.getSuperclass());
 			adapterMap.put(c, adapter);

@@ -5,15 +5,14 @@ import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.item.ModItems;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 
-public class TileFurnus extends AbstractMachine {
+public class TilePulvus extends AbstractMachine {
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 2)
-			return FurnaceRecipes.smelting().getSmeltingResult(stack) != null;
+			return CrunchHandler.instance().getResult(stack) != null;
 		if (slot == 9)
 			return TileEntityFurnace.isItemFuel(stack);
 		if (slot >= 10)
@@ -24,7 +23,7 @@ public class TileFurnus extends AbstractMachine {
 	@Override
 	protected void processItem(int slot) {
 		if (this.canProcess(slot)) {
-			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(getStackInSlot(slot));
+			ItemStack itemstack = CrunchHandler.instance().getResult(getStackInSlot(slot));
 
 			if (getStackInSlot(slot + 3) == null) {
 				setInventorySlotContents(slot + 3, itemstack.copy());
@@ -57,7 +56,7 @@ public class TileFurnus extends AbstractMachine {
 		if (getStackInSlot(slot) == null) {
 			return false;
 		} else {
-			ItemStack itemstack = FurnaceRecipes.smelting().getSmeltingResult(getStackInSlot(slot));
+			ItemStack itemstack = CrunchHandler.instance().getResult(getStackInSlot(slot));
 			if (itemstack == null)
 				return false;
 			if (getStackInSlot(slot + 3) == null)
@@ -73,9 +72,8 @@ public class TileFurnus extends AbstractMachine {
 	@Override
 	protected boolean fit(ItemStack stack, int slot) {
 		return getStackInSlot(slot + 3) == null
-				|| (FurnaceRecipes.smelting().getSmeltingResult(stack)
-						.isItemEqual(getStackInSlot(slot + 3)) && getStackInSlot(slot + 3).stackSize
-						+ FurnaceRecipes.smelting().getSmeltingResult(stack).stackSize <= getStackInSlot(
+				|| (CrunchHandler.instance().getResult(stack).isItemEqual(getStackInSlot(slot + 3)) && getStackInSlot(slot + 3).stackSize
+						+ CrunchHandler.instance().getResult(stack).stackSize <= getStackInSlot(
 							slot + 3).getMaxStackSize());
 	}
 

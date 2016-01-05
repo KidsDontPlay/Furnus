@@ -3,10 +3,13 @@ package mrriegel.furnus.gui;
 import java.util.ArrayList;
 
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TilePulvus;
+import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
-import mrriegel.furnus.item.ItemUpgrade;
+import mrriegel.furnus.item.ModItems;
 import mrriegel.furnus.message.StackMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -17,13 +20,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 
-public class FurnusContainer extends Container {
-	TileFurnus tile;
+public class MachineContainer extends Container {
+	AbstractMachine tile;
 	EntityPlayer player;
 	int startSlot;
 	int tileSlots;
 
-	public FurnusContainer(InventoryPlayer inventory, TileFurnus tileEntity) {
+	public MachineContainer(InventoryPlayer inventory, AbstractMachine tileEntity) {
 		tile = tileEntity;
 		player = inventory.player;
 		initSlots();
@@ -87,8 +90,10 @@ public class FurnusContainer extends Container {
 				save = player.inventory.getItemStack().copy();
 				player.inventory.setItemStack(null);
 			}
-			player.openGui(Furnus.instance, GuiHandler.FURNUS, tile.getWorldObj(), tile.xCoord,
-					tile.yCoord, tile.zCoord);
+			Integer guiID = tile instanceof TileFurnus ? GuiHandler.FURNUS
+					: tile instanceof TilePulvus ? GuiHandler.PULVUS : null;
+			player.openGui(Furnus.instance, guiID, tile.getWorldObj(), tile.xCoord, tile.yCoord,
+					tile.zCoord);
 			if (save != null) {
 				player.inventory.setItemStack(save);
 				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);
@@ -101,7 +106,7 @@ public class FurnusContainer extends Container {
 		return true;
 	}
 
-	public TileFurnus getTile() {
+	public AbstractMachine getTile() {
 		return tile;
 	}
 
@@ -180,7 +185,7 @@ public class FurnusContainer extends Container {
 				slot.onSlotChange(itemstack1, itemstack);
 			} else {
 				boolean merged = false;
-				if (itemstack1.getItem() == ItemUpgrade.upgrade) {
+				if (itemstack1.getItem() == ModItems.upgrade) {
 					if (getSlotWithUpgrade(itemstack1.getItemDamage()) == -1) {
 						if (this.mergeItemStack(itemstack1, getUpgradeSlots()[0],
 								getUpgradeSlots()[getUpgradeSlots().length - 1] + 1, false))
@@ -198,7 +203,11 @@ public class FurnusContainer extends Container {
 						merged = true;
 					}
 				}
-				if (!merged && FurnaceRecipes.smelting().getSmeltingResult(itemstack1) != null) {
+				boolean canProcess = tile instanceof TileFurnus ? FurnaceRecipes.smelting()
+						.getSmeltingResult(itemstack1) != null
+						: tile instanceof TilePulvus ? CrunchHandler.instance().getResult(
+								itemstack1) != null : false;
+				if (!merged && canProcess) {
 					for (int i = 0; i < getInputSlots().length; i++)
 						if (this.mergeItemStack(itemstack1, getInputSlots()[i],
 								getInputSlots()[i] + 1, false)) {

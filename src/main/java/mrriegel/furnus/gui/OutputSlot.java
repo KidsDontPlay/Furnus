@@ -1,6 +1,9 @@
 package mrriegel.furnus.gui;
 
+import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigurationHandler;
+import mrriegel.furnus.handler.CrunchHandler;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -53,10 +56,11 @@ public class OutputSlot extends Slot {
 		p_75208_1_.onCrafting(this.thePlayer.worldObj, this.thePlayer, this.field_75228_b);
 		if (!this.thePlayer.worldObj.isRemote) {
 			int i = this.field_75228_b;
-			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : FurnaceRecipes.smelting()
-					.func_151398_b(p_75208_1_)
-					+ FurnaceRecipes.smelting().func_151398_b(p_75208_1_)
-					* ((FurnusContainer) thePlayer.openContainer).tile.getXp()
+			float m = inventory instanceof TileFurnus ? FurnaceRecipes.smelting().func_151398_b(
+					p_75208_1_) : inventory instanceof TilePulvus ? CrunchHandler.instance()
+					.getExperience(p_75208_1_) : 0f;
+			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : m + m
+					* ((MachineContainer) thePlayer.openContainer).tile.getXp()
 					* (float) ConfigurationHandler.xpMulti;
 			int j;
 
@@ -80,8 +84,8 @@ public class OutputSlot extends Slot {
 		}
 
 		this.field_75228_b = 0;
-
-		FMLCommonHandler.instance().firePlayerSmeltedEvent(thePlayer, p_75208_1_);
+		if (inventory instanceof TileFurnus)
+			FMLCommonHandler.instance().firePlayerSmeltedEvent(thePlayer, p_75208_1_);
 		if (p_75208_1_.getItem() == Items.iron_ingot) {
 			this.thePlayer.addStat(AchievementList.acquireIron, 1);
 		}

@@ -1,7 +1,7 @@
 package mrriegel.furnus.gui;
 
 import mrriegel.furnus.block.AbstractMachine;
-import mrriegel.furnus.item.ItemUpgrade;
+import mrriegel.furnus.item.ModItems;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -10,15 +10,15 @@ import net.minecraft.item.ItemStack;
 public class UpgradeSlot extends Slot {
 	EntityPlayer player;
 
-	public UpgradeSlot(FurnusContainer furnusContainer, EntityPlayer player, IInventory p_i1824_1_,
-			int p_i1824_2_, int p_i1824_3_, int p_i1824_4_) {
+	public UpgradeSlot(MachineContainer furnusContainer, EntityPlayer player,
+			IInventory p_i1824_1_, int p_i1824_2_, int p_i1824_3_, int p_i1824_4_) {
 		super(p_i1824_1_, p_i1824_2_, p_i1824_3_, p_i1824_4_);
 		this.player = player;
 	}
 
 	@Override
 	public boolean isItemValid(ItemStack p_75214_1_) {
-		return p_75214_1_.getItem() == ItemUpgrade.upgrade
+		return p_75214_1_.getItem() == ModItems.upgrade
 				&& in(p_75214_1_, getSlotIndex(), (AbstractMachine) inventory);
 	}
 

@@ -64,6 +64,22 @@ public class InventoryHelper {
 			ItemStack in = inventory.getStackInSlot(i);
 			if (!inventory.isItemValidForSlot(i, stack))
 				continue;
+			if (in != null && stack.isItemEqual(in) && ItemStack.areItemStackTagsEqual(stack, in)) {
+				int space = max - in.stackSize;
+				int add = Math.min(space, stack.stackSize);
+				if (add > 0) {
+					if (!simulate)
+						in.stackSize += add;
+					left -= add;
+					if (left <= 0)
+						return 0;
+				}
+			}
+		}
+		for (int i = 0; i < inventory.getSizeInventory(); i++) {
+			ItemStack in = inventory.getStackInSlot(i);
+			if (!inventory.isItemValidForSlot(i, stack))
+				continue;
 			if (in == null) {
 				int add = Math.min(max, left);
 				if (!simulate)
@@ -71,18 +87,6 @@ public class InventoryHelper {
 				left -= add;
 				if (left <= 0)
 					return 0;
-			} else {
-				if (stack.isItemEqual(in) && ItemStack.areItemStackTagsEqual(stack, in)) {
-					int space = max - in.stackSize;
-					int add = Math.min(space, stack.stackSize);
-					if (add > 0) {
-						if (!simulate)
-							in.stackSize += add;
-						left -= add;
-						if (left <= 0)
-							return 0;
-					}
-				}
 			}
 		}
 		return left;
@@ -94,9 +98,25 @@ public class InventoryHelper {
 		int left = stack.stackSize;
 		int max = Math.min(inventory.getInventoryStackLimit(), stack.getMaxStackSize());
 		for (int i : inventory.getAccessibleSlotsFromSide(side)) {
+			ItemStack in = inventory.getStackInSlot(i);
 			if (!inventory.isItemValidForSlot(i, stack) || !inventory.canInsertItem(i, stack, side))
 				continue;
+			if (in != null && stack.isItemEqual(in) && ItemStack.areItemStackTagsEqual(stack, in)) {
+				int space = max - in.stackSize;
+				int add = Math.min(space, stack.stackSize);
+				if (add > 0) {
+					if (!simulate)
+						in.stackSize += add;
+					left -= add;
+					if (left <= 0)
+						return 0;
+				}
+			}
+		}
+		for (int i : inventory.getAccessibleSlotsFromSide(side)) {
 			ItemStack in = inventory.getStackInSlot(i);
+			if (!inventory.isItemValidForSlot(i, stack) || !inventory.canInsertItem(i, stack, side))
+				continue;
 			if (in == null) {
 				int add = Math.min(max, left);
 				if (!simulate)
@@ -104,18 +124,6 @@ public class InventoryHelper {
 				left -= add;
 				if (left <= 0)
 					return 0;
-			} else {
-				if (stack.isItemEqual(in) && ItemStack.areItemStackTagsEqual(stack, in)) {
-					int space = max - in.stackSize;
-					int add = Math.min(space, stack.stackSize);
-					if (add > 0) {
-						if (!simulate)
-							in.stackSize += add;
-						left -= add;
-						if (left <= 0)
-							return 0;
-					}
-				}
 			}
 		}
 		return left;

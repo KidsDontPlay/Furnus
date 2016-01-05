@@ -1,4 +1,5 @@
 tile.furnus:furnus.name=Furnus
+tile.furnus:pulvus.name=Pulvus
 
 item.furnus:upgrade_0.name=Speed Upgrade
 item.furnus:upgrade_1.name=Efficiency Upgrade
@@ -15,6 +16,9 @@ item.furnus:upgrade_3.tip=Adds one additional input slot (max. 2).
 item.furnus:upgrade_4.tip=Increases chance of more output. Increases fuel consumption.
 item.furnus:upgrade_5.tip=Increases XP output.
 item.furnus:upgrade_6.tip=Saves fuel.
+
+item.furnus:dust_iron.name=Iron Dust
+item.furnus:dust_gold.name=Gold Dust
 
 gui.furnus.speed=Speed
 gui.furnus.effi=Fuel consumption
