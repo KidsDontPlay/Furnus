@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import vazkii.botania.api.item.IExoflameHeatable;
 import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
 
 import com.google.common.reflect.TypeToken;
@@ -26,14 +27,14 @@ import com.google.gson.Gson;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory,
-		IExternalHeatable {
+		IExternalHeatable, IExoflameHeatable {
 
 	public AbstractMachine(int size) {
 		super(size);
 	}
 
 	protected boolean burning, eco, inout, split;
-	protected int speed, effi, slots, bonus, xp, fuel, maxFuel;
+	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
 	protected Map<Direction, Mode> input, output, fuelput;
 	protected Map<Integer, Integer> progress;
 	protected String face;
@@ -84,6 +85,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		xp = tag.getInteger("xp");
 		fuel = tag.getInteger("fuel");
 		maxFuel = tag.getInteger("maxFuel");
+		remainTicks = tag.getInteger("remainTicks");
 		input = new Gson().fromJson(tag.getString("input"), new TypeToken<Map<Direction, Mode>>() {
 		}.getType());
 		output = new Gson().fromJson(tag.getString("output"),
@@ -111,6 +113,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setInteger("xp", xp);
 		tag.setInteger("fuel", fuel);
 		tag.setInteger("maxFuel", maxFuel);
+		tag.setInteger("remainTicks", remainTicks);
 		tag.setString("input", new Gson().toJson(input));
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
@@ -204,6 +207,14 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	public void setMaxFuel(int maxFuel) {
 		this.maxFuel = maxFuel;
+	}
+
+	public int getRemainTicks() {
+		return remainTicks;
+	}
+
+	public void setRemainTicks(int remainTicks) {
+		this.remainTicks = remainTicks;
 	}
 
 	public Map<Direction, Mode> getInput() {
@@ -437,8 +448,21 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 					/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
 			fuel -= effi * 100;
 		}
-
+		calculateTicks();
 		sendMessage();
+	}
+
+	private void calculateTicks() {
+		if (fuel <= 0)
+			remainTicks = 0;
+		int ticks = (fuel / 100);
+		ticks /= (speed * ConfigurationHandler.speedMulti + 1);
+		ticks /= (slots + 1);
+		double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus()
+				* (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
+				/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+		ticks /= effi;
+		remainTicks = ticks;
 	}
 
 	boolean progressing(int slot) {
@@ -739,5 +763,29 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		fuel += 20000 - fuel;
 		maxFuel = 20000;
 		return 17;
+	}
+
+	@Override
+	public boolean canSmelt() {
+		if (worldObj.isRemote)
+			return false;
+		return canProcessAny();
+	}
+
+	@Override
+	public int getBurnTime() {
+		return remainTicks;
+	}
+
+	@Override
+	public void boostBurnTime() {
+		if (!canProcessAny() || fuel > 20000)
+			return;
+		fuel += 20000 - fuel;
+		maxFuel = 20000;
+	}
+
+	@Override
+	public void boostCookTime() {
 	}
 }
