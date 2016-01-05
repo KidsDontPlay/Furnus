@@ -1,13 +1,14 @@
 package mrriegel.furnus.block;
 
 import mrriegel.furnus.gui.UpgradeSlot;
+import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 
 public class TileFurnus extends AbstractMachine {
-	
+
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack stack) {
 		if (slot >= 0 && slot <= 2)
@@ -19,8 +20,6 @@ public class TileFurnus extends AbstractMachine {
 		return false;
 	}
 
-	
-
 	@Override
 	public void processItem(int slot) {
 		if (this.canProcess(slot)) {
@@ -31,7 +30,7 @@ public class TileFurnus extends AbstractMachine {
 			} else if (getStackInSlot(slot + 3).isItemEqual(itemstack)) {
 				getStackInSlot(slot + 3).stackSize += itemstack.stackSize;
 			}
-			if ((worldObj.rand.nextInt(100) < bonus * 10)) {
+			if ((worldObj.rand.nextInt(100) < bonus * 100 * ConfigurationHandler.bonusMulti)) {
 				if (getStackInSlot(slot + 6) == null) {
 					setInventorySlotContents(slot + 6, itemstack.copy());
 				} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {

@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.TileFurnus;
+import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemUpgrade;
 import mrriegel.furnus.message.StackMessage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -90,8 +90,8 @@ public class FurnusContainer extends Container {
 				save = player.inventory.getItemStack().copy();
 				player.inventory.setItemStack(null);
 			}
-			player.openGui(Furnus.instance, 0, tile.getWorld(), tile.getPos().getX(), tile.getPos()
-					.getY(), tile.getPos().getZ());
+			player.openGui(Furnus.instance, GuiHandler.FURNUS, tile.getWorld(), tile.getPos()
+					.getX(), tile.getPos().getY(), tile.getPos().getZ());
 			if (save != null) {
 				player.inventory.setItemStack(save);
 				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);

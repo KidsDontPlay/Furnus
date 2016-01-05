@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import java.util.Map;
 
 import mrriegel.furnus.block.AbstractMachine;
-import mrriegel.furnus.block.TileFurnus;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;

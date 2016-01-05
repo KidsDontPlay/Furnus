@@ -8,15 +8,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import mrriegel.furnus.InventoryHelper;
-import mrriegel.furnus.gui.UpgradeSlot;
+import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
-import mrriegel.furnus.item.ItemUpgrade;
 import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -28,15 +26,17 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory,ITickable {
+public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory,
+		ITickable {
 	protected AbstractMachine(int size) {
 		super(size);
 	}
+
 	protected boolean burning, eco, inout, split;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel;
-	Map<Direction, Mode> input, output, fuelput;
-	Map<Integer, Integer> progress;
-	String face;
+	protected Map<Direction, Mode> input, output, fuelput;
+	protected Map<Integer, Integer> progress;
+	protected String face;
 
 	protected AbstractMachine() {
 		super(15);
@@ -117,8 +117,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setString("progress", new Gson().toJson(progress));
 		tag.setString("face", face);
 	}
-
-	
 
 	public boolean isBurning() {
 		return burning;
@@ -315,8 +313,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	@Override
-	public
-	abstract boolean isItemValidForSlot(int slot, ItemStack stack);
+	public abstract boolean isItemValidForSlot(int slot, ItemStack stack);
 
 	public void updateStats(EntityPlayer player) {
 		int s = getSlots();
@@ -392,7 +389,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			((BlockFurnus) getBlockType()).setFurnusState(worldObj, getPos(),
 					worldObj.getBlockState(getPos()), burning);
 		}
-		for (int i = 0; i <= speed; i++) {
+		for (int i = 0; i <= speed * ConfigurationHandler.speedMulti; i++) {
 			burn(0);
 			if (slots >= 2)
 				burn(2);
@@ -403,7 +400,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	protected void fuelUp(int slot) {
-		if (fuel >= 51 || getStackInSlot(9) == null
+		if (fuel >= 1 || getStackInSlot(9) == null
 				|| !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canProcess(slot))
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
@@ -437,11 +434,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progress.put(slot, 0);
 		}
 		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
-			int down = 100;
-			down /= (-1d / 13d) * speed + 1d;
-			down /= (-1d / 10d) * bonus + 1d;
-			down *= (-1d / 16d) * effi + 1d;
-			fuel -= down;
+			double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus()
+					* (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
+					/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+			fuel -= effi * 100;
 		}
 
 		sendMessage();

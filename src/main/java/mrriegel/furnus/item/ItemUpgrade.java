@@ -4,6 +4,7 @@ import java.util.List;
 
 import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.handler.ConfigurationHandler;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -66,17 +67,17 @@ public class ItemUpgrade extends Item {
 	public int getItemStackLimit(ItemStack stack) {
 		switch (stack.getItemDamage()) {
 		case 0:
-			return 8;
+			return ConfigurationHandler.speedSize;
 		case 1:
-			return 8;
+			return ConfigurationHandler.effiSize;
 		case 2:
 			return 1;
 		case 3:
 			return 2;
 		case 4:
-			return 8;
+			return ConfigurationHandler.bonusSize;
 		case 5:
-			return 8;
+			return ConfigurationHandler.xpSize;
 		case 6:
 			return 1;
 		}

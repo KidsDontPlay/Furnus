@@ -4,6 +4,7 @@ import java.util.Random;
 
 import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.handler.GuiHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -141,7 +142,8 @@ public class BlockFurnus extends BlockContainer {
 		if (worldIn.isRemote) {
 			return true;
 		} else {
-			playerIn.openGui(Furnus.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+			playerIn.openGui(Furnus.instance, GuiHandler.FURNUS, worldIn, pos.getX(), pos.getY(),
+					pos.getZ());
 			return true;
 		}
 	}
@@ -182,31 +184,32 @@ public class BlockFurnus extends BlockContainer {
 			double d3 = 0.52D;
 			double d4 = rand.nextDouble() * 0.6D - 0.3D;
 
-			switch (enumfacing) {
-			case WEST:
-				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4, 0.0D,
-						0.0D, 0.0D, new int[0]);
-				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D, 0.0D,
-						0.0D, new int[0]);
-				break;
-			case EAST:
-				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4, 0.0D,
-						0.0D, 0.0D, new int[0]);
-				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D, 0.0D,
-						0.0D, new int[0]);
-				break;
-			case NORTH:
-				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3, 0.0D,
-						0.0D, 0.0D, new int[0]);
-				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D, 0.0D,
-						0.0D, new int[0]);
-				break;
-			case SOUTH:
-				worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3, 0.0D,
-						0.0D, 0.0D, new int[0]);
-				worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D, 0.0D,
-						0.0D, new int[0]);
-			}
+			for (int i = 0; i < tile.getSpeed() + 1; i++)
+				switch (enumfacing) {
+				case WEST:
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4,
+							0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D,
+							0.0D, 0.0D, new int[0]);
+					break;
+				case EAST:
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4,
+							0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D,
+							0.0D, 0.0D, new int[0]);
+					break;
+				case NORTH:
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3,
+							0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D,
+							0.0D, 0.0D, new int[0]);
+					break;
+				case SOUTH:
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3,
+							0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D,
+							0.0D, 0.0D, new int[0]);
+				}
 		}
 	}
 
