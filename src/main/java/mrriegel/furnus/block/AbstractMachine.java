@@ -18,13 +18,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory {
+public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory,
+		IExternalHeatable {
 
 	public AbstractMachine(int size) {
 		super(size);
@@ -720,5 +722,22 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return new int[] { a / 2, a / 2 };
 		else
 			return new int[] { a / 2 + 1, a / 2 };
+	}
+
+	boolean canProcessAny() {
+		for (int i : getInputSlots()) {
+			if (canProcess(i))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int doHeatTick(int energyAvailable, boolean redstone) {
+		if (redstone || !canProcessAny() || fuel > 20000)
+			return 0;
+		fuel += 20000 - fuel;
+		maxFuel = 20000;
+		return 17;
 	}
 }
