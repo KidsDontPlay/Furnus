@@ -19,9 +19,7 @@ import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ModItems;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,19 +34,18 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.0";
+	public static final String VERSION = "1.3";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
 	public static Furnus instance;
-	private Map<String, String> recipes;
+	private List<Recipe> recipes;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException {
@@ -61,27 +58,27 @@ public class Furnus {
 		if (!questFile.exists()) {
 			questFile.createNewFile();
 			FileWriter fw = new FileWriter(questFile);
-			Map<String, String> map = new TreeMap<String, String>();
-			map.put("cobblestone:1", "minecraft:gravel:0:1");
-			map.put("minecraft:gravel:0:1", "minecraft:sand:0:1");
-			map.put("stone:1", "cobblestone:1");
-			map.put("minecraft:stonebrick:-1:1", "cobblestone:1");
-			map.put("oreQuartz:1", "gemQuartz:3");
-			map.put("oreCoal:1", "minecraft:coal:0:3");
-			map.put("oreLapis:1", "gemLapis:8");
-			map.put("oreDiamond:1", "gemDiamond:2");
-			map.put("oreRedstone:1", "dustRedstone:8");
-			map.put("oreEmerald:1", "gemEmerald:2");
-			map.put("minecraft:quartz_block:-1:1", "gemQuartz:4");
-			map.put("glowstone:1", "dustGlowstone:4");
-			map.put("minecraft:blaze_rod:0:1", "minecraft:blaze_powder:0:4");
-			map.put("minecraft:bone:0:1", "minecraft:dye:15:6");
-			map.put("minecraft:wool:-1:1", "minecraft:string:0:4");
-			fw.write(new GsonBuilder().setPrettyPrinting().create().toJson(map));
+			List<Recipe> lis = new ArrayList<Recipe>();
+			lis.add(new Recipe("cobblestone:1", "minecraft:gravel:0:1", .1F));
+			lis.add(new Recipe("minecraft:gravel:0:1", "minecraft:sand:0:1", .1F));
+			lis.add(new Recipe("stone:1", "cobblestone:1", .1F));
+			lis.add(new Recipe("minecraft:stonebrick:-1:1", "cobblestone:1", .1F));
+			lis.add(new Recipe("oreQuartz:1", "gemQuartz:3", .3F));
+			lis.add(new Recipe("oreCoal:1", "minecraft:coal:0:3", .3F));
+			lis.add(new Recipe("oreLapis:1", "gemLapis:8", .3F));
+			lis.add(new Recipe("oreDiamond:1", "gemDiamond:2", 1F));
+			lis.add(new Recipe("oreRedstone:1", "dustRedstone:8", .3F));
+			lis.add(new Recipe("oreEmerald:1", "gemEmerald:2", 1F));
+			lis.add(new Recipe("minecraft:quartz_block:-1:1", "gemQuartz:4", .3F));
+			lis.add(new Recipe("glowstone:1", "dustGlowstone:4", .3F));
+			lis.add(new Recipe("minecraft:blaze_rod:0:1", "minecraft:blaze_powder:0:4", .4F));
+			lis.add(new Recipe("minecraft:bone:0:1", "minecraft:dye:15:6", .1F));
+			lis.add(new Recipe("minecraft:wool:-1:1", "minecraft:string:0:4", .1F));
+			fw.write(new GsonBuilder().setPrettyPrinting().create().toJson(lis));
 			fw.close();
 		}
 		recipes = new Gson().fromJson(new BufferedReader(new FileReader(questFile)),
-				new TypeToken<Map<String, String>>() {
+				new TypeToken<List<Recipe>>() {
 				}.getType());
 	}
 
@@ -95,22 +92,22 @@ public class Furnus {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		for (Entry<String, String> e : recipes.entrySet()) {
+		for (Recipe r : recipes) {
 			List<ItemStack> inl = new ArrayList<ItemStack>();
 			List<ItemStack> outl = new ArrayList<ItemStack>();
-			if (string2Stack(e.getKey()) != null)
-				inl.add(string2Stack(e.getKey()));
+			if (string2Stack(r.in) != null)
+				inl.add(string2Stack(r.in));
 			else
-				inl.addAll(string2Stacklist(e.getKey()));
-			if (string2Stack(e.getValue()) != null)
-				outl.add(string2Stack(e.getValue()));
+				inl.addAll(string2Stacklist(r.in));
+			if (string2Stack(r.out) != null)
+				outl.add(string2Stack(r.out));
 			else {
-				if (!string2Stacklist(e.getValue()).isEmpty())
-					outl.add(string2Stacklist(e.getValue()).get(0));
+				if (!string2Stacklist(r.out).isEmpty())
+					outl.add(string2Stacklist(r.out).get(0));
 			}
 			for (ItemStack in : inl)
 				for (ItemStack out : outl)
-					CrunchHandler.instance().addItemStack(in, out, 0.1f);
+					CrunchHandler.instance().addItemStack(in, out, r.exp);
 
 		}
 		List<String> black = Arrays.asList(ConfigurationHandler.blacklistDusts);
@@ -160,5 +157,17 @@ public class Furnus {
 			}
 		}
 		return lis;
+	}
+
+	private class Recipe {
+		String in, out;
+		float exp;
+
+		public Recipe(String in, String out, float exp) {
+			super();
+			this.in = in;
+			this.out = out;
+			this.exp = exp;
+		}
 	}
 }
