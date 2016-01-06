@@ -1,12 +1,13 @@
 package mrriegel.furnus;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 
 import mrriegel.furnus.block.ModBlocks;
 import mrriegel.furnus.handler.ConfigurationHandler;
@@ -29,25 +30,59 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.0";
+	public static final String VERSION = "1.3";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
 	public static Furnus instance;
+	private List<Recipe> recipes;
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
+	public void preInit(FMLPreInitializationEvent event) throws IOException {
 		File configFile = event.getSuggestedConfigurationFile();
 		ConfigurationHandler.config = new Configuration(configFile);
 		ConfigurationHandler.config.load();
 		ConfigurationHandler.refreshConfig();
 		PacketHandler.init();
+		File questFile = new File(event.getModConfigurationDirectory(), "furnus_recipes.json");
+		if (!questFile.exists()) {
+			questFile.createNewFile();
+			FileWriter fw = new FileWriter(questFile);
+			List<Recipe> lis = new ArrayList<Recipe>();
+			lis.add(new Recipe("cobblestone:1", "minecraft:gravel:0:1", .1F));
+			lis.add(new Recipe("minecraft:gravel:0:1", "minecraft:sand:0:1", .1F));
+			lis.add(new Recipe("stone:1", "cobblestone:1", .1F));
+			lis.add(new Recipe("minecraft:stonebrick:-1:1", "cobblestone:1", .1F));
+			lis.add(new Recipe("oreQuartz:1", "gemQuartz:3", .3F));
+			lis.add(new Recipe("oreCoal:1", "minecraft:coal:0:3", .3F));
+			lis.add(new Recipe("oreLapis:1", "gemLapis:8", .3F));
+			lis.add(new Recipe("oreDiamond:1", "gemDiamond:2", 1F));
+			lis.add(new Recipe("oreRedstone:1", "dustRedstone:8", .3F));
+			lis.add(new Recipe("oreEmerald:1", "gemEmerald:2", 1F));
+			lis.add(new Recipe("minecraft:quartz_block:-1:1", "gemQuartz:4", .3F));
+			lis.add(new Recipe("glowstone:1", "dustGlowstone:4", .3F));
+			lis.add(new Recipe("minecraft:blaze_rod:0:1", "minecraft:blaze_powder:0:4", .4F));
+			lis.add(new Recipe("minecraft:bone:0:1", "minecraft:dye:15:6", .1F));
+			lis.add(new Recipe("minecraft:wool:-1:1", "minecraft:string:0:4", .1F));
+			fw.write(new GsonBuilder().setPrettyPrinting().create().toJson(lis));
+			fw.close();
+		}
+		recipes = new Gson().fromJson(new BufferedReader(new FileReader(questFile)),
+				new TypeToken<List<Recipe>>() {
+				}.getType());
 	}
 
 	@EventHandler
@@ -104,6 +139,24 @@ public class Furnus {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
+		for (Recipe r : recipes) {
+			List<ItemStack> inl = new ArrayList<ItemStack>();
+			List<ItemStack> outl = new ArrayList<ItemStack>();
+			if (string2Stack(r.in) != null)
+				inl.add(string2Stack(r.in));
+			else
+				inl.addAll(string2Stacklist(r.in));
+			if (string2Stack(r.out) != null)
+				outl.add(string2Stack(r.out));
+			else {
+				if (!string2Stacklist(r.out).isEmpty())
+					outl.add(string2Stacklist(r.out).get(0));
+			}
+			for (ItemStack in : inl)
+				for (ItemStack out : outl)
+					CrunchHandler.instance().addItemStack(in, out, r.exp);
+
+		}
 		List<String> black = Arrays.asList(ConfigurationHandler.blacklistDusts);
 		for (String ore : OreDictionary.getOreNames()) {
 			if (ore.startsWith("ore")
@@ -118,7 +171,48 @@ public class Furnus {
 					&& !black.contains("dust" + ore.substring(5)))
 				CrunchHandler.instance().addItemStack(OreDictionary.getOres(ore).get(0),
 						OreDictionary.getOres("dust" + ore.substring(5)).get(0), 0.1F);
+		}
 
+	}
+
+	private ItemStack string2Stack(String s) {
+		ItemStack stack = null;
+		if (StringUtils.countMatches(s, ":") == 3) {
+			Item tmp = GameRegistry.findItem(s.split(":")[0], s.split(":")[1]);
+			if (tmp != null) {
+				stack = new ItemStack(tmp, Integer.valueOf(s.split(":")[3]), Integer.valueOf(s
+						.split(":")[2]) == -1 ? OreDictionary.WILDCARD_VALUE : Integer.valueOf(s
+						.split(":")[2]));
+			}
+		}
+		if (stack == null)
+			return null;
+		return stack.copy();
+	}
+
+	private List<ItemStack> string2Stacklist(String s) {
+		List<ItemStack> lis = new ArrayList<ItemStack>();
+		if (StringUtils.countMatches(s, ":") == 1) {
+			if (!OreDictionary.getOres(s.split(":")[0]).isEmpty()) {
+				for (ItemStack ore : OreDictionary.getOres(s.split(":")[0])) {
+					ItemStack stack = ore.copy();
+					stack.stackSize = Integer.valueOf(s.split(":")[1]);
+					lis.add(stack);
+				}
+			}
+		}
+		return lis;
+	}
+
+	private class Recipe {
+		String in, out;
+		float exp;
+
+		public Recipe(String in, String out, float exp) {
+			super();
+			this.in = in;
+			this.out = out;
+			this.exp = exp;
 		}
 	}
 }
