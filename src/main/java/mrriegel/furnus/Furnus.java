@@ -1,8 +1,12 @@
 package mrriegel.furnus;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 
 import mrriegel.furnus.block.ModBlocks;
 import mrriegel.furnus.handler.ConfigurationHandler;
@@ -15,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
