@@ -45,8 +45,9 @@ public class CrunchHandler {
 	public static ItemStack resize(ItemStack stack, int size) {
 		if (stack == null)
 			return null;
-		stack.stackSize = size;
-		return stack.copy();
+		ItemStack stack2 = stack.copy();
+		stack2.stackSize = size;
+		return stack2;
 	}
 
 	public ItemStack getResult(ItemStack stack) {
@@ -80,7 +81,14 @@ public class CrunchHandler {
 	public void addItemStack(ItemStack p_151394_1_, ItemStack p_151394_2_, float p_151394_3_) {
 		if (p_151394_1_ == null || p_151394_2_ == null)
 			return;
+		for (ItemStack stack : crushingList.keySet())
+			if (stack2String(p_151394_1_).equals(stack2String(stack)))
+				return;
 		this.crushingList.put(p_151394_1_.copy(), p_151394_2_);
 		this.experienceList.put(p_151394_2_, Float.valueOf(p_151394_3_));
+	}
+
+	private String stack2String(ItemStack stack) {
+		return stack.getUnlocalizedName() + stack.getItemDamage();
 	}
 }
