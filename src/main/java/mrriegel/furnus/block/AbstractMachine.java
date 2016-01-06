@@ -706,7 +706,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		}
 	}
 
-	protected abstract boolean fit(ItemStack stack, int slot);
+	public abstract boolean fit(ItemStack stack, int slot);
 
 	protected void tryMerge(int i1, int i2) {
 		ItemStack stack1 = getStackInSlot(i1), stack2 = getStackInSlot(i2);

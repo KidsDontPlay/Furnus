@@ -71,7 +71,7 @@ public class TileFurnus extends AbstractMachine {
 	}
 
 	@Override
-	protected boolean fit(ItemStack stack, int slot) {
+	public boolean fit(ItemStack stack, int slot) {
 		return getStackInSlot(slot + 3) == null
 				|| (FurnaceRecipes.smelting().getSmeltingResult(stack)
 						.isItemEqual(getStackInSlot(slot + 3)) && getStackInSlot(slot + 3).stackSize

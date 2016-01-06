@@ -42,11 +42,7 @@ public class CraftingRecipes {
 			for (int i = 0; i < Dust.values().length; i++) {
 				Dust dus = Dust.values()[i];
 				GameRegistry.addSmelting(
-						OreDictionary.getOres(
-								"dust"
-										+ dus.toString().substring(0, 1)
-										+ dus.toString().substring(1, dus.toString().length())
-												.toLowerCase()).get(0),
+						new ItemStack(ModItems.dust, 1, i),
 						OreDictionary.getOres(
 								"ingot"
 										+ dus.toString().substring(0, 1)

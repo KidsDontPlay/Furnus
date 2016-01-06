@@ -1,6 +1,7 @@
 package mrriegel.furnus.gui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
@@ -214,7 +215,6 @@ public class MachineContainer extends Container {
 							merged = true;
 							break;
 						}
-
 				}
 				if (!merged)
 					return null;
