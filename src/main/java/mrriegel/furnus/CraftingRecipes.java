@@ -38,10 +38,11 @@ public class CraftingRecipes {
 		GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 6), "cgc", "rir", "cgc",
 				'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Blocks.coal_block, 'r',
 				Items.blaze_powder);
-		if (ConfigurationHandler.dusts) {
+		if(ConfigurationHandler.rf)
 			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 7), "cgc", "rir",
 					"cgc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Blocks.gold_block,
 					'r', Blocks.redstone_block);
+		if (ConfigurationHandler.dusts) {
 			for (int i = 0; i < Dust.values().length; i++) {
 				Dust dus = Dust.values()[i];
 				GameRegistry.addSmelting(
