@@ -474,7 +474,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	protected abstract boolean canProcess(int slot);
 
 	protected void output() {
-		if (!inout || worldObj.getTotalWorldTime() % (50 - (speed + slots * 2) * 4) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % 50 / (speed + slots + 1) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {
@@ -509,7 +509,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	protected void input() {
-		if (!inout || worldObj.getTotalWorldTime() % (60 - (speed + slots * 2) * 4) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % 60 / (speed + slots + 1) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
