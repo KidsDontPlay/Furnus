@@ -124,7 +124,6 @@ public class Furnus {
 				CrunchHandler.instance().addItemStack(OreDictionary.getOres(ore).get(0),
 						OreDictionary.getOres("dust" + ore.substring(5)).get(0), 0.1F);
 		}
-
 	}
 
 	private ItemStack string2Stack(String s) {
