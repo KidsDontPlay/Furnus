@@ -781,6 +781,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public int doHeatTick(int energyAvailable, boolean redstone) {
+		if (1 == 1)
+			return 0;
 		final double multiplier = 0.08;
 		if (energyAvailable <= 0 /* || redstone */|| !canProcessAny())
 			return 0;
