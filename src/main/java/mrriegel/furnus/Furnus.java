@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import mrriegel.furnus.block.ModBlocks;
 import mrriegel.furnus.handler.ConfigurationHandler;
@@ -26,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import cpw.mods.fml.common.Mod;
@@ -96,33 +92,35 @@ public class Furnus {
 		for (Recipe r : recipes) {
 			List<ItemStack> inl = new ArrayList<ItemStack>();
 			List<ItemStack> outl = new ArrayList<ItemStack>();
-			if (string2Stack(r.in) != null)
-				inl.add(string2Stack(r.in));
+			if (string2Stack(r.inputItem) != null)
+				inl.add(string2Stack(r.inputItem));
 			else
-				inl.addAll(string2Stacklist(r.in));
-			if (string2Stack(r.out) != null)
-				outl.add(string2Stack(r.out));
+				inl.addAll(string2Stacklist(r.inputItem));
+			if (string2Stack(r.outputItem) != null)
+				outl.add(string2Stack(r.outputItem));
 			else {
-				if (!string2Stacklist(r.out).isEmpty())
-					outl.add(string2Stacklist(r.out).get(0));
+				if (!string2Stacklist(r.outputItem).isEmpty())
+					outl.add(string2Stacklist(r.outputItem).get(0));
 			}
 			for (ItemStack in : inl)
 				for (ItemStack out : outl)
-					CrunchHandler.instance().addItemStack(in, out, r.exp);
+					CrunchHandler.instance().addItemStack(in, out, r.experience);
 
 		}
 		List<String> black = Arrays.asList(ConfigurationHandler.blacklistDusts);
 		for (String ore : OreDictionary.getOreNames()) {
 			if (ore.startsWith("ore")
 					&& !OreDictionary.getOres("dust" + ore.substring(3)).isEmpty()
-					&& !black.contains("dust" + ore.substring(3)))
+					&& !black.contains("dust" + ore.substring(3))
+					&& !OreDictionary.getOres(ore).isEmpty())
 				CrunchHandler.instance().addItemStack(
 						OreDictionary.getOres(ore).get(0),
 						CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(3))
 								.get(0), 2), 0.5F);
 			else if (ore.startsWith("ingot")
 					&& !OreDictionary.getOres("dust" + ore.substring(5)).isEmpty()
-					&& !black.contains("dust" + ore.substring(5)))
+					&& !black.contains("dust" + ore.substring(5))
+					&& !OreDictionary.getOres(ore).isEmpty())
 				CrunchHandler.instance().addItemStack(OreDictionary.getOres(ore).get(0),
 						OreDictionary.getOres("dust" + ore.substring(5)).get(0), 0.1F);
 		}
@@ -161,14 +159,14 @@ public class Furnus {
 	}
 
 	private class Recipe {
-		String in, out;
-		float exp;
+		String inputItem, outputItem;
+		float experience;
 
 		public Recipe(String in, String out, float exp) {
 			super();
-			this.in = in;
-			this.out = out;
-			this.exp = exp;
+			this.inputItem = in;
+			this.outputItem = out;
+			this.experience = exp;
 		}
 	}
 }

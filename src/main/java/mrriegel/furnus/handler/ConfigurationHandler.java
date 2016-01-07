@@ -31,7 +31,7 @@ public class ConfigurationHandler {
 		speedFuelMulti = config.get("multiplier", "speedFuelMulti", 3.3,
 				"Multiplier of Fuel Consumption of Speed Upgrade").getDouble();
 		dusts = config.get("dust", "dusts", true, "Enable Dusts").getBoolean();
-		rf = config.get("rf", "rf", false, "Enable RF").getBoolean();
+		// rf = config.get("rf", "rf", false, "Enable RF").getBoolean();
 		blacklistDusts = config.get("dust", "blacklistDusts", new String[] { "dustCoal" },
 				"Blacklist for dusts which should not be craftable in pulvus.").getStringList();
 		if (config.hasChanged()) {

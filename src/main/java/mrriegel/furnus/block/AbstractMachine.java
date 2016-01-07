@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.Generated;
-
 import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
@@ -21,10 +19,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.oredict.OreDictionary;
 import vazkii.botania.api.item.IExoflameHeatable;
 import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
-import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.reflect.TypeToken;
@@ -505,7 +501,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	protected abstract boolean canProcess(int slot);
 
 	protected void output() {
-		if (!inout || worldObj.getTotalWorldTime() % (50 - (speed + slots * 2) * 4) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % 50 / (speed + slots + 1) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {
@@ -544,7 +540,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	protected void input() {
-		if (!inout || worldObj.getTotalWorldTime() % (60 - (speed + slots * 2) * 4) != 0)
+		if (!inout || worldObj.getTotalWorldTime() % 60 / (speed + slots + 1) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
 			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
@@ -778,23 +774,25 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public int doHeatTick(int energyAvailable, boolean redstone) {
-		if (energyAvailable <= 0 || redstone || !canProcessAny() || fuel >= maxFuel)
+		if (1 == 1)
 			return 0;
-		maxFuel = 200000 * (speed + slots + 1 + bonus);
+		if (energyAvailable <= 0 /* || redstone */|| !canProcessAny() || fuel >= maxFuel)
+			return 0;
+		if (energyAvailable == 1)
+			return energyAvailable;
+		maxFuel = (int) (30000 * ((getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.)
+				+ getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (getEffi()
+				* (ConfigurationHandler.effiMulti / 10.) + 1.)));
 		int f = fuel;
-		int dif = maxFuel - f;
-		if (dif <= 0)
+		int need = (maxFuel - f);
+		if (need <= 0)
 			return 0;
-		double multiplier = 0.076;
-		if (dif * multiplier <= energyAvailable) {
-			fuel += dif;
-			return (int) (dif * multiplier);
+		final double multiplier = 0.08;
+		while (need * multiplier > energyAvailable) {
+			need--;
 		}
-		while (dif * multiplier > energyAvailable) {
-			dif--;
-		}
-		fuel += dif;
-		return (int) (dif * multiplier);
+		fuel += need;
+		return (int) (need * multiplier);
 	}
 
 	@Override
