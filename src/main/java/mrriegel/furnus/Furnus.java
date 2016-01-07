@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import cpw.mods.fml.common.Mod;
@@ -118,7 +119,7 @@ public class Furnus {
 				CrunchHandler.instance().addItemStack(
 						OreDictionary.getOres(ore).get(0),
 						CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(3))
-								.get(0), 2), 0.4F);
+								.get(0), 2), 0.5F);
 			else if (ore.startsWith("ingot")
 					&& !OreDictionary.getOres("dust" + ore.substring(5)).isEmpty()
 					&& !black.contains("dust" + ore.substring(5)))

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Generated;
+
 import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
@@ -18,8 +20,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.OreDictionary;
 import vazkii.botania.api.item.IExoflameHeatable;
 import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
+import cofh.api.energy.EnergyStorage;
+import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -27,13 +33,13 @@ import com.google.gson.Gson;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory,
-		IExternalHeatable, IExoflameHeatable {
+		IExternalHeatable, IExoflameHeatable, IEnergyReceiver {
 
 	public AbstractMachine(int size) {
 		super(size);
 	}
 
-	protected boolean burning, eco, inout, split;
+	protected boolean burning, eco, inout, split, rf;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
 	protected Map<Direction, Mode> input, output, fuelput;
 	protected Map<Integer, Integer> progress;
@@ -78,6 +84,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		eco = tag.getBoolean("eco");
 		inout = tag.getBoolean("inout");
 		split = tag.getBoolean("split");
+		rf = tag.getBoolean("rf");
 		speed = tag.getInteger("speed");
 		effi = tag.getInteger("effi");
 		slots = tag.getInteger("slot");
@@ -106,6 +113,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setBoolean("eco", eco);
 		tag.setBoolean("inout", inout);
 		tag.setBoolean("split", split);
+		tag.setBoolean("rf", rf);
 		tag.setInteger("speed", speed);
 		tag.setInteger("effi", effi);
 		tag.setInteger("slot", slots);
@@ -191,6 +199,14 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	public void setSplit(boolean split) {
 		this.split = split;
+	}
+
+	public boolean isRF() {
+		return rf;
+	}
+
+	public void setRF(boolean rf) {
+		this.rf = rf;
 	}
 
 	public int getFuel() {
@@ -329,7 +345,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	public void updateStats(EntityPlayer player) {
 		int s = getSlots();
 		Map<Integer, Integer> upgrades = new HashMap<Integer, Integer>();
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < 8; i++)
 			upgrades.put(i, 0);
 		for (int i = 10; i < 15; i++) {
 			ItemStack stack = getStackInSlot(i);
@@ -360,6 +376,9 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				break;
 			case 6:
 				setEco(e.getValue() > 0 ? true : false);
+				break;
+			case 7:
+				setRF(e.getValue() > 0 ? true : false);
 				break;
 			}
 		}
@@ -759,11 +778,23 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public int doHeatTick(int energyAvailable, boolean redstone) {
-		if (redstone || !canProcessAny() || fuel > 20000)
+		if (energyAvailable <= 0 || redstone || !canProcessAny() || fuel >= maxFuel)
 			return 0;
-		fuel += 20000 - fuel;
-		maxFuel = 20000;
-		return 17;
+		maxFuel = 200000 * (speed + slots + 1 + bonus);
+		int f = fuel;
+		int dif = maxFuel - f;
+		if (dif <= 0)
+			return 0;
+		double multiplier = 0.076;
+		if (dif * multiplier <= energyAvailable) {
+			fuel += dif;
+			return (int) (dif * multiplier);
+		}
+		while (dif * multiplier > energyAvailable) {
+			dif--;
+		}
+		fuel += dif;
+		return (int) (dif * multiplier);
 	}
 
 	@Override
@@ -788,5 +819,29 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public void boostCookTime() {
+	}
+
+	@Override
+	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
+		if (!canProcessAny() || fuel > maxFuel || simulate || !rf)
+			return 0;
+		int f = fuel;
+		fuel = maxFuel = 60000 * (slots + 1);
+		return ((fuel - f) / 12) * speed * ConfigurationHandler.speedMulti;
+	}
+
+	@Override
+	public int getEnergyStored(ForgeDirection from) {
+		return 0;
+	}
+
+	@Override
+	public int getMaxEnergyStored(ForgeDirection from) {
+		return 0;
+	}
+
+	@Override
+	public boolean canConnectEnergy(ForgeDirection from) {
+		return rf;
 	}
 }

@@ -18,7 +18,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ItemUpgrade extends Item {
 
 	@SideOnly(Side.CLIENT)
-	private IIcon[] icons;;
+	private IIcon[] icons;
 
 	public ItemUpgrade() {
 		super();
@@ -30,8 +30,8 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister reg) {
-		icons = new IIcon[7];
-		for (int i = 0; i < 7; i++) {
+		icons = new IIcon[7 + (ConfigurationHandler.rf ? 1 : 0)];
+		for (int i = 0; i < icons.length; i++) {
 			this.icons[i] = reg.registerIcon(Furnus.MODID + ":upgrade_" + i);
 		}
 	}
@@ -39,7 +39,7 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int meta) {
-		if (meta > 6)
+		if (meta > 6 + (ConfigurationHandler.rf ? 1 : 0))
 			meta = 0;
 
 		return this.icons[meta];
@@ -48,7 +48,7 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 7 + (ConfigurationHandler.rf ? 1 : 0); i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
 	}
@@ -83,6 +83,8 @@ public class ItemUpgrade extends Item {
 		case 5:
 			return ConfigurationHandler.xpSize;
 		case 6:
+			return 1;
+		case 7:
 			return 1;
 		}
 		return -1;

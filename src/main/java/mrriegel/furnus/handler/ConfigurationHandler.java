@@ -7,7 +7,7 @@ public class ConfigurationHandler {
 
 	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti;
 	public static double effiMulti, bonusMulti, xpMulti, bonusFuelMulti, speedFuelMulti;
-	public static boolean dusts;
+	public static boolean dusts, rf;
 	public static String[] blacklistDusts;
 
 	public static void refreshConfig() {
@@ -31,6 +31,7 @@ public class ConfigurationHandler {
 		speedFuelMulti = config.get("multiplier", "speedFuelMulti", 3.3,
 				"Multiplier of Fuel Consumption of Speed Upgrade").getDouble();
 		dusts = config.get("dust", "dusts", true, "Enable Dusts").getBoolean();
+		rf = config.get("rf", "rf", false, "Enable RF").getBoolean();
 		blacklistDusts = config.get("dust", "blacklistDusts", new String[] { "dustCoal" },
 				"Blacklist for dusts which should not be craftable in pulvus.").getStringList();
 		if (config.hasChanged()) {
