@@ -36,7 +36,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	protected boolean burning, eco, inout, split, rf;
-	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
+	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks, fuelPerTick;
 	protected Map<Direction, Mode> input, output, fuelput;
 	protected Map<Integer, Integer> progress;
 	protected String face;
@@ -89,6 +89,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		fuel = tag.getInteger("fuel");
 		maxFuel = tag.getInteger("maxFuel");
 		remainTicks = tag.getInteger("remainTicks");
+		fuelPerTick = tag.getInteger("fuelPerTick");
 		input = new Gson().fromJson(tag.getString("input"), new TypeToken<Map<Direction, Mode>>() {
 		}.getType());
 		output = new Gson().fromJson(tag.getString("output"),
@@ -118,6 +119,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setInteger("fuel", fuel);
 		tag.setInteger("maxFuel", maxFuel);
 		tag.setInteger("remainTicks", remainTicks);
+		tag.setInteger("fuelPerTick", fuelPerTick);
 		tag.setString("input", new Gson().toJson(input));
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
@@ -397,6 +399,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	}
 
+	int tmp = 0;
+
 	@Override
 	public void updateEntity() {
 		if (worldObj.isRemote) {
@@ -413,6 +417,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			burning = false;
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
+		tmp = 0;
 		for (int i = 0; i <= speed * ConfigurationHandler.speedMulti; i++) {
 			burn(0);
 			if (slots >= 2)
@@ -420,6 +425,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			if (slots >= 1)
 				burn(1);
 		}
+		fuelPerTick = tmp;
 
 	}
 
@@ -462,6 +468,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 					* (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
 					/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
 			fuel -= effi * 100;
+			tmp += effi * 100;
 		}
 		calculateTicks();
 		sendMessage();
@@ -774,25 +781,24 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public int doHeatTick(int energyAvailable, boolean redstone) {
-		if (1 == 1)
-			return 0;
-		if (energyAvailable <= 0 /* || redstone */|| !canProcessAny() || fuel >= maxFuel)
-			return 0;
-		if (energyAvailable == 1)
-			return energyAvailable;
-		maxFuel = (int) (30000 * ((getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.)
-				+ getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (getEffi()
-				* (ConfigurationHandler.effiMulti / 10.) + 1.)));
-		int f = fuel;
-		int need = (maxFuel - f);
-		if (need <= 0)
-			return 0;
 		final double multiplier = 0.08;
-		while (need * multiplier > energyAvailable) {
-			need--;
+		if (energyAvailable <= 0 /* || redstone */|| !canProcessAny())
+			return 0;
+		if (fuelPerTick == .0) {
+			maxFuel = fuel = (Math.min((int) (energyAvailable / multiplier), 160000));
+			return (int) (fuel * multiplier);
+		} else {
+			// if (fuel > 160000)
+			// return 0;
+			// fuel += (Math.min((int) (energyAvailable / multiplier), 160000));
+			// maxFuel = fuel;
+			// return Math.min(energyAvailable, (int) ((160000) * multiplier));
+			if (fuel > fuelPerTick * 1)
+				return 0;
+			fuel += (Math.min((int) (energyAvailable / multiplier), fuelPerTick * 1));
+			maxFuel = fuel;
+			return Math.min(energyAvailable, (int) ((fuelPerTick * 1) * multiplier));
 		}
-		fuel += need;
-		return (int) (need * multiplier);
 	}
 
 	@Override
