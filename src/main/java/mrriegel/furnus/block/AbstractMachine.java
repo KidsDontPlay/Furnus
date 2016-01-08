@@ -781,26 +781,15 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public int doHeatTick(int energyAvailable, boolean redstone) {
-		if (1 == 1)
-			return 0;
 		final double multiplier = 0.08;
-		if (energyAvailable <= 0 /* || redstone */|| !canProcessAny())
+		if (energyAvailable <= 0 || redstone || !canProcessAny() || remainTicks > 4)
 			return 0;
-		if (fuelPerTick == .0) {
-			maxFuel = fuel = (Math.min((int) (energyAvailable / multiplier), 160000));
-			return (int) (fuel * multiplier);
-		} else {
-			// if (fuel > 160000)
-			// return 0;
-			// fuel += (Math.min((int) (energyAvailable / multiplier), 160000));
-			// maxFuel = fuel;
-			// return Math.min(energyAvailable, (int) ((160000) * multiplier));
-			if (fuel > fuelPerTick * 1)
-				return 0;
-			fuel += (Math.min((int) (energyAvailable / multiplier), fuelPerTick * 1));
-			maxFuel = fuel;
-			return Math.min(energyAvailable, (int) ((fuelPerTick * 1) * multiplier));
-		}
+		int consume = energyAvailable;
+		while (consume > 256)
+			consume--;
+		fuel += consume / multiplier;
+		maxFuel = fuel;
+		return consume;
 	}
 
 	@Override
