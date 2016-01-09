@@ -21,6 +21,10 @@ public class CrunchHandler {
 	private CrunchHandler() {
 	}
 
+	public Map<ItemStack, ItemStack> getCrushingList() {
+		return crushingList;
+	}
+
 	public static ItemStack resize(ItemStack stack, int size) {
 		if (stack == null)
 			return null;
