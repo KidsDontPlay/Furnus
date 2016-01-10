@@ -17,6 +17,7 @@ import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemDust.Dust;
 import mrriegel.furnus.item.ModItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemModelMesher;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -43,7 +44,7 @@ import com.google.gson.reflect.TypeToken;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.3";
+	public static final String VERSION = "1.4";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -67,11 +68,15 @@ public class Furnus {
 			lis.add(new Recipe("stone:1", "cobblestone:1", .1F));
 			lis.add(new Recipe("minecraft:stonebrick:-1:1", "cobblestone:1", .1F));
 			lis.add(new Recipe("oreQuartz:1", "gemQuartz:3", .3F));
+			lis.add(new Recipe("denseoreQuartz:1", "gemQuartz:9", .9F));
 			lis.add(new Recipe("oreCoal:1", "minecraft:coal:0:3", .3F));
+			lis.add(new Recipe("denseoreCoal:1", "minecraft:coal:0:9", .9F));
 			lis.add(new Recipe("oreLapis:1", "gemLapis:8", .3F));
-			lis.add(new Recipe("oreDiamond:1", "gemDiamond:2", 1F));
+			lis.add(new Recipe("denseoreLapis:1", "gemLapis:24", .9F));
+			lis.add(new Recipe("denseoreDiamond:1", "gemDiamond:6", 3F));
 			lis.add(new Recipe("oreRedstone:1", "dustRedstone:8", .3F));
-			lis.add(new Recipe("oreEmerald:1", "gemEmerald:2", 1F));
+			lis.add(new Recipe("denseoreRedstone:1", "dustRedstone:24", .9F));
+			lis.add(new Recipe("denseoreEmerald:1", "gemEmerald:6", 3F));
 			lis.add(new Recipe("minecraft:quartz_block:-1:1", "gemQuartz:4", .3F));
 			lis.add(new Recipe("glowstone:1", "dustGlowstone:4", .3F));
 			lis.add(new Recipe("minecraft:blaze_rod:0:1", "minecraft:blaze_powder:0:4", .4F));
@@ -97,43 +102,22 @@ public class Furnus {
 	}
 
 	private void initModels() {
-		Minecraft
-				.getMinecraft()
-				.getRenderItem()
-				.getItemModelMesher()
-				.register(Item.getItemFromBlock(ModBlocks.furnus), 0,
-						new ModelResourceLocation(Furnus.MODID + ":" + "furnus", "inventory"));
-		Minecraft
-				.getMinecraft()
-				.getRenderItem()
-				.getItemModelMesher()
-				.register(Item.getItemFromBlock(ModBlocks.pulvus), 0,
-						new ModelResourceLocation(Furnus.MODID + ":" + "pulvus", "inventory"));
+		ItemModelMesher mesh = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
+		mesh.register(Item.getItemFromBlock(ModBlocks.furnus), 0, new ModelResourceLocation(
+				Furnus.MODID + ":" + "furnus", "inventory"));
+		mesh.register(Item.getItemFromBlock(ModBlocks.pulvus), 0, new ModelResourceLocation(
+				Furnus.MODID + ":" + "pulvus", "inventory"));
 		for (int i = 0; i < 7; i++) {
 			ModelBakery.registerItemVariants(ModItems.upgrade, new ResourceLocation(Furnus.MODID
 					+ ":" + "upgrade_" + i));
-			Minecraft
-					.getMinecraft()
-					.getRenderItem()
-					.getItemModelMesher()
-					.register(
-							ModItems.upgrade,
-							i,
-							new ModelResourceLocation(Furnus.MODID + ":" + "upgrade_" + i,
-									"inventory"));
+			mesh.register(ModItems.upgrade, i, new ModelResourceLocation(Furnus.MODID + ":"
+					+ "upgrade_" + i, "inventory"));
 		}
 		for (int i = 0; i < Dust.values().length; i++) {
 			ModelBakery.registerItemVariants(ModItems.dust, new ResourceLocation(Furnus.MODID + ":"
 					+ "dust_" + Dust.values()[i].toString().toLowerCase()));
-			Minecraft
-					.getMinecraft()
-					.getRenderItem()
-					.getItemModelMesher()
-					.register(
-							ModItems.dust,
-							i,
-							new ModelResourceLocation(Furnus.MODID + ":" + "dust_"
-									+ Dust.values()[i].toString().toLowerCase(), "inventory"));
+			mesh.register(ModItems.dust, i, new ModelResourceLocation(Furnus.MODID + ":" + "dust_"
+					+ Dust.values()[i].toString().toLowerCase(), "inventory"));
 		}
 	}
 
@@ -163,16 +147,36 @@ public class Furnus {
 					&& !OreDictionary.getOres("dust" + ore.substring(3)).isEmpty()
 					&& !black.contains("dust" + ore.substring(3))
 					&& !OreDictionary.getOres(ore).isEmpty())
-				CrunchHandler.instance().addItemStack(
-						OreDictionary.getOres(ore).get(0),
-						CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(3))
-								.get(0), 2), 0.5F);
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(
+							stack,
+							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(3))
+									.get(0), 2), 0.5F);
+			else if (ore.startsWith("denseore")
+					&& !OreDictionary.getOres("dust" + ore.substring(8)).isEmpty()
+					&& !black.contains("dust" + ore.substring(8))
+					&& !OreDictionary.getOres(ore).isEmpty())
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(
+							stack,
+							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(8))
+									.get(0), 6), 2F);
+			else if (ore.startsWith("ore")
+					&& !OreDictionary.getOres("gem" + ore.substring(3)).isEmpty()
+					&& !black.contains("gem" + ore.substring(3))
+					&& !OreDictionary.getOres(ore).isEmpty())
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(
+							stack,
+							CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(3))
+									.get(0), 2), 0.4F);
 			else if (ore.startsWith("ingot")
 					&& !OreDictionary.getOres("dust" + ore.substring(5)).isEmpty()
 					&& !black.contains("dust" + ore.substring(5))
 					&& !OreDictionary.getOres(ore).isEmpty())
-				CrunchHandler.instance().addItemStack(OreDictionary.getOres(ore).get(0),
-						OreDictionary.getOres("dust" + ore.substring(5)).get(0), 0.1F);
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(stack,
+							OreDictionary.getOres("dust" + ore.substring(5)).get(0), 0.1F);
 		}
 
 	}
