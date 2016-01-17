@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.AbstractMachine.Direction;
 import mrriegel.furnus.block.AbstractMachine.Mode;
-import mrriegel.furnus.gui.IOFGui;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -32,7 +31,7 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 	public IMessage onMessage(PutMessage message, MessageContext ctx) {
 		AbstractMachine tile = (AbstractMachine) ctx.getServerHandler().playerEntity.worldObj
 				.getTileEntity(message.x, message.y, message.z);
-		IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
+		AbstractMachine.getMap(message.kind, tile).put(Direction.valueOf(message.i),
 				Mode.valueOf(message.mode));
 		return null;
 	}

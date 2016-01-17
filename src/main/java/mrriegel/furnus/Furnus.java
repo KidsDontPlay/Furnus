@@ -37,7 +37,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.4";
+	public static final String VERSION = "1.5";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -75,6 +75,16 @@ public class Furnus {
 			lis.add(new Recipe("minecraft:blaze_rod:0:1", "minecraft:blaze_powder:0:4", .4F));
 			lis.add(new Recipe("minecraft:bone:0:1", "minecraft:dye:15:6", .1F));
 			lis.add(new Recipe("minecraft:wool:-1:1", "minecraft:string:0:4", .1F));
+			lis.add(new Recipe("minecraft:red_flower:0:1", "minecraft:dye:1:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:4:1", "minecraft:dye:1:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:3:1", "minecraft:dye:7:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:6:1", "minecraft:dye:7:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:8:1", "minecraft:dye:7:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:7:1", "minecraft:dye:9:3", .1F));
+			lis.add(new Recipe("minecraft:yellow_flower:0:1", "minecraft:dye:11:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:1:1", "minecraft:dye:12:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:2:1", "minecraft:dye:13:3", .1F));
+			lis.add(new Recipe("minecraft:red_flower:5:1", "minecraft:dye:14:3", .1F));
 			fw.write(new GsonBuilder().setPrettyPrinting().create().toJson(lis));
 			fw.close();
 		}
