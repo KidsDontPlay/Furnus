@@ -1,7 +1,5 @@
 package mrriegel.furnus.gui;
 
-import java.util.Map;
-
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.AbstractMachine.Direction;
@@ -42,12 +40,12 @@ public class IOFGui extends GuiScreen {
 		else if (iD == 3)
 			id = "F";
 
-		topMode = getMap(id, tile).get(Direction.TOP);
-		frontMode = getMap(id, tile).get(Direction.FRONT);
-		leftMode = getMap(id, tile).get(Direction.LEFT);
-		rightMode = getMap(id, tile).get(Direction.RIGHT);
-		bottomMode = getMap(id, tile).get(Direction.BOTTOM);
-		backMode = getMap(id, tile).get(Direction.BACK);
+		topMode = AbstractMachine.getMap(id, tile).get(Direction.TOP);
+		frontMode = AbstractMachine.getMap(id, tile).get(Direction.FRONT);
+		leftMode = AbstractMachine.getMap(id, tile).get(Direction.LEFT);
+		rightMode = AbstractMachine.getMap(id, tile).get(Direction.RIGHT);
+		bottomMode = AbstractMachine.getMap(id, tile).get(Direction.BOTTOM);
+		backMode = AbstractMachine.getMap(id, tile).get(Direction.BACK);
 	}
 
 	@Override
@@ -81,7 +79,7 @@ public class IOFGui extends GuiScreen {
 		case 0:
 			topMode = topMode.next();
 			top.displayString = topMode.toString().substring(0, 1).toUpperCase();
-			getMap(id, tile).put(Direction.TOP, topMode);
+			AbstractMachine.getMap(id, tile).put(Direction.TOP, topMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP.toString(), tile
 					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, topMode
 					.toString()));
@@ -89,7 +87,7 @@ public class IOFGui extends GuiScreen {
 		case 1:
 			frontMode = frontMode.next();
 			front.displayString = frontMode.toString().substring(0, 1).toUpperCase();
-			getMap(id, tile).put(Direction.FRONT, frontMode);
+			AbstractMachine.getMap(id, tile).put(Direction.FRONT, frontMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.FRONT.toString(), tile
 					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, frontMode
 					.toString()));
@@ -97,7 +95,7 @@ public class IOFGui extends GuiScreen {
 		case 2:
 			leftMode = leftMode.next();
 			left.displayString = leftMode.toString().substring(0, 1).toUpperCase();
-			getMap(id, tile).put(Direction.LEFT, leftMode);
+			AbstractMachine.getMap(id, tile).put(Direction.LEFT, leftMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.LEFT.toString(), tile
 					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, leftMode
 					.toString()));
@@ -105,7 +103,7 @@ public class IOFGui extends GuiScreen {
 		case 3:
 			rightMode = rightMode.next();
 			right.displayString = rightMode.toString().substring(0, 1).toUpperCase();
-			getMap(id, tile).put(Direction.RIGHT, rightMode);
+			AbstractMachine.getMap(id, tile).put(Direction.RIGHT, rightMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.RIGHT.toString(), tile
 					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, rightMode
 					.toString()));
@@ -113,7 +111,7 @@ public class IOFGui extends GuiScreen {
 		case 4:
 			bottomMode = bottomMode.next();
 			bottom.displayString = bottomMode.toString().substring(0, 1).toUpperCase();
-			getMap(id, tile).put(Direction.BOTTOM, bottomMode);
+			AbstractMachine.getMap(id, tile).put(Direction.BOTTOM, bottomMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BOTTOM.toString(), tile
 					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, bottomMode
 					.toString()));
@@ -121,22 +119,12 @@ public class IOFGui extends GuiScreen {
 		case 5:
 			backMode = backMode.next();
 			back.displayString = backMode.toString().substring(0, 1).toUpperCase();
-			getMap(id, tile).put(Direction.BACK, backMode);
+			AbstractMachine.getMap(id, tile).put(Direction.BACK, backMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BACK.toString(), tile
 					.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, backMode
 					.toString()));
 			break;
 		}
-	}
-
-	public static Map<Direction, Mode> getMap(String id, AbstractMachine tile) {
-		if (id.equals("I"))
-			return tile.getInput();
-		if (id.equals("O"))
-			return tile.getOutput();
-		if (id.equals("F"))
-			return tile.getFuelput();
-		return null;
 	}
 
 	@Override

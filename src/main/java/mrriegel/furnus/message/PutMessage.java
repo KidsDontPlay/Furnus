@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.AbstractMachine.Direction;
 import mrriegel.furnus.block.AbstractMachine.Mode;
-import mrriegel.furnus.gui.IOFGui;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -39,7 +38,7 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 			public void run() {
 				AbstractMachine tile = (AbstractMachine) ctx.getServerHandler().playerEntity.worldObj
 						.getTileEntity(new BlockPos(message.x, message.y, message.z));
-				IOFGui.getMap(message.kind, tile).put(Direction.valueOf(message.i),
+				AbstractMachine.getMap(message.kind, tile).put(Direction.valueOf(message.i),
 						Mode.valueOf(message.mode));
 			}
 		});

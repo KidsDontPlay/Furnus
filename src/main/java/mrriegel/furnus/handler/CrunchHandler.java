@@ -1,20 +1,17 @@
 package mrriegel.furnus.handler;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class CrunchHandler {
 	private static final CrunchHandler base = new CrunchHandler();
-	private Map<ItemStack, ItemStack> crushingList = new HashMap<ItemStack, ItemStack>();
+	public Map<ItemStack, ItemStack> crushingList = new HashMap<ItemStack, ItemStack>();
 	private Map<ItemStack, Float> experienceList = new HashMap<ItemStack, Float>();
 
 	public static CrunchHandler instance() {

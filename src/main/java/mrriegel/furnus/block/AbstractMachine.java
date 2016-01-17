@@ -733,4 +733,14 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		else
 			return new int[] { a / 2 + 1, a / 2 };
 	}
+
+	public static Map<Direction, Mode> getMap(String id, AbstractMachine tile) {
+		if (id.equals("I"))
+			return tile.getInput();
+		if (id.equals("O"))
+			return tile.getOutput();
+		if (id.equals("F"))
+			return tile.getFuelput();
+		return null;
+	}
 }

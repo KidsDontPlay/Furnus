@@ -16,7 +16,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
-import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 
@@ -110,11 +109,11 @@ public class MachineGUI extends GuiContainer {
 			double xp = (1.d + tile.getXp() * ConfigurationHandler.xpMulti);
 			list.add(StatCollector.translateToLocal("gui.furnus.xp") + ": "
 					+ String.format("%.2f", xp) + "x");
-			GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
-			GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+			GlStateManager.pushMatrix();
+			GlStateManager.disableLighting();
 			this.drawHoveringText(list, i, j, fontRendererObj);
-			GL11.glPopAttrib();
-			GL11.glPopAttrib();
+			GlStateManager.popMatrix();
+			GlStateManager.enableLighting();
 		}
 	}
 
