@@ -6,6 +6,7 @@ import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.item.ModItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class TilePulvus extends AbstractMachine {
 
@@ -31,15 +32,26 @@ public class TilePulvus extends AbstractMachine {
 				getStackInSlot(slot + 3).stackSize += itemstack.stackSize;
 			}
 			if ((worldObj.rand.nextInt(100) < bonus * 100 * ConfigurationHandler.bonusMulti)) {
-				int ran = worldObj.rand.nextInt(itemstack.stackSize) + 1;
-				if (getStackInSlot(slot + 6) == null) {
-					setInventorySlotContents(slot + 6, CrunchHandler.resize(itemstack, ran));
-				} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
-					if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack
-							.getMaxStackSize())
-						getStackInSlot(slot + 6).stackSize += ran;
-					else
-						getStackInSlot(slot + 6).stackSize = itemstack.getMaxStackSize();
+				boolean ingot = false;
+				for (int i : OreDictionary.getOreIDs(getStackInSlot(slot))) {
+					String s = OreDictionary.getOreName(i);
+					if (s.startsWith("ingot")) {
+						ingot = true;
+						break;
+					}
+				}
+				if (!ingot) {
+					int ran = worldObj.rand.nextInt(itemstack.stackSize)
+							+ (worldObj.rand.nextBoolean() ? 1 : 0);
+					if (getStackInSlot(slot + 6) == null) {
+						setInventorySlotContents(slot + 6, CrunchHandler.resize(itemstack, ran));
+					} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
+						if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack
+								.getMaxStackSize())
+							getStackInSlot(slot + 6).stackSize += ran;
+						else
+							getStackInSlot(slot + 6).stackSize = itemstack.getMaxStackSize();
+					}
 				}
 			}
 

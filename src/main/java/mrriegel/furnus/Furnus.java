@@ -37,7 +37,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.5";
+	public static final String VERSION = "1.6";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -63,11 +63,14 @@ public class Furnus {
 			lis.add(new Recipe("oreQuartz:1", "gemQuartz:3", .3F));
 			lis.add(new Recipe("denseoreQuartz:1", "gemQuartz:9", .9F));
 			lis.add(new Recipe("oreCoal:1", "minecraft:coal:0:3", .3F));
+			lis.add(new Recipe("oreNetherCoal:1", "minecraft:coal:0:6", .6F));
 			lis.add(new Recipe("denseoreCoal:1", "minecraft:coal:0:9", .9F));
 			lis.add(new Recipe("oreLapis:1", "gemLapis:8", .3F));
+			lis.add(new Recipe("oreNetherLapis:1", "gemLapis:16", .6F));
 			lis.add(new Recipe("denseoreLapis:1", "gemLapis:24", .9F));
 			lis.add(new Recipe("denseoreDiamond:1", "gemDiamond:6", 3F));
 			lis.add(new Recipe("oreRedstone:1", "dustRedstone:8", .3F));
+			lis.add(new Recipe("oreNetherRedstone:1", "dustRedstone:16", .6F));
 			lis.add(new Recipe("denseoreRedstone:1", "dustRedstone:24", .9F));
 			lis.add(new Recipe("denseoreEmerald:1", "gemEmerald:6", 3F));
 			lis.add(new Recipe("minecraft:quartz_block:-1:1", "gemQuartz:4", .3F));
@@ -132,15 +135,6 @@ public class Furnus {
 							stack,
 							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(3))
 									.get(0), 2), 0.5F);
-			else if (ore.startsWith("denseore")
-					&& !OreDictionary.getOres("dust" + ore.substring(8)).isEmpty()
-					&& !black.contains("dust" + ore.substring(8))
-					&& !OreDictionary.getOres(ore).isEmpty())
-				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(
-							stack,
-							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(8))
-									.get(0), 6), 2F);
 			else if (ore.startsWith("ore")
 					&& !OreDictionary.getOres("gem" + ore.substring(3)).isEmpty()
 					&& !black.contains("gem" + ore.substring(3))
@@ -150,6 +144,42 @@ public class Furnus {
 							stack,
 							CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(3))
 									.get(0), 2), 0.4F);
+			if (ore.startsWith("oreNether")
+					&& !OreDictionary.getOres("dust" + ore.substring(9)).isEmpty()
+					&& !black.contains("dust" + ore.substring(9))
+					&& !OreDictionary.getOres(ore).isEmpty())
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(
+							stack,
+							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(9))
+									.get(0), 4), 1F);
+			if (ore.startsWith("oreNether")
+					&& !OreDictionary.getOres("gem" + ore.substring(9)).isEmpty()
+					&& !black.contains("gem" + ore.substring(9))
+					&& !OreDictionary.getOres(ore).isEmpty())
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(
+							stack,
+							CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(9))
+									.get(0), 4), 1.2F);
+			else if (ore.startsWith("denseore")
+					&& !OreDictionary.getOres("dust" + ore.substring(8)).isEmpty()
+					&& !black.contains("dust" + ore.substring(8))
+					&& !OreDictionary.getOres(ore).isEmpty())
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(
+							stack,
+							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(8))
+									.get(0), 6), 2F);
+			else if (ore.startsWith("denseore")
+					&& !OreDictionary.getOres("gem" + ore.substring(8)).isEmpty()
+					&& !black.contains("gem" + ore.substring(8))
+					&& !OreDictionary.getOres(ore).isEmpty())
+				for (ItemStack stack : OreDictionary.getOres(ore))
+					CrunchHandler.instance().addItemStack(
+							stack,
+							CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(8))
+									.get(0), 6), 2F);
 			else if (ore.startsWith("ingot")
 					&& !OreDictionary.getOres("dust" + ore.substring(5)).isEmpty()
 					&& !black.contains("dust" + ore.substring(5))
