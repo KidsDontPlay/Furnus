@@ -115,7 +115,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
 		tag.setString("progress", new Gson().toJson(progress));
-		System.out.println("f: " +face);
 		tag.setString("face", face);
 	}
 
