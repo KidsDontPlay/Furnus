@@ -22,7 +22,7 @@ public class CrunchHandler {
 	}
 
 	public static ItemStack resize(ItemStack stack, int size) {
-		if (stack == null)
+		if (stack == null || size <= 0)
 			return null;
 		ItemStack stack2 = stack.copy();
 		stack2.stackSize = size;
