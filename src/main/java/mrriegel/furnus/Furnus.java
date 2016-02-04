@@ -37,7 +37,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.6";
+	public static final String VERSION = "1.7";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)

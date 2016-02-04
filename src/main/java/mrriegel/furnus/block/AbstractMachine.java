@@ -11,6 +11,7 @@ import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.ProgressMessage;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import vazkii.botania.api.item.IExoflameHeatable;
 import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
@@ -39,7 +41,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks, fuelPerTick;
 	protected Map<Direction, Mode> input, output, fuelput;
 	protected Map<Integer, Integer> progress;
-	protected String face;
 
 	public AbstractMachine() {
 		super(15);
@@ -101,7 +102,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		progress = new Gson().fromJson(tag.getString("progress"),
 				new TypeToken<Map<Integer, Integer>>() {
 				}.getType());
-		face = tag.getString("face");
 	}
 
 	@Override
@@ -124,7 +124,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
 		tag.setString("progress", new Gson().toJson(progress));
-		tag.setString("face", face);
 	}
 
 	public boolean isBurning() {
@@ -263,14 +262,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		this.progress = progress;
 	}
 
-	public String getFace() {
-		return face;
-	}
-
-	public void setFace(String face) {
-		this.face = face;
-	}
-
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side) {
 		if (!inout)
@@ -316,6 +307,12 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		}
 		if (fuelput.get(wrongSide) != Mode.X && slot == 9 && !TileEntityFurnace.isItemFuel(stack))
 			return true;
+		return false;
+	}
+
+	@Override
+	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta,
+			World world, int x, int y, int z) {
 		return false;
 	}
 
@@ -643,7 +640,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return Direction.TOP;
 		if (side == 0)
 			return Direction.BOTTOM;
-		if (face.equals("N")) {
+		int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+		if (meta == 2) {
 			switch (side) {
 			case 2:
 				return Direction.FRONT;
@@ -655,7 +653,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return Direction.LEFT;
 			}
 		}
-		if (face.equals("S")) {
+		if (meta == 3) {
 			switch (side) {
 			case 2:
 				return Direction.BACK;
@@ -667,7 +665,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return Direction.RIGHT;
 			}
 		}
-		if (face.equals("E")) {
+		if (meta == 5) {
 			switch (side) {
 			case 2:
 				return Direction.RIGHT;
@@ -679,7 +677,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return Direction.FRONT;
 			}
 		}
-		if (face.equals("W")) {
+		if (meta == 4) {
 			switch (side) {
 			case 2:
 				return Direction.LEFT;
