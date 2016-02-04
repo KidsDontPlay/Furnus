@@ -11,6 +11,7 @@ import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.ProgressMessage;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -21,6 +22,7 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
 import com.google.common.reflect.TypeToken;
@@ -280,6 +282,12 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		}
 		if (fuelput.get(wrongSide) != Mode.X && slot == 9 && !TileEntityFurnace.isItemFuel(stack))
 			return true;
+		return false;
+	}
+
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState,
+			IBlockState newSate) {
 		return false;
 	}
 
