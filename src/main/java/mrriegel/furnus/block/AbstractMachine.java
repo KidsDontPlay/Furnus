@@ -36,7 +36,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel;
 	protected Map<Direction, Mode> input, output, fuelput;
 	protected Map<Integer, Integer> progress;
-	protected String face;
 
 	protected AbstractMachine() {
 		super(15);
@@ -95,7 +94,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		progress = new Gson().fromJson(tag.getString("progress"),
 				new TypeToken<Map<Integer, Integer>>() {
 				}.getType());
-		face = tag.getString("face");
 	}
 
 	@Override
@@ -115,7 +113,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setString("output", new Gson().toJson(output));
 		tag.setString("fuelput", new Gson().toJson(fuelput));
 		tag.setString("progress", new Gson().toJson(progress));
-		tag.setString("face", face);
 	}
 
 	public boolean isBurning() {
@@ -236,14 +233,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	public void setProgress(Map<Integer, Integer> progress) {
 		this.progress = progress;
-	}
-
-	public String getFace() {
-		return face;
-	}
-
-	public void setFace(String face) {
-		this.face = face;
 	}
 
 	@Override
@@ -382,20 +371,12 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		move();
 		if (fuel > 0 && !burning) {
 			burning = true;
-			if (this instanceof TileFurnus)
-				((BlockFurnus) getBlockType()).setFurnusState(worldObj, getPos(),
-						worldObj.getBlockState(getPos()), burning);
-			else if (this instanceof TilePulvus)
-				((BlockPulvus) getBlockType()).setPulvusState(worldObj, getPos(),
-						worldObj.getBlockState(getPos()), burning);
+			((AbstractBlock) getBlockType()).setState(worldObj, getPos(),
+					worldObj.getBlockState(getPos()), burning);
 		} else if (fuel <= 0 && burning) {
 			burning = false;
-			if (this instanceof TileFurnus)
-				((BlockFurnus) getBlockType()).setFurnusState(worldObj, getPos(),
-						worldObj.getBlockState(getPos()), burning);
-			else if (this instanceof TilePulvus)
-				((BlockPulvus) getBlockType()).setPulvusState(worldObj, getPos(),
-						worldObj.getBlockState(getPos()), burning);
+			((AbstractBlock) getBlockType()).setState(worldObj, getPos(),
+					worldObj.getBlockState(getPos()), burning);
 		}
 
 		for (int i = 0; i <= speed * ConfigurationHandler.speedMulti; i++) {
@@ -607,7 +588,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return Direction.TOP;
 		if (side == EnumFacing.DOWN)
 			return Direction.BOTTOM;
-		if (face.equals("N")) {
+		EnumFacing face = worldObj.getBlockState(pos).getValue(AbstractBlock.FACING);
+		if (face == EnumFacing.NORTH) {
 			switch (side) {
 			case NORTH:
 				return Direction.FRONT;
@@ -619,7 +601,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return Direction.LEFT;
 			}
 		}
-		if (face.equals("S")) {
+		if (face == EnumFacing.SOUTH) {
 			switch (side) {
 			case NORTH:
 				return Direction.BACK;
@@ -631,7 +613,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return Direction.RIGHT;
 			}
 		}
-		if (face.equals("E")) {
+		if (face == EnumFacing.EAST) {
 			switch (side) {
 			case NORTH:
 				return Direction.RIGHT;
@@ -643,7 +625,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return Direction.FRONT;
 			}
 		}
-		if (face.equals("W")) {
+		if (face == EnumFacing.WEST) {
 			switch (side) {
 			case NORTH:
 				return Direction.LEFT;

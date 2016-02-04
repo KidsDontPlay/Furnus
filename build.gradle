@@ -25,7 +25,7 @@ group= "mrriegel.furnus" // http://maven.apache.org/guides/mini/guide-naming-con
 archivesBaseName = "Furnus"
 
 minecraft {
-    version = "1.8.9-11.15.0.1697"
+    version = "1.8.9-11.15.1.1731"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -91,6 +91,6 @@ minecraft {
 }
 
 dependencies {
-  deobfCompile "mezz.jei:jei_1.8.9:2.19.0.93"
+  deobfCompile "mezz.jei:jei_1.8.9:2.24.2.125"
 }
 }
