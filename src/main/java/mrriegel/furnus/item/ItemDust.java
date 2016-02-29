@@ -33,8 +33,7 @@ public class ItemDust extends Item {
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		return this.getUnlocalizedName() + "_"
-				+ Dust.values()[stack.getItemDamage()].toString().toLowerCase();
+		return this.getUnlocalizedName() + "_" + Dust.values()[stack.getItemDamage()].toString().toLowerCase();
 	}
 
 }

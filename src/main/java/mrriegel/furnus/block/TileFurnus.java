@@ -36,8 +36,7 @@ public class TileFurnus extends AbstractMachine {
 				if (getStackInSlot(slot + 6) == null) {
 					setInventorySlotContents(slot + 6, CrunchHandler.resize(itemstack, ran));
 				} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
-					if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack
-							.getMaxStackSize())
+					if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack.getMaxStackSize())
 						getStackInSlot(slot + 6).stackSize += ran;
 					else
 						getStackInSlot(slot + 6).stackSize = itemstack.getMaxStackSize();
@@ -65,18 +64,13 @@ public class TileFurnus extends AbstractMachine {
 			if (!getStackInSlot(slot + 3).isItemEqual(itemstack))
 				return false;
 			int result = getStackInSlot(slot + 3).stackSize + itemstack.stackSize;
-			return result <= getInventoryStackLimit()
-					&& result <= getStackInSlot(slot + 3).getMaxStackSize();
+			return result <= getInventoryStackLimit() && result <= getStackInSlot(slot + 3).getMaxStackSize();
 		}
 	}
 
 	@Override
 	protected boolean fit(ItemStack stack, int slot) {
-		return getStackInSlot(slot + 3) == null
-				|| (FurnaceRecipes.instance().getSmeltingResult(stack)
-						.isItemEqual(getStackInSlot(slot + 3)) && getStackInSlot(slot + 3).stackSize
-						+ FurnaceRecipes.instance().getSmeltingResult(stack).stackSize <= getStackInSlot(
-							slot + 3).getMaxStackSize());
+		return getStackInSlot(slot + 3) == null || (FurnaceRecipes.instance().getSmeltingResult(stack).isItemEqual(getStackInSlot(slot + 3)) && getStackInSlot(slot + 3).stackSize + FurnaceRecipes.instance().getSmeltingResult(stack).stackSize <= getStackInSlot(slot + 3).getMaxStackSize());
 	}
 
 }

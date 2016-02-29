@@ -28,9 +28,7 @@ public class OpenMessage implements IMessage, IMessageHandler<OpenMessage, IMess
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				ctx.getServerHandler().playerEntity.openGui(Furnus.instance, message.id,
-						ctx.getServerHandler().playerEntity.worldObj, message.x, message.y,
-						message.z);
+				ctx.getServerHandler().playerEntity.openGui(Furnus.instance, message.id, ctx.getServerHandler().playerEntity.worldObj, message.x, message.y, message.z);
 			}
 		});
 		return null;

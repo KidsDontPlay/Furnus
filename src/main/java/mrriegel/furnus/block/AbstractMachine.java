@@ -13,6 +13,7 @@ import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -28,8 +29,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory,
-		ITickable {
+public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory, ITickable {
 	protected AbstractMachine(int size) {
 		super(size);
 	}
@@ -87,15 +87,12 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		maxFuel = tag.getInteger("maxFuel");
 		input = new Gson().fromJson(tag.getString("input"), new TypeToken<Map<Direction, Mode>>() {
 		}.getType());
-		output = new Gson().fromJson(tag.getString("output"),
-				new TypeToken<Map<Direction, Mode>>() {
-				}.getType());
-		fuelput = new Gson().fromJson(tag.getString("fuelput"),
-				new TypeToken<Map<Direction, Mode>>() {
-				}.getType());
-		progress = new Gson().fromJson(tag.getString("progress"),
-				new TypeToken<Map<Integer, Integer>>() {
-				}.getType());
+		output = new Gson().fromJson(tag.getString("output"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
+		fuelput = new Gson().fromJson(tag.getString("fuelput"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
+		progress = new Gson().fromJson(tag.getString("progress"), new TypeToken<Map<Integer, Integer>>() {
+		}.getType());
 	}
 
 	@Override
@@ -286,9 +283,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState,
-			IBlockState newSate) {
-		return false;
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		return newSate.getBlock() == Blocks.air;
 	}
 
 	protected ArrayList<Integer> getOutputSlots() {
@@ -379,12 +375,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		move();
 		if (fuel > 0 && !burning) {
 			burning = true;
-			((AbstractBlock) getBlockType()).setState(worldObj, getPos(),
-					worldObj.getBlockState(getPos()), burning);
+			((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
 		} else if (fuel <= 0 && burning) {
 			burning = false;
-			((AbstractBlock) getBlockType()).setState(worldObj, getPos(),
-					worldObj.getBlockState(getPos()), burning);
+			((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
 		}
 
 		for (int i = 0; i <= speed * ConfigurationHandler.speedMulti; i++) {
@@ -398,8 +392,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	protected void fuelUp(int slot) {
-		if (fuel >= 1 || getStackInSlot(9) == null
-				|| !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canProcess(slot))
+		if (fuel >= 1 || getStackInSlot(9) == null || !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canProcess(slot))
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
 		fuel += fuelTime;
@@ -407,8 +400,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		if (getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)) == null)
 			InventoryHelper.decrStackSize(this, 9, 1);
 		else
-			setInventorySlotContents(9,
-					getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
+			setInventorySlotContents(9, getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
 	}
 
 	protected void burn(int slot) {
@@ -432,9 +424,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progress.put(slot, 0);
 		}
 		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
-			double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus()
-					* (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
-					/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+			double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
 			fuel -= effi * 100;
 		}
 
@@ -452,10 +442,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	void sendMessage() {
-		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(),
-				getPos().getY(), getPos().getZ(), fuel, maxFuel, progress), new TargetPoint(
-				worldObj.provider.getDimensionId(), getPos().getX(), getPos().getY(), getPos()
-						.getZ(), 12));
+		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress), new TargetPoint(worldObj.provider.getDimensionId(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
 	}
 
 	protected abstract void processItem(int slot);
@@ -467,30 +454,22 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {
-				if (getStackInSlot(i) == null
-						|| output.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
+				if (getStackInSlot(i) == null || output.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
 					continue;
 
 				if (!(ir instanceof ISidedInventory)) {
 					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToInventoryWithLeftover(getStackInSlot(i).copy(),
-							ir, false);
+					int rest = InventoryHelper.addToInventoryWithLeftover(getStackInSlot(i).copy(), ir, false);
 					if (num == rest)
 						continue;
-					setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
-									: null);
+					setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest) : null);
 					break;
 				} else if (ir instanceof ISidedInventory) {
 					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(getStackInSlot(i)
-							.copy(), (ISidedInventory) ir, getDirection((TileEntity) ir, this),
-							false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(getStackInSlot(i).copy(), (ISidedInventory) ir, getDirection((TileEntity) ir, this), false);
 					if (num == rest)
 						continue;
-					setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
-									: null);
+					setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest) : null);
 					break;
 				}
 			}
@@ -501,8 +480,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		if (!inout || worldObj.getTotalWorldTime() % 60 / (speed + slots + 1) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
-			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
-					&& fuelput.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
+			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO && fuelput.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
 				continue;
 			EnumFacing side = getDirection(this, (TileEntity) ir);
 			if (!(ir instanceof ISidedInventory)) {
@@ -510,30 +488,23 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 					if (ir.getStackInSlot(i) == null)
 						continue;
 					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i)
-							.copy(), this, side, false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
 					if (num == rest)
 						continue;
-					ir.setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
-									: null);
+					ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
 					break;
 				}
 			} else if (ir instanceof ISidedInventory) {
 				for (int i : ((ISidedInventory) ir).getSlotsForFace(side)) {
 					if (ir.getStackInSlot(i) == null)
 						continue;
-					if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i),
-							getDirection((TileEntity) ir, this)))
+					if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i), getDirection((TileEntity) ir, this)))
 						break;
 					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i)
-							.copy(), this, side, false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
 					if (num == rest)
 						continue;
-					ir.setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
-									: null);
+					ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
 					break;
 				}
 			}
@@ -558,33 +529,27 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	protected List<IInventory> getIInventories() {
 		ArrayList<IInventory> lis = new ArrayList<IInventory>();
-		TileEntity a = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() + 1,
-				getPos().getZ()));
+		TileEntity a = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() + 1, getPos().getZ()));
 		if (a != null && a instanceof IInventory)
 			lis.add((IInventory) a);
 
-		TileEntity b = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() - 1,
-				getPos().getZ()));
+		TileEntity b = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() - 1, getPos().getZ()));
 		if (b != null && b instanceof IInventory)
 			lis.add((IInventory) b);
 
-		TileEntity c = worldObj.getTileEntity(new BlockPos(getPos().getX() + 1, getPos().getY(),
-				getPos().getZ()));
+		TileEntity c = worldObj.getTileEntity(new BlockPos(getPos().getX() + 1, getPos().getY(), getPos().getZ()));
 		if (c != null && c instanceof IInventory)
 			lis.add((IInventory) c);
 
-		TileEntity d = worldObj.getTileEntity(new BlockPos(getPos().getX() - 1, getPos().getY(),
-				getPos().getZ()));
+		TileEntity d = worldObj.getTileEntity(new BlockPos(getPos().getX() - 1, getPos().getY(), getPos().getZ()));
 		if (d != null && d instanceof IInventory)
 			lis.add((IInventory) d);
 
-		TileEntity e = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(),
-				getPos().getZ() + 1));
+		TileEntity e = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ() + 1));
 		if (e != null && e instanceof IInventory)
 			lis.add((IInventory) e);
 
-		TileEntity f = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(),
-				getPos().getZ() - 1));
+		TileEntity f = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ() - 1));
 		if (f != null && f instanceof IInventory)
 			lis.add((IInventory) f);
 
@@ -673,8 +638,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return;
 		for (int i : getInputSlots()) {
 			for (int j : getInputSlots())
-				if (getStackInSlot(j) == null && getStackInSlot(i) != null && !canProcess(i)
-						&& fit(getStackInSlot(i), j)) {
+				if (getStackInSlot(j) == null && getStackInSlot(i) != null && !canProcess(i) && fit(getStackInSlot(i), j)) {
 					setInventorySlotContents(j, getStackInSlot(i).copy());
 					setInventorySlotContents(i, null);
 				}

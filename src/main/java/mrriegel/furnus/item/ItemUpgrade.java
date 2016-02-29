@@ -32,11 +32,9 @@ public class ItemUpgrade extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_,
-			boolean p_77624_4_) {
+	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_, boolean p_77624_4_) {
 		super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
-		p_77624_3_.add(StatCollector.translateToLocal("item.furnus:upgrade_"
-				+ p_77624_1_.getItemDamage() + ".tip"));
+		p_77624_3_.add(StatCollector.translateToLocal("item.furnus:upgrade_" + p_77624_1_.getItemDamage() + ".tip"));
 	}
 
 	@Override

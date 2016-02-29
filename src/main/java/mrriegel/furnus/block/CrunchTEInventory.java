@@ -77,8 +77,7 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 	public Packet getDescriptionPacket() {
 		NBTTagCompound syncData = new NBTTagCompound();
 		this.writeSyncableDataToNBT(syncData);
-		return new S35PacketUpdateTileEntity(new BlockPos(this.getPos().getX(), this.getPos()
-				.getY(), this.getPos().getZ()), 1, syncData);
+		return new S35PacketUpdateTileEntity(new BlockPos(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ()), 1, syncData);
 	}
 
 	@Override
@@ -137,9 +136,7 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
-		return this.worldObj.getTileEntity(new BlockPos(this.getPos().getX(), this.getPos().getY(),
-				this.getPos().getZ())) != this ? false : p_70300_1_.getDistanceSq(this.getPos()
-				.getX() + 0.5D, this.getPos().getY() + 0.5D, this.getPos().getZ() + 0.5D) <= 64.0D;
+		return this.worldObj.getTileEntity(new BlockPos(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ())) != this ? false : p_70300_1_.getDistanceSq(this.getPos().getX() + 0.5D, this.getPos().getY() + 0.5D, this.getPos().getZ() + 0.5D) <= 64.0D;
 
 	}
 

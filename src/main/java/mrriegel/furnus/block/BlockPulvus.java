@@ -17,13 +17,11 @@ public class BlockPulvus extends AbstractBlock {
 	}
 
 	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
-			EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (worldIn.isRemote) {
 			return true;
 		} else {
-			playerIn.openGui(Furnus.instance, GuiHandler.PULVUS, worldIn, pos.getX(), pos.getY(),
-					pos.getZ());
+			playerIn.openGui(Furnus.instance, GuiHandler.PULVUS, worldIn, pos.getX(), pos.getY(), pos.getZ());
 			return true;
 		}
 	}

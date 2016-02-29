@@ -57,8 +57,7 @@ public class InventoryHelper {
 	}
 
 	/** nicked from reika */
-	public static int addToInventoryWithLeftover(ItemStack stack, IInventory inventory,
-			boolean simulate) {
+	public static int addToInventoryWithLeftover(ItemStack stack, IInventory inventory, boolean simulate) {
 		int left = stack.stackSize;
 		int max = Math.min(inventory.getInventoryStackLimit(), stack.getMaxStackSize());
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
@@ -94,8 +93,7 @@ public class InventoryHelper {
 	}
 
 	/** nicked from reika */
-	public static int addToSidedInventoryWithLeftover(ItemStack stack, ISidedInventory inventory,
-			EnumFacing side, boolean simulate) {
+	public static int addToSidedInventoryWithLeftover(ItemStack stack, ISidedInventory inventory, EnumFacing side, boolean simulate) {
 		int left = stack.stackSize;
 		int max = Math.min(inventory.getInventoryStackLimit(), stack.getMaxStackSize());
 		for (int i : inventory.getSlotsForFace(side)) {
@@ -159,10 +157,7 @@ public class InventoryHelper {
 		if (!tags)
 			return stack1.isItemEqual(stack2);
 		else
-			return stack1.isItemEqual(stack2)
-					&& ((stack1.getTagCompound() == null && stack2.getTagCompound() == null) || (stack1
-							.getTagCompound() != null && stack2.getTagCompound() != null && stack1
-							.getTagCompound().equals(stack2.getTagCompound())));
+			return stack1.isItemEqual(stack2) && ((stack1.getTagCompound() == null && stack2.getTagCompound() == null) || (stack1.getTagCompound() != null && stack2.getTagCompound() != null && stack1.getTagCompound().equals(stack2.getTagCompound())));
 	}
 
 	public static boolean decrStackSize(IInventory inv, int slot, int num) {
@@ -226,8 +221,7 @@ public class InventoryHelper {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		for (int i = 0; i < inv.getSizeInventory() - ((inv instanceof InventoryPlayer) ? 4 : 0); ++i) {
 			ItemStack stack = inv.getStackInSlot(i);
-			if (stack != null && stack.getItem().equals(item)
-					&& (stack.getItemDamage() == meta || meta == OreDictionary.WILDCARD_VALUE)) {
+			if (stack != null && stack.getItem().equals(item) && (stack.getItemDamage() == meta || meta == OreDictionary.WILDCARD_VALUE)) {
 				ar.add(i);
 			}
 		}
@@ -238,8 +232,7 @@ public class InventoryHelper {
 		ArrayList<Integer> ar = new ArrayList<Integer>();
 		for (int i = 0; i < inv.length; ++i) {
 			ItemStack stack = inv[i];
-			if (stack != null && stack.getItem().equals(item)
-					&& (stack.getItemDamage() == meta || meta == OreDictionary.WILDCARD_VALUE)) {
+			if (stack != null && stack.getItem().equals(item) && (stack.getItemDamage() == meta || meta == OreDictionary.WILDCARD_VALUE)) {
 				ar.add(i);
 			}
 		}

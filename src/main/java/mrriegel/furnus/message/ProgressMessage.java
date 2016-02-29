@@ -25,8 +25,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 
 	}
 
-	public ProgressMessage(boolean burning, int x, int y, int z, int fuel, int maxFuel,
-			Map<Integer, Integer> progress) {
+	public ProgressMessage(boolean burning, int x, int y, int z, int fuel, int maxFuel, Map<Integer, Integer> progress) {
 		this.burning = burning;
 		this.x = x;
 		this.y = y;
@@ -43,8 +42,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 			@Override
 			public void run() {
 				try {
-					AbstractMachine tile = (AbstractMachine) Minecraft.getMinecraft().theWorld
-							.getTileEntity(new BlockPos(message.x, message.y, message.z));
+					AbstractMachine tile = (AbstractMachine) Minecraft.getMinecraft().theWorld.getTileEntity(new BlockPos(message.x, message.y, message.z));
 					if (tile == null)
 						return;
 					tile.setProgress(message.progress);
@@ -68,9 +66,8 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		this.z = buf.readInt();
 		this.fuel = buf.readInt();
 		this.maxFuel = buf.readInt();
-		this.progress = new Gson().fromJson(ByteBufUtils.readUTF8String(buf),
-				new TypeToken<Map<Integer, Integer>>() {
-				}.getType());
+		this.progress = new Gson().fromJson(ByteBufUtils.readUTF8String(buf), new TypeToken<Map<Integer, Integer>>() {
+		}.getType());
 	}
 
 	@Override

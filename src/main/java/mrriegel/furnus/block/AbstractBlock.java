@@ -25,15 +25,13 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class AbstractBlock extends BlockContainer {
-	public static final PropertyDirection FACING = PropertyDirection.create("facing",
-			EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool STATE = PropertyBool.create("state");
 
 	public AbstractBlock() {
 		super(Material.rock);
 		this.setHardness(4.0F);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
-				.withProperty(STATE, false));
+		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(STATE, false));
 		this.setCreativeTab(CreativeTab.tab1);
 	}
 
@@ -50,8 +48,7 @@ public abstract class AbstractBlock extends BlockContainer {
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
-		return this.getDefaultState().withProperty(FACING, enumfacing)
-				.withProperty(STATE, meta > 5);
+		return this.getDefaultState().withProperty(FACING, enumfacing).withProperty(STATE, meta > 5);
 	}
 
 	@Override
@@ -90,14 +87,11 @@ public abstract class AbstractBlock extends BlockContainer {
 			EnumFacing enumfacing = state.getValue(FACING);
 			if (enumfacing == EnumFacing.NORTH && block.isFullBlock() && !block1.isFullBlock()) {
 				enumfacing = EnumFacing.SOUTH;
-			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock()
-					&& !block.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock() && !block.isFullBlock()) {
 				enumfacing = EnumFacing.NORTH;
-			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock()
-					&& !block3.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock() && !block3.isFullBlock()) {
 				enumfacing = EnumFacing.EAST;
-			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock()
-					&& !block2.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock() && !block2.isFullBlock()) {
 				enumfacing = EnumFacing.WEST;
 			}
 
@@ -107,19 +101,13 @@ public abstract class AbstractBlock extends BlockContainer {
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX,
-			float hitY, float hitZ, int meta, EntityLivingBase placer) {
-		return this.getDefaultState()
-				.withProperty(FACING, placer.getHorizontalFacing().getOpposite())
-				.withProperty(STATE, false);
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+		return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(STATE, false);
 	}
 
 	@Override
-	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state,
-			EntityLivingBase placer, ItemStack stack) {
-		worldIn.setBlockState(pos,
-				state.withProperty(FACING, placer.getHorizontalFacing().getOpposite())
-						.withProperty(STATE, false), 2);
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(STATE, false), 2);
 		worldIn.markBlockForUpdate(pos);
 
 	}
@@ -157,28 +145,20 @@ public abstract class AbstractBlock extends BlockContainer {
 			for (int i = 0; i < tile.getSpeed() + 1; i++)
 				switch (enumfacing) {
 				case WEST:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D,
-							0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
 					break;
 				case EAST:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D,
-							0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
 					break;
 				case NORTH:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D,
-							0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3, 0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D, 0.0D, 0.0D, new int[0]);
 					break;
 				case SOUTH:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3,
-							0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D,
-							0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
+					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
 				}
 		}
 	}

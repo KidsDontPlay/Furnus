@@ -24,8 +24,7 @@ public class CheckMessage implements IMessage, IMessageHandler<CheckMessage, IMe
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				((MachineContainer) ctx.getServerHandler().playerEntity.openContainer).getTile()
-						.setSplit(message.split);
+				((MachineContainer) ctx.getServerHandler().playerEntity.openContainer).getTile().setSplit(message.split);
 			}
 		});
 		return null;

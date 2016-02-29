@@ -17,8 +17,7 @@ public class PulvusCategory extends FurnaceRecipeCategory {
 	public PulvusCategory(IJeiHelpers helpers) {
 		super(helpers.getGuiHelper());
 		IGuiHelper guiHelper = helpers.getGuiHelper();
-		ResourceLocation location = new ResourceLocation("minecraft",
-				"textures/gui/container/furnace.png");
+		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		background = guiHelper.createDrawable(location, 55, 16, 82, 54);
 	}
 

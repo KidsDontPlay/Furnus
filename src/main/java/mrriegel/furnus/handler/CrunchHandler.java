@@ -32,8 +32,7 @@ public class CrunchHandler {
 	public ItemStack getResult(ItemStack stack) {
 		for (Entry<ItemStack, ItemStack> entry : crushingList.entrySet()) {
 			ItemStack in = entry.getKey().copy();
-			if (in.isItemEqual(stack)
-					|| (in.getItem() == stack.getItem() && in.getItemDamage() == OreDictionary.WILDCARD_VALUE))
+			if (in.isItemEqual(stack) || (in.getItem() == stack.getItem() && in.getItemDamage() == OreDictionary.WILDCARD_VALUE))
 				return entry.getValue().copy();
 		}
 		return null;
@@ -42,8 +41,7 @@ public class CrunchHandler {
 	public float getExperience(ItemStack stack) {
 		for (Entry<ItemStack, Float> entry : experienceList.entrySet()) {
 			ItemStack in = entry.getKey().copy();
-			if (in.isItemEqual(stack)
-					|| (in.getItem() == stack.getItem() && in.getItemDamage() == OreDictionary.WILDCARD_VALUE))
+			if (in.isItemEqual(stack) || (in.getItem() == stack.getItem() && in.getItemDamage() == OreDictionary.WILDCARD_VALUE))
 				return entry.getValue();
 		}
 		return 0f;
