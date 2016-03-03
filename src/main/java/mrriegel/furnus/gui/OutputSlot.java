@@ -19,8 +19,7 @@ public class OutputSlot extends Slot {
 	private EntityPlayer thePlayer;
 	private int field_75228_b;
 
-	public OutputSlot(EntityPlayer p_i1813_1_, IInventory p_i1813_2_, int p_i1813_3_,
-			int p_i1813_4_, int p_i1813_5_) {
+	public OutputSlot(EntityPlayer p_i1813_1_, IInventory p_i1813_2_, int p_i1813_3_, int p_i1813_4_, int p_i1813_5_) {
 		super(p_i1813_2_, p_i1813_3_, p_i1813_4_, p_i1813_5_);
 		this.thePlayer = p_i1813_1_;
 	}
@@ -56,12 +55,8 @@ public class OutputSlot extends Slot {
 		p_75208_1_.onCrafting(this.thePlayer.worldObj, this.thePlayer, this.field_75228_b);
 		if (!this.thePlayer.worldObj.isRemote) {
 			int i = this.field_75228_b;
-			float m = inventory instanceof TileFurnus ? FurnaceRecipes.smelting().func_151398_b(
-					p_75208_1_) : inventory instanceof TilePulvus ? CrunchHandler.instance()
-					.getExperience(p_75208_1_) : 0f;
-			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : m + m
-					* ((MachineContainer) thePlayer.openContainer).tile.getXp()
-					* (float) ConfigurationHandler.xpMulti;
+			float m = inventory instanceof TileFurnus ? FurnaceRecipes.smelting().func_151398_b(p_75208_1_) : inventory instanceof TilePulvus ? CrunchHandler.instance().getExperience(p_75208_1_) : 0f;
+			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : m + m * ((MachineContainer) thePlayer.openContainer).tile.getXp() * (float) ConfigurationHandler.xpMulti;
 			int j;
 
 			if (f == 0.0F) {
@@ -77,9 +72,7 @@ public class OutputSlot extends Slot {
 			while (i > 0) {
 				j = EntityXPOrb.getXPSplit(i);
 				i -= j;
-				this.thePlayer.worldObj.spawnEntityInWorld(new EntityXPOrb(this.thePlayer.worldObj,
-						this.thePlayer.posX, this.thePlayer.posY + 0.5D,
-						this.thePlayer.posZ + 0.5D, j));
+				this.thePlayer.worldObj.spawnEntityInWorld(new EntityXPOrb(this.thePlayer.worldObj, this.thePlayer.posX, this.thePlayer.posY + 0.5D, this.thePlayer.posZ + 0.5D, j));
 			}
 		}
 

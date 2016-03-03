@@ -22,8 +22,7 @@ public class OpenMessage implements IMessage, IMessageHandler<OpenMessage, IMess
 
 	@Override
 	public IMessage onMessage(OpenMessage message, MessageContext ctx) {
-		ctx.getServerHandler().playerEntity.openGui(Furnus.instance, message.id,
-				ctx.getServerHandler().playerEntity.worldObj, message.x, message.y, message.z);
+		ctx.getServerHandler().playerEntity.openGui(Furnus.instance, message.id, ctx.getServerHandler().playerEntity.worldObj, message.x, message.y, message.z);
 		return null;
 	}
 

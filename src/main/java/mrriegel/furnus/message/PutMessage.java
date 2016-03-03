@@ -29,10 +29,8 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 
 	@Override
 	public IMessage onMessage(PutMessage message, MessageContext ctx) {
-		AbstractMachine tile = (AbstractMachine) ctx.getServerHandler().playerEntity.worldObj
-				.getTileEntity(message.x, message.y, message.z);
-		AbstractMachine.getMap(message.kind, tile).put(Direction.valueOf(message.i),
-				Mode.valueOf(message.mode));
+		AbstractMachine tile = (AbstractMachine) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
+		AbstractMachine.getMap(message.kind, tile).put(Direction.valueOf(message.i), Mode.valueOf(message.mode));
 		return null;
 	}
 

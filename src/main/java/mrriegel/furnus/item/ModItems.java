@@ -21,9 +21,7 @@ public class ModItems {
 			GameRegistry.registerItem(dust, "dust");
 			for (int i = 0; i < Dust.values().length; i++) {
 				Dust dus = Dust.values()[i];
-				OreDictionary.registerOre("dust" + dus.toString().substring(0, 1)
-						+ dus.toString().substring(1, dus.toString().length()).toLowerCase(),
-						new ItemStack(dust, 1, i));
+				OreDictionary.registerOre("dust" + dus.toString().substring(0, 1) + dus.toString().substring(1, dus.toString().length()).toLowerCase(), new ItemStack(dust, 1, i));
 			}
 		}
 	}

@@ -61,8 +61,7 @@ public abstract class AbstractBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player,
-			ItemStack stack) {
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
 		AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
 		int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
 		if (l == 0) {
@@ -134,9 +133,7 @@ public abstract class AbstractBlock extends BlockContainer {
 	}
 
 	@Override
-	public int getComparatorInputOverride(World p_149736_1_, int p_149736_2_, int p_149736_3_,
-			int p_149736_4_, int p_149736_5_) {
-		return Container.calcRedstoneFromInventory((IInventory) p_149736_1_.getTileEntity(
-				p_149736_2_, p_149736_3_, p_149736_4_));
+	public int getComparatorInputOverride(World p_149736_1_, int p_149736_2_, int p_149736_3_, int p_149736_4_, int p_149736_5_) {
+		return Container.calcRedstoneFromInventory((IInventory) p_149736_1_.getTileEntity(p_149736_2_, p_149736_3_, p_149736_4_));
 	}
 }

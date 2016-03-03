@@ -13,6 +13,7 @@ import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -20,24 +21,22 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.OreDictionary;
 import vazkii.botania.api.item.IExoflameHeatable;
 import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
-import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory,
-		IExternalHeatable, IExoflameHeatable, IEnergyReceiver {
+public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory, IExternalHeatable, IExoflameHeatable {
 
 	public AbstractMachine(int size) {
 		super(size);
 	}
 
-	protected boolean burning, eco, inout, split, rf;
+	protected boolean burning, eco, inout, split;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks, fuelPerTick;
 	protected Map<Direction, Mode> input, output, fuelput;
 	protected Map<Integer, Integer> progress;
@@ -81,7 +80,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		eco = tag.getBoolean("eco");
 		inout = tag.getBoolean("inout");
 		split = tag.getBoolean("split");
-		rf = tag.getBoolean("rf");
 		speed = tag.getInteger("speed");
 		effi = tag.getInteger("effi");
 		slots = tag.getInteger("slot");
@@ -93,15 +91,12 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		fuelPerTick = tag.getInteger("fuelPerTick");
 		input = new Gson().fromJson(tag.getString("input"), new TypeToken<Map<Direction, Mode>>() {
 		}.getType());
-		output = new Gson().fromJson(tag.getString("output"),
-				new TypeToken<Map<Direction, Mode>>() {
-				}.getType());
-		fuelput = new Gson().fromJson(tag.getString("fuelput"),
-				new TypeToken<Map<Direction, Mode>>() {
-				}.getType());
-		progress = new Gson().fromJson(tag.getString("progress"),
-				new TypeToken<Map<Integer, Integer>>() {
-				}.getType());
+		output = new Gson().fromJson(tag.getString("output"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
+		fuelput = new Gson().fromJson(tag.getString("fuelput"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
+		progress = new Gson().fromJson(tag.getString("progress"), new TypeToken<Map<Integer, Integer>>() {
+		}.getType());
 	}
 
 	@Override
@@ -110,7 +105,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setBoolean("eco", eco);
 		tag.setBoolean("inout", inout);
 		tag.setBoolean("split", split);
-		tag.setBoolean("rf", rf);
 		tag.setInteger("speed", speed);
 		tag.setInteger("effi", effi);
 		tag.setInteger("slot", slots);
@@ -196,14 +190,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	public void setSplit(boolean split) {
 		this.split = split;
-	}
-
-	public boolean isRF() {
-		return rf;
-	}
-
-	public void setRF(boolean rf) {
-		this.rf = rf;
 	}
 
 	public int getFuel() {
@@ -311,8 +297,19 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	@Override
-	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta,
-			World world, int x, int y, int z) {
+	public boolean shouldRefresh(Block oldBlock, Block newBlock, int oldMeta, int newMeta, World world, int x, int y, int z) {
+		return newBlock == Blocks.air;
+	}
+
+	protected boolean equalOreDict(ItemStack a, ItemStack b) {
+		if (a == null || b == null)
+			return false;
+		int[] ar = OreDictionary.getOreIDs(a);
+		int[] br = OreDictionary.getOreIDs(b);
+		for (int i = 0; i < ar.length; i++)
+			for (int j = 0; j < br.length; j++)
+				if (ar[i] == br[j])
+					return true;
 		return false;
 	}
 
@@ -352,28 +349,25 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		for (Entry<Integer, Integer> e : upgrades.entrySet()) {
 			switch (e.getKey()) {
 			case 0:
-				setSpeed(e.getValue());
+				setSpeed(ConfigurationHandler.speed ? e.getValue() : 0);
 				break;
 			case 1:
-				setEffi(e.getValue());
+				setEffi(ConfigurationHandler.effi ? e.getValue() : 0);
 				break;
 			case 2:
-				setInout(e.getValue() > 0 ? true : false);
+				setInout(ConfigurationHandler.io ? e.getValue() > 0 ? true : false : false);
 				break;
 			case 3:
-				setSlots(e.getValue());
+				setSlots(ConfigurationHandler.slot ? e.getValue() : 0);
 				break;
 			case 4:
-				setBonus(e.getValue());
+				setBonus(ConfigurationHandler.bonus ? e.getValue() : 0);
 				break;
 			case 5:
-				setXp(e.getValue());
+				setXp(ConfigurationHandler.xp ? e.getValue() : 0);
 				break;
 			case 6:
-				setEco(e.getValue() > 0 ? true : false);
-				break;
-			case 7:
-				setRF(e.getValue() > 0 ? true : false);
+				setEco(ConfigurationHandler.eco ? e.getValue() > 0 ? true : false : false);
 				break;
 			}
 		}
@@ -427,8 +421,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	protected void fuelUp(int slot) {
-		if (fuel >= 1 || getStackInSlot(9) == null
-				|| !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canProcess(slot))
+		if (fuel >= 1 || getStackInSlot(9) == null || !TileEntityFurnace.isItemFuel(getStackInSlot(9)) || !canProcess(slot))
 			return;
 		int fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
 		fuel += fuelTime;
@@ -436,8 +429,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		if (getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)) == null)
 			InventoryHelper.decrStackSize(this, 9, 1);
 		else
-			setInventorySlotContents(9,
-					getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
+			setInventorySlotContents(9, getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
 	}
 
 	protected void burn(int slot) {
@@ -461,9 +453,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progress.put(slot, 0);
 		}
 		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
-			double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus()
-					* (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
-					/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+			double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
 			fuel -= effi * 100;
 			tmp += effi * 100;
 		}
@@ -477,9 +467,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		int ticks = (fuel / 100);
 		ticks /= (speed * ConfigurationHandler.speedMulti + 1);
 		ticks /= (slots + 1);
-		double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus()
-				* (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
-				/ (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+		double effi = (getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
 		ticks /= effi;
 		remainTicks = ticks;
 	}
@@ -495,9 +483,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	void sendMessage() {
-		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, xCoord, yCoord, zCoord,
-				fuel, maxFuel, progress), new TargetPoint(worldObj.provider.dimensionId, xCoord,
-				yCoord, zCoord, 12));
+		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, xCoord, yCoord, zCoord, fuel, maxFuel, progress), new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 12));
 	}
 
 	protected abstract void processItem(int slot);
@@ -509,32 +495,24 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return;
 		for (IInventory ir : getIInventories()) {
 			for (int i : getOutputSlots()) {
-				if (getStackInSlot(i) == null
-						|| output.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
+				if (getStackInSlot(i) == null || output.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
 					continue;
 
 				if (!(ir instanceof ISidedInventory)) {
 					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToInventoryWithLeftover(getStackInSlot(i).copy(),
-							ir, false);
+					int rest = InventoryHelper.addToInventoryWithLeftover(getStackInSlot(i).copy(), ir, false);
 					if (num == rest)
 						continue;
-					setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
-									: null);
+					setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest) : null);
 					TileEntity inv = (TileEntity) ir;
 					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
 				} else if (ir instanceof ISidedInventory) {
 					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(getStackInSlot(i)
-							.copy(), (ISidedInventory) ir, getDirection((TileEntity) ir, this),
-							false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(getStackInSlot(i).copy(), (ISidedInventory) ir, getDirection((TileEntity) ir, this), false);
 					if (num == rest)
 						continue;
-					setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest)
-									: null);
+					setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest) : null);
 					TileEntity inv = (TileEntity) ir;
 					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
@@ -547,8 +525,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		if (!inout || worldObj.getTotalWorldTime() % 60 / (speed + slots + 1) != 0)
 			return;
 		for (IInventory ir : getIInventories()) {
-			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO
-					&& fuelput.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
+			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO && fuelput.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
 				continue;
 			int side = getDirection(this, (TileEntity) ir);
 			if (!(ir instanceof ISidedInventory)) {
@@ -556,13 +533,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 					if (ir.getStackInSlot(i) == null)
 						continue;
 					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i)
-							.copy(), this, side, false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
 					if (num == rest)
 						continue;
-					ir.setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
-									: null);
+					ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
 					TileEntity inv = (TileEntity) ir;
 					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
@@ -571,17 +545,13 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				for (int i : ((ISidedInventory) ir).getAccessibleSlotsFromSide(side)) {
 					if (ir.getStackInSlot(i) == null)
 						continue;
-					if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i),
-							getDirection((TileEntity) ir, this)))
+					if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i), getDirection((TileEntity) ir, this)))
 						break;
 					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i)
-							.copy(), this, side, false);
+					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
 					if (num == rest)
 						continue;
-					ir.setInventorySlotContents(i,
-							rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest)
-									: null);
+					ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
 					TileEntity inv = (TileEntity) ir;
 					worldObj.markBlockForUpdate(inv.xCoord, inv.yCoord, inv.zCoord);
 					break;
@@ -717,8 +687,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return;
 		for (int i : getInputSlots()) {
 			for (int j : getInputSlots()) {
-				if (getStackInSlot(j) == null && getStackInSlot(i) != null && !canProcess(i)
-						&& fit(getStackInSlot(i), j)) {
+				if (getStackInSlot(j) == null && getStackInSlot(i) != null && !canProcess(i) && fit(getStackInSlot(i), j)) {
 					setInventorySlotContents(j, getStackInSlot(i).copy());
 					setInventorySlotContents(i, null);
 				}
@@ -812,30 +781,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public void boostCookTime() {
-	}
-
-	@Override
-	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
-		if (!canProcessAny() || fuel > maxFuel || simulate || !rf)
-			return 0;
-		int f = fuel;
-		fuel = maxFuel = 60000 * (slots + 1);
-		return ((fuel - f) / 12) * speed * ConfigurationHandler.speedMulti;
-	}
-
-	@Override
-	public int getEnergyStored(ForgeDirection from) {
-		return 0;
-	}
-
-	@Override
-	public int getMaxEnergyStored(ForgeDirection from) {
-		return 0;
-	}
-
-	@Override
-	public boolean canConnectEnergy(ForgeDirection from) {
-		return rf;
 	}
 
 	public static Map<Direction, Mode> getMap(String id, AbstractMachine tile) {

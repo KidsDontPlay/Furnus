@@ -53,8 +53,7 @@ public class MachineGUI extends GuiContainer {
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_,
-			int p_146976_3_) {
+	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.getTextureManager().bindTexture(texture);
 		int k = (width - xSize) / 2;
@@ -62,8 +61,7 @@ public class MachineGUI extends GuiContainer {
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
 		if (tile.getSlots() > 0)
-			mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.furnus.split"),
-					guiLeft + 22, guiTop + 7, 4210752);
+			mc.fontRenderer.drawString(StatCollector.translateToLocal("gui.furnus.split"), guiLeft + 22, guiTop + 7, 4210752);
 
 	}
 
@@ -97,19 +95,13 @@ public class MachineGUI extends GuiContainer {
 		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
 			List<String> list = new ArrayList<String>();
 			double speed = (1.d + tile.getSpeed() * 1.d * ConfigurationHandler.speedMulti);
-			list.add(StatCollector.translateToLocal("gui.furnus.speed") + ": "
-					+ String.format("%.2f", speed) + "x");
-			double effi = (tile.getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.)
-					+ tile.getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.)
-					/ (tile.getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
-			list.add(StatCollector.translateToLocal("gui.furnus.effi") + ": "
-					+ String.format("%.2f", effi) + "x");
+			list.add(StatCollector.translateToLocal("gui.furnus.speed") + ": " + String.format("%.2f", speed) + "x");
+			double effi = (tile.getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + tile.getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (tile.getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+			list.add(StatCollector.translateToLocal("gui.furnus.effi") + ": " + String.format("%.2f", effi) + "x");
 			int bonus = (tile.getBonus() * (int) (ConfigurationHandler.bonusMulti * 100.));
-			list.add(StatCollector.translateToLocal("gui.furnus.bonus") + ": "
-					+ String.format("%d", bonus) + "%");
+			list.add(StatCollector.translateToLocal("gui.furnus.bonus") + ": " + String.format("%d", bonus) + "%");
 			double xp = (1.d + tile.getXp() * ConfigurationHandler.xpMulti);
-			list.add(StatCollector.translateToLocal("gui.furnus.xp") + ": "
-					+ String.format("%.2f", xp) + "x");
+			list.add(StatCollector.translateToLocal("gui.furnus.xp") + ": " + String.format("%.2f", xp) + "x");
 			GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 			GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
 			this.drawHoveringText(list, i, j, fontRendererObj);
@@ -130,8 +122,7 @@ public class MachineGUI extends GuiContainer {
 			PacketHandler.INSTANCE.sendToServer(new CheckMessage(chek));
 		} else {
 			mc.thePlayer.closeScreen();
-			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord,
-					tile.yCoord, tile.zCoord);
+			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorldObj(), tile.xCoord, tile.yCoord, tile.zCoord);
 		}
 	}
 
@@ -142,8 +133,7 @@ public class MachineGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14,
-					(int) (tile.getProgress().get(0) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, (int) (tile.getProgress().get(0) / (200. / 24.)), 17);
 			break;
 		case 1:
 			drawTexturedModalRect(k + 19, l + 47 - 13, 176, 31, 18, 18);
@@ -154,10 +144,8 @@ public class MachineGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49 + 14, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 14, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 14, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14,
-					(int) (tile.getProgress().get(0) / (200. / 24.)), 17);
-			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14,
-					(int) (tile.getProgress().get(1) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14, (int) (tile.getProgress().get(0) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14, (int) (tile.getProgress().get(1) / (200. / 24.)), 17);
 			break;
 		case 2:
 			drawTexturedModalRect(k + 19, l + 47 - 27, 176, 31, 18, 18);
@@ -172,12 +160,9 @@ public class MachineGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49 + 27, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14,
-					(int) (tile.getProgress().get(0) / (200. / 24.)), 17);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14,
-					(int) (tile.getProgress().get(1) / (200. / 24.)), 17);
-			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14,
-					(int) (tile.getProgress().get(2) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, (int) (tile.getProgress().get(0) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, (int) (tile.getProgress().get(1) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, (int) (tile.getProgress().get(2) / (200. / 24.)), 17);
 			break;
 		}
 		int percent = (int) (((float) tile.getFuel()) / ((float) tile.getMaxFuel()) * 100f);
@@ -197,10 +182,7 @@ public class MachineGUI extends GuiContainer {
 				FontRenderer fontrenderer = p_146112_1_.fontRenderer;
 				p_146112_1_.getTextureManager().bindTexture(texture);
 				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.field_146123_n = p_146112_2_ >= this.xPosition
-						&& p_146112_3_ >= this.yPosition
-						&& p_146112_2_ < this.xPosition + this.width
-						&& p_146112_3_ < this.yPosition + this.height;
+				this.field_146123_n = p_146112_2_ >= this.xPosition && p_146112_3_ >= this.yPosition && p_146112_2_ < this.xPosition + this.width && p_146112_3_ < this.yPosition + this.height;
 				int k = this.getHoverState(this.field_146123_n);
 				GL11.glEnable(GL11.GL_BLEND);
 				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
@@ -217,8 +199,7 @@ public class MachineGUI extends GuiContainer {
 					l = 16777120;
 				}
 
-				this.drawCenteredString(fontrenderer, this.displayString, this.xPosition
-						+ this.width / 2, this.yPosition + (this.height - 8) / 2, l);
+				this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, l);
 			}
 		}
 

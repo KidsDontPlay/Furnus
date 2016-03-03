@@ -70,8 +70,7 @@ public class ExternalHeaterHandler {
 	 * registers a HeatableAdapter to a TileEnttiy class. Should really only be
 	 * used when implementing the interface is not an option
 	 */
-	public static void registerHeatableAdapter(Class<? extends TileEntity> c,
-			HeatableAdapter adapter) {
+	public static void registerHeatableAdapter(Class<? extends TileEntity> c, HeatableAdapter adapter) {
 		adapterMap.put(c, adapter);
 	}
 
@@ -101,8 +100,7 @@ public class ExternalHeaterHandler {
 			if (!existingOutput.isItemEqual(output))
 				return false;
 			int stackSize = existingOutput.stackSize + output.stackSize;
-			return stackSize <= tileEntity.getInventoryStackLimit()
-					&& stackSize <= output.getMaxStackSize();
+			return stackSize <= tileEntity.getInventoryStackLimit() && stackSize <= output.getMaxStackSize();
 		}
 
 		@Override
@@ -123,8 +121,7 @@ public class ExternalHeaterHandler {
 							updateFurnace(tileEntity, tileEntity.furnaceBurnTime > 0);
 					}
 				}
-				if (canCook && tileEntity.furnaceBurnTime >= 200
-						&& tileEntity.furnaceCookTime < 199) {
+				if (canCook && tileEntity.furnaceBurnTime >= 200 && tileEntity.furnaceCookTime < 199) {
 					int energyToUse = defaultFurnaceSpeedupCost;
 					if (energyAvailable - energyConsumed > energyToUse) {
 						energyConsumed += energyToUse;
@@ -138,8 +135,7 @@ public class ExternalHeaterHandler {
 		public void updateFurnace(TileEntity tileEntity, boolean active) {
 			Block containing = tileEntity.getBlockType();
 			if (containing == Blocks.furnace || containing == Blocks.lit_furnace)
-				BlockFurnace.updateFurnaceBlockState(active, tileEntity.getWorldObj(),
-						tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+				BlockFurnace.updateFurnaceBlockState(active, tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
 			else {
 				// Fix for Natura, might work on other furnaces that extend the
 				// vanilla one and use the variable name "active". Let's hope.
@@ -149,8 +145,7 @@ public class ExternalHeaterHandler {
 				nbt.setBoolean("active", active);
 				nbt.setBoolean("Active", active);
 				tileEntity.readFromNBT(nbt);
-				tileEntity.getWorldObj().markBlockForUpdate(tileEntity.xCoord, tileEntity.yCoord,
-						tileEntity.zCoord);
+				tileEntity.getWorldObj().markBlockForUpdate(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
 			}
 		}
 	}

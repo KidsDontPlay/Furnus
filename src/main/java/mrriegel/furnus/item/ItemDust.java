@@ -32,8 +32,7 @@ public class ItemDust extends Item {
 	public void registerIcons(IIconRegister reg) {
 		icons = new IIcon[Dust.values().length];
 		for (int i = 0; i < Dust.values().length; i++) {
-			this.icons[i] = reg.registerIcon(Furnus.MODID + ":dust_"
-					+ Dust.values()[i].toString().toLowerCase());
+			this.icons[i] = reg.registerIcon(Furnus.MODID + ":dust_" + Dust.values()[i].toString().toLowerCase());
 		}
 	}
 
@@ -56,8 +55,7 @@ public class ItemDust extends Item {
 
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
-		return this.getUnlocalizedName() + "_"
-				+ Dust.values()[stack.getItemDamage()].toString().toLowerCase();
+		return this.getUnlocalizedName() + "_" + Dust.values()[stack.getItemDamage()].toString().toLowerCase();
 	}
 
 }

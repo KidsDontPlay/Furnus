@@ -18,8 +18,7 @@ public class CheckMessage implements IMessage, IMessageHandler<CheckMessage, IMe
 
 	@Override
 	public IMessage onMessage(CheckMessage message, MessageContext ctx) {
-		((MachineContainer) ctx.getServerHandler().playerEntity.openContainer).getTile().setSplit(
-				message.split);
+		((MachineContainer) ctx.getServerHandler().playerEntity.openContainer).getTile().setSplit(message.split);
 		return null;
 	}
 

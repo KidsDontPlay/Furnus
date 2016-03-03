@@ -30,7 +30,7 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister reg) {
-		icons = new IIcon[7 + (ConfigurationHandler.rf ? 1 : 0)];
+		icons = new IIcon[7];
 		for (int i = 0; i < icons.length; i++) {
 			this.icons[i] = reg.registerIcon(Furnus.MODID + ":upgrade_" + i);
 		}
@@ -39,7 +39,7 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int meta) {
-		if (meta > 6 + (ConfigurationHandler.rf ? 1 : 0))
+		if (meta > 6)
 			meta = 0;
 
 		return this.icons[meta];
@@ -48,18 +48,27 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
-		for (int i = 0; i < 7 + (ConfigurationHandler.rf ? 1 : 0); i++) {
-			list.add(new ItemStack(item, 1, i));
-		}
+		if (ConfigurationHandler.speed)
+			list.add(new ItemStack(item, 1, 0));
+		if (ConfigurationHandler.effi)
+			list.add(new ItemStack(item, 1, 1));
+		if (ConfigurationHandler.io)
+			list.add(new ItemStack(item, 1, 2));
+		if (ConfigurationHandler.slot)
+			list.add(new ItemStack(item, 1, 3));
+		if (ConfigurationHandler.bonus)
+			list.add(new ItemStack(item, 1, 4));
+		if (ConfigurationHandler.xp)
+			list.add(new ItemStack(item, 1, 5));
+		if (ConfigurationHandler.eco)
+			list.add(new ItemStack(item, 1, 6));
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_,
-			boolean p_77624_4_) {
+	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_, boolean p_77624_4_) {
 		super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
-		p_77624_3_.add(StatCollector.translateToLocal("item.furnus:upgrade_"
-				+ p_77624_1_.getItemDamage() + ".tip"));
+		p_77624_3_.add(StatCollector.translateToLocal("item.furnus:upgrade_" + p_77624_1_.getItemDamage() + ".tip"));
 	}
 
 	@Override

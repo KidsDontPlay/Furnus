@@ -37,7 +37,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.7";
+	public static final String VERSION = "1.72";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -91,9 +91,8 @@ public class Furnus {
 			fw.write(new GsonBuilder().setPrettyPrinting().create().toJson(lis));
 			fw.close();
 		}
-		recipes = new Gson().fromJson(new BufferedReader(new FileReader(questFile)),
-				new TypeToken<List<Recipe>>() {
-				}.getType());
+		recipes = new Gson().fromJson(new BufferedReader(new FileReader(questFile)), new TypeToken<List<Recipe>>() {
+		}.getType());
 	}
 
 	@EventHandler
@@ -112,12 +111,12 @@ public class Furnus {
 			if (string2Stack(r.inputItem) != null)
 				inl.add(string2Stack(r.inputItem));
 			else
-				inl.addAll(string2Stacklist(r.inputItem));
+				inl.addAll(oreName2Stacklist(r.inputItem));
 			if (string2Stack(r.outputItem) != null)
 				outl.add(string2Stack(r.outputItem));
 			else {
-				if (!string2Stacklist(r.outputItem).isEmpty())
-					outl.add(string2Stacklist(r.outputItem).get(0));
+				if (!oreName2Stacklist(r.outputItem).isEmpty())
+					outl.add(oreName2Stacklist(r.outputItem).get(0));
 			}
 			for (ItemStack in : inl)
 				for (ItemStack out : outl)
@@ -126,79 +125,37 @@ public class Furnus {
 		}
 		List<String> black = Arrays.asList(ConfigurationHandler.blacklistDusts);
 		for (String ore : OreDictionary.getOreNames()) {
-			if (ore.startsWith("ore")
-					&& !OreDictionary.getOres("dust" + ore.substring(3)).isEmpty()
-					&& !black.contains("dust" + ore.substring(3))
-					&& !OreDictionary.getOres(ore).isEmpty())
+			if (ore.startsWith("ore") && !OreDictionary.getOres("dust" + ore.substring(3)).isEmpty() && !black.contains("dust" + ore.substring(3)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(
-							stack,
-							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(3))
-									.get(0), 2), 0.5F);
-			else if (ore.startsWith("ore")
-					&& !OreDictionary.getOres("gem" + ore.substring(3)).isEmpty()
-					&& !black.contains("gem" + ore.substring(3))
-					&& !OreDictionary.getOres(ore).isEmpty())
+					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(3)).get(0), 2), 0.5F);
+			else if (ore.startsWith("ore") && !OreDictionary.getOres("gem" + ore.substring(3)).isEmpty() && !black.contains("gem" + ore.substring(3)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(
-							stack,
-							CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(3))
-									.get(0), 2), 0.4F);
-			if (ore.startsWith("oreNether")
-					&& !OreDictionary.getOres("dust" + ore.substring(9)).isEmpty()
-					&& !black.contains("dust" + ore.substring(9))
-					&& !OreDictionary.getOres(ore).isEmpty())
+					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(3)).get(0), 2), 0.4F);
+			if (ore.startsWith("oreNether") && !OreDictionary.getOres("dust" + ore.substring(9)).isEmpty() && !black.contains("dust" + ore.substring(9)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(
-							stack,
-							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(9))
-									.get(0), 4), 1F);
-			if (ore.startsWith("oreNether")
-					&& !OreDictionary.getOres("gem" + ore.substring(9)).isEmpty()
-					&& !black.contains("gem" + ore.substring(9))
-					&& !OreDictionary.getOres(ore).isEmpty())
+					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(9)).get(0), 4), 1F);
+			if (ore.startsWith("oreNether") && !OreDictionary.getOres("gem" + ore.substring(9)).isEmpty() && !black.contains("gem" + ore.substring(9)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(
-							stack,
-							CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(9))
-									.get(0), 4), 1.2F);
-			else if (ore.startsWith("denseore")
-					&& !OreDictionary.getOres("dust" + ore.substring(8)).isEmpty()
-					&& !black.contains("dust" + ore.substring(8))
-					&& !OreDictionary.getOres(ore).isEmpty())
+					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(9)).get(0), 4), 1.2F);
+			else if (ore.startsWith("denseore") && !OreDictionary.getOres("dust" + ore.substring(8)).isEmpty() && !black.contains("dust" + ore.substring(8)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(
-							stack,
-							CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(8))
-									.get(0), 6), 2F);
-			else if (ore.startsWith("denseore")
-					&& !OreDictionary.getOres("gem" + ore.substring(8)).isEmpty()
-					&& !black.contains("gem" + ore.substring(8))
-					&& !OreDictionary.getOres(ore).isEmpty())
+					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(8)).get(0), 6), 2F);
+			else if (ore.startsWith("denseore") && !OreDictionary.getOres("gem" + ore.substring(8)).isEmpty() && !black.contains("gem" + ore.substring(8)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(
-							stack,
-							CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(8))
-									.get(0), 6), 2F);
-			else if (ore.startsWith("ingot")
-					&& !OreDictionary.getOres("dust" + ore.substring(5)).isEmpty()
-					&& !black.contains("dust" + ore.substring(5))
-					&& !OreDictionary.getOres(ore).isEmpty())
+					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(8)).get(0), 6), 2F);
+			else if (ore.startsWith("ingot") && !OreDictionary.getOres("dust" + ore.substring(5)).isEmpty() && !black.contains("dust" + ore.substring(5)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
-					CrunchHandler.instance().addItemStack(stack,
-							OreDictionary.getOres("dust" + ore.substring(5)).get(0), 0.1F);
+					CrunchHandler.instance().addItemStack(stack, OreDictionary.getOres("dust" + ore.substring(5)).get(0), 0.1F);
 		}
 	}
 
 	private ItemStack string2Stack(String s) {
 		ItemStack stack = null;
 		if (StringUtils.countMatches(s, ":") == 3) {
-			ItemStack tmp = GameRegistry.findItemStack(s.split(":")[0], s.split(":")[1],
-					Integer.valueOf(s.split(":")[3]));
+			ItemStack tmp = GameRegistry.findItemStack(s.split(":")[0], s.split(":")[1], Integer.valueOf(s.split(":")[3]));
 			if (tmp != null) {
 				stack = tmp.copy();
-				stack.setItemDamage(Integer.valueOf(s.split(":")[2]) == -1 ? OreDictionary.WILDCARD_VALUE
-						: Integer.valueOf(s.split(":")[2]));
+				stack.setItemDamage(Integer.valueOf(s.split(":")[2]) == -1 ? OreDictionary.WILDCARD_VALUE : Integer.valueOf(s.split(":")[2]));
 			}
 		}
 		if (stack == null)
@@ -207,7 +164,7 @@ public class Furnus {
 		return stack.copy();
 	}
 
-	private List<ItemStack> string2Stacklist(String s) {
+	private List<ItemStack> oreName2Stacklist(String s) {
 		List<ItemStack> lis = new ArrayList<ItemStack>();
 		if (StringUtils.countMatches(s, ":") == 1) {
 			if (OreDictionary.doesOreNameExist(s.split(":")[0])) {
