@@ -1,6 +1,5 @@
 package mrriegel.furnus.handler;
 
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.common.config.Configuration;
 
 public class ConfigurationHandler {

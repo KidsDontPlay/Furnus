@@ -33,7 +33,7 @@ public class TileFurnus extends AbstractMachine {
 			}
 			boolean valid;
 			try {
-				valid = !getStackInSlot(slot).isItemEqual(CrunchHandler.instance().getResult(getStackInSlot(slot + 3)))&&!equalOreDict(getStackInSlot(slot), CrunchHandler.instance().getResult(getStackInSlot(slot + 3)));
+				valid = !getStackInSlot(slot).isItemEqual(CrunchHandler.instance().getResult(getStackInSlot(slot + 3))) && !equalOreDict(getStackInSlot(slot), CrunchHandler.instance().getResult(getStackInSlot(slot + 3)));
 			} catch (NullPointerException e) {
 				valid = true;
 			}

@@ -1,6 +1,5 @@
 package mrriegel.furnus.block;
 
-import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.CrunchHandler;
@@ -8,7 +7,6 @@ import mrriegel.furnus.item.ModItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraftforge.oredict.OreDictionary;
 
 public class TilePulvus extends AbstractMachine {
 
