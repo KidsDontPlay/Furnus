@@ -25,6 +25,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -305,6 +306,18 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0 }));
 	}
 
+	protected boolean equalOreDict(ItemStack a, ItemStack b) {
+		if (a == null || b == null)
+			return false;
+		int[] ar = OreDictionary.getOreIDs(a);
+		int[] br = OreDictionary.getOreIDs(b);
+		for (int i = 0; i < ar.length; i++)
+			for (int j = 0; j < br.length; j++)
+				if (ar[i] == br[j])
+					return true;
+		return false;
+	}
+
 	@Override
 	public abstract boolean isItemValidForSlot(int slot, ItemStack stack);
 
@@ -323,25 +336,25 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		for (Entry<Integer, Integer> e : upgrades.entrySet()) {
 			switch (e.getKey()) {
 			case 0:
-				setSpeed(e.getValue());
+				setSpeed(ConfigurationHandler.speed ? e.getValue() : 0);
 				break;
 			case 1:
-				setEffi(e.getValue());
+				setEffi(ConfigurationHandler.effi ? e.getValue() : 0);
 				break;
 			case 2:
-				setInout(e.getValue() > 0 ? true : false);
+				setInout(ConfigurationHandler.io ? e.getValue() > 0 ? true : false : false);
 				break;
 			case 3:
-				setSlots(e.getValue());
+				setSlots(ConfigurationHandler.slot ? e.getValue() : 0);
 				break;
 			case 4:
-				setBonus(e.getValue());
+				setBonus(ConfigurationHandler.bonus ? e.getValue() : 0);
 				break;
 			case 5:
-				setXp(e.getValue());
+				setXp(ConfigurationHandler.xp ? e.getValue() : 0);
 				break;
 			case 6:
-				setEco(e.getValue() > 0 ? true : false);
+				setEco(ConfigurationHandler.eco ? e.getValue() > 0 ? true : false : false);
 				break;
 			}
 		}

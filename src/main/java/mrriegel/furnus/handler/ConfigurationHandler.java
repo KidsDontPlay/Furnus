@@ -1,5 +1,6 @@
 package mrriegel.furnus.handler;
 
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.common.config.Configuration;
 
 public class ConfigurationHandler {
@@ -7,7 +8,7 @@ public class ConfigurationHandler {
 
 	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti;
 	public static double effiMulti, bonusMulti, xpMulti, bonusFuelMulti, speedFuelMulti;
-	public static boolean dusts;
+	public static boolean dusts, speed, effi, io, slot, bonus, xp, eco;
 	public static String[] blacklistDusts;
 
 	public static void refreshConfig() {
@@ -23,6 +24,13 @@ public class ConfigurationHandler {
 		bonusFuelMulti = config.get("multiplier", "bonusFuelMulti", 4.0, "Multiplier of Fuel Consumption of Bonus Upgrade").getDouble();
 		speedFuelMulti = config.get("multiplier", "speedFuelMulti", 3.3, "Multiplier of Fuel Consumption of Speed Upgrade").getDouble();
 		dusts = config.get("dust", "dusts", true, "Enable Dusts").getBoolean();
+		speed = config.get("upgrade", "speed", true, "Enable Speed Upgrade").getBoolean();
+		effi = config.get("upgrade", "effi", true, "Enable Efficiency Upgrade").getBoolean();
+		io = config.get("upgrade", "io", true, "Enable IO Upgrade").getBoolean();
+		slot = config.get("upgrade", "slot", true, "Enable Slot Upgrade").getBoolean();
+		bonus = config.get("upgrade", "bonus", true, "Enable Bonus Upgrade").getBoolean();
+		xp = config.get("upgrade", "xp", true, "Enable XP Upgrade").getBoolean();
+		eco = config.get("upgrade", "eco", true, "Enable Eco Upgrade").getBoolean();
 		blacklistDusts = config.get("dust", "blacklistDusts", new String[] { "dustCoal" }, "Blacklist for dusts which should not be craftable in pulvus.").getStringList();
 		if (config.hasChanged()) {
 			config.save();

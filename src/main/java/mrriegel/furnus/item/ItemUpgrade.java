@@ -25,9 +25,20 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
-		for (int i = 0; i < 7; i++) {
-			list.add(new ItemStack(item, 1, i));
-		}
+		if (ConfigurationHandler.speed)
+			list.add(new ItemStack(item, 1, 0));
+		if (ConfigurationHandler.effi)
+			list.add(new ItemStack(item, 1, 1));
+		if (ConfigurationHandler.io)
+			list.add(new ItemStack(item, 1, 2));
+		if (ConfigurationHandler.slot)
+			list.add(new ItemStack(item, 1, 3));
+		if (ConfigurationHandler.bonus)
+			list.add(new ItemStack(item, 1, 4));
+		if (ConfigurationHandler.xp)
+			list.add(new ItemStack(item, 1, 5));
+		if (ConfigurationHandler.eco)
+			list.add(new ItemStack(item, 1, 6));
 	}
 
 	@Override

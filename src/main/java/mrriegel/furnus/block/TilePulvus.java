@@ -1,10 +1,12 @@
 package mrriegel.furnus.block;
 
+import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.item.ModItems;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -31,17 +33,15 @@ public class TilePulvus extends AbstractMachine {
 			} else if (getStackInSlot(slot + 3).isItemEqual(itemstack)) {
 				getStackInSlot(slot + 3).stackSize += itemstack.stackSize;
 			}
+			boolean valid;
+			try {
+				valid = !getStackInSlot(slot).isItemEqual(FurnaceRecipes.instance().getSmeltingResult(getStackInSlot(slot + 3))) && !equalOreDict(getStackInSlot(slot), FurnaceRecipes.instance().getSmeltingResult(getStackInSlot(slot + 3)));
+			} catch (NullPointerException e) {
+				valid = true;
+			}
 			if ((worldObj.rand.nextInt(100) < bonus * 100 * ConfigurationHandler.bonusMulti)) {
-				boolean ingot = false;
-				for (int i : OreDictionary.getOreIDs(getStackInSlot(slot))) {
-					String s = OreDictionary.getOreName(i);
-					if (s.startsWith("ingot")) {
-						ingot = true;
-						break;
-					}
-				}
-				if (!ingot) {
-					int ran = worldObj.rand.nextInt(itemstack.stackSize) + (worldObj.rand.nextBoolean() ? 1 : 0);
+				if (valid) {
+					int ran = worldObj.rand.nextInt(itemstack.stackSize) + 1;
 					if (getStackInSlot(slot + 6) == null) {
 						setInventorySlotContents(slot + 6, CrunchHandler.resize(itemstack, ran));
 					} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {

@@ -44,7 +44,7 @@ import com.google.gson.reflect.TypeToken;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.7";
+	public static final String VERSION = "1.71";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -136,12 +136,12 @@ public class Furnus {
 			if (string2Stack(r.inputItem) != null)
 				inl.add(string2Stack(r.inputItem));
 			else
-				inl.addAll(string2Stacklist(r.inputItem));
+				inl.addAll(oreName2Stacklist(r.inputItem));
 			if (string2Stack(r.outputItem) != null)
 				outl.add(string2Stack(r.outputItem));
 			else {
-				if (!string2Stacklist(r.outputItem).isEmpty())
-					outl.add(string2Stacklist(r.outputItem).get(0));
+				if (!oreName2Stacklist(r.outputItem).isEmpty())
+					outl.add(oreName2Stacklist(r.outputItem).get(0));
 			}
 			for (ItemStack in : inl)
 				for (ItemStack out : outl)
@@ -188,7 +188,7 @@ public class Furnus {
 		return stack.copy();
 	}
 
-	private List<ItemStack> string2Stacklist(String s) {
+	private List<ItemStack> oreName2Stacklist(String s) {
 		List<ItemStack> lis = new ArrayList<ItemStack>();
 		if (StringUtils.countMatches(s, ":") == 1) {
 			if (!OreDictionary.getOres(s.split(":")[0]).isEmpty()) {

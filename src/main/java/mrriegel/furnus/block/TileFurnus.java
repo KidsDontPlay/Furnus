@@ -31,15 +31,23 @@ public class TileFurnus extends AbstractMachine {
 			} else if (getStackInSlot(slot + 3).isItemEqual(itemstack)) {
 				getStackInSlot(slot + 3).stackSize += itemstack.stackSize;
 			}
+			boolean valid;
+			try {
+				valid = !getStackInSlot(slot).isItemEqual(CrunchHandler.instance().getResult(getStackInSlot(slot + 3)))&&!equalOreDict(getStackInSlot(slot), CrunchHandler.instance().getResult(getStackInSlot(slot + 3)));
+			} catch (NullPointerException e) {
+				valid = true;
+			}
 			if ((worldObj.rand.nextInt(100) < bonus * 100 * ConfigurationHandler.bonusMulti)) {
-				int ran = worldObj.rand.nextInt(itemstack.stackSize) + 1;
-				if (getStackInSlot(slot + 6) == null) {
-					setInventorySlotContents(slot + 6, CrunchHandler.resize(itemstack, ran));
-				} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
-					if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack.getMaxStackSize())
-						getStackInSlot(slot + 6).stackSize += ran;
-					else
-						getStackInSlot(slot + 6).stackSize = itemstack.getMaxStackSize();
+				if (valid) {
+					int ran = worldObj.rand.nextInt(itemstack.stackSize) + 1;
+					if (getStackInSlot(slot + 6) == null) {
+						setInventorySlotContents(slot + 6, CrunchHandler.resize(itemstack, ran));
+					} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
+						if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack.getMaxStackSize())
+							getStackInSlot(slot + 6).stackSize += ran;
+						else
+							getStackInSlot(slot + 6).stackSize = itemstack.getMaxStackSize();
+					}
 				}
 			}
 
