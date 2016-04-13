@@ -17,7 +17,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -60,7 +60,7 @@ public class MachineGUI extends GuiContainer {
 		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
 		drawMore(k, l);
 		if (tile.getSlots() > 0)
-			mc.fontRendererObj.drawString(StatCollector.translateToLocal("gui.furnus.split"), guiLeft + 22, guiTop + 7, 4210752);
+			mc.fontRendererObj.drawString(I18n.translateToLocal("gui.furnus.split"), guiLeft + 22, guiTop + 7, 4210752);
 
 	}
 
@@ -94,13 +94,13 @@ public class MachineGUI extends GuiContainer {
 		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
 			List<String> list = new ArrayList<String>();
 			double speed = (1.d + tile.getSpeed() * 1.d * ConfigurationHandler.speedMulti);
-			list.add(StatCollector.translateToLocal("gui.furnus.speed") + ": " + String.format("%.2f", speed) + "x");
+			list.add(I18n.translateToLocal("gui.furnus.speed") + ": " + String.format("%.2f", speed) + "x");
 			double effi = (tile.getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + tile.getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (tile.getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
-			list.add(StatCollector.translateToLocal("gui.furnus.effi") + ": " + String.format("%.2f", effi) + "x");
+			list.add(I18n.translateToLocal("gui.furnus.effi") + ": " + String.format("%.2f", effi) + "x");
 			int bonus = (tile.getBonus() * (int) (ConfigurationHandler.bonusMulti * 100.));
-			list.add(StatCollector.translateToLocal("gui.furnus.bonus") + ": " + String.format("%d", bonus) + "%");
+			list.add(I18n.translateToLocal("gui.furnus.bonus") + ": " + String.format("%d", bonus) + "%");
 			double xp = (1.d + tile.getXp() * ConfigurationHandler.xpMulti);
-			list.add(StatCollector.translateToLocal("gui.furnus.xp") + ": " + String.format("%.2f", xp) + "x");
+			list.add(I18n.translateToLocal("gui.furnus.xp") + ": " + String.format("%.2f", xp) + "x");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
 			this.drawHoveringText(list, i, j, fontRendererObj);

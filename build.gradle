@@ -20,12 +20,12 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.8.9-1.73"
+version = "1.9-1.73"
 group= "mrriegel.furnus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Furnus"
 
 minecraft {
-    version = "1.8.9-11.15.1.1731"
+    version = "1.9-12.16.0.1863-1.9"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -33,7 +33,7 @@ minecraft {
     // stable_#            stables are built at the discretion of the MCP team.
     // Use non-default mappings at your own risk. they may not allways work.
     // simply re-run your setup task after changing the mappings to update your workspace.
-    mappings = "stable_20"
+    mappings = "snapshot_20160312"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 }
 
@@ -79,7 +79,7 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
-
+}
 repositories {
   maven {
     url "http://dvs1.progwml6.com/files/maven"
@@ -91,6 +91,5 @@ minecraft {
 }
 
 dependencies {
-  deobfCompile "mezz.jei:jei_1.8.9:2.28.6.173"
-}
+  deobfCompile "mezz.jei:jei_1.9:3.2.10.185"
 }

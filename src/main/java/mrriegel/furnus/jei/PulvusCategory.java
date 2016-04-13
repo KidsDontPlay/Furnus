@@ -1,7 +1,6 @@
 package mrriegel.furnus.jei;
 
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -14,9 +13,8 @@ import net.minecraft.util.ResourceLocation;
 public class PulvusCategory extends FurnaceRecipeCategory {
 	private final IDrawable background;
 
-	public PulvusCategory(IJeiHelpers helpers) {
-		super(helpers.getGuiHelper());
-		IGuiHelper guiHelper = helpers.getGuiHelper();
+	public PulvusCategory(IGuiHelper guiHelper) {
+		super(guiHelper);
 		ResourceLocation location = new ResourceLocation("minecraft", "textures/gui/container/furnace.png");
 		background = guiHelper.createDrawable(location, 55, 16, 82, 54);
 	}

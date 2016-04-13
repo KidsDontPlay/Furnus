@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import vazkii.botania.api.item.IExoflameHeatable;
 import mrriegel.furnus.InventoryHelper;
 import mrriegel.furnus.handler.ConfigurationHandler;
 import mrriegel.furnus.handler.PacketHandler;
@@ -21,12 +20,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.oredict.OreDictionary;
+import vazkii.botania.api.item.IExoflameHeatable;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -376,7 +376,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			setInventorySlotContents(i, null);
 
 		}
-		worldObj.markBlockForUpdate(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ()));
+		// worldObj.markBlockForUpdate(new BlockPos(getPos().getX(),
+		// getPos().getY(), getPos().getZ()));
 
 	}
 
@@ -469,7 +470,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	void sendMessage() {
-		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress), new TargetPoint(worldObj.provider.getDimensionId(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
+		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress), new TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
 	}
 
 	protected abstract void processItem(int slot);

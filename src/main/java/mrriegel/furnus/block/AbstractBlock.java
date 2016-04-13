@@ -9,17 +9,17 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,11 +35,11 @@ public abstract class AbstractBlock extends BlockContainer {
 		this.setCreativeTab(CreativeTab.tab1);
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IBlockState getStateForEntityRender(IBlockState state) {
-		return this.getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
-	}
+	// @Override
+	// @SideOnly(Side.CLIENT)
+	// public IBlockState getStateForEntityRender(IBlockState state) {
+	// return this.getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
+	// }
 
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
@@ -58,8 +58,8 @@ public abstract class AbstractBlock extends BlockContainer {
 	}
 
 	@Override
-	protected BlockState createBlockState() {
-		return new BlockState(this, new IProperty[] { FACING, STATE });
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, new IProperty[] { FACING, STATE });
 	}
 
 	public void setState(World world, BlockPos pos, IBlockState state, boolean on) {
@@ -69,7 +69,7 @@ public abstract class AbstractBlock extends BlockContainer {
 			tileentity.validate();
 			world.setTileEntity(pos, tileentity);
 		}
-		world.markBlockForUpdate(pos);
+		// world.markBlockForUpdate(pos);
 
 	}
 
@@ -85,18 +85,18 @@ public abstract class AbstractBlock extends BlockContainer {
 			Block block2 = worldIn.getBlockState(pos.west()).getBlock();
 			Block block3 = worldIn.getBlockState(pos.east()).getBlock();
 			EnumFacing enumfacing = state.getValue(FACING);
-			if (enumfacing == EnumFacing.NORTH && block.isFullBlock() && !block1.isFullBlock()) {
+			if (enumfacing == EnumFacing.NORTH && block.isFullBlock(state) && !block1.isFullBlock(state)) {
 				enumfacing = EnumFacing.SOUTH;
-			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock() && !block.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.SOUTH && block1.isFullBlock(state) && !block.isFullBlock(state)) {
 				enumfacing = EnumFacing.NORTH;
-			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock() && !block3.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.WEST && block2.isFullBlock(state) && !block3.isFullBlock(state)) {
 				enumfacing = EnumFacing.EAST;
-			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock() && !block2.isFullBlock()) {
+			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock(state) && !block2.isFullBlock(state)) {
 				enumfacing = EnumFacing.WEST;
 			}
 
 			worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
-			worldIn.markBlockForUpdate(pos);
+			// worldIn.markBlockForUpdate(pos);
 		}
 	}
 
@@ -108,18 +108,18 @@ public abstract class AbstractBlock extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(STATE, false), 2);
-		worldIn.markBlockForUpdate(pos);
+		// worldIn.markBlockForUpdate(pos);
 
 	}
 
 	@Override
-	public int getLightValue(IBlockAccess world, BlockPos pos) {
-		return world.getBlockState(pos).getValue(STATE) ? 13 : 0;
+	public int getLightValue(IBlockState state) {
+		return state.getValue(STATE) ? 13 : 0;
 	}
 
 	@Override
-	public int getRenderType() {
-		return 3;
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+		return EnumBlockRenderType.MODEL;
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public abstract class AbstractBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("incomplete-switch")
-	public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+	public void randomDisplayTick(IBlockState state, World worldIn, BlockPos pos, Random rand) {
 		if (state.getValue(STATE)) {
 			EnumFacing enumfacing = state.getValue(FACING);
 			double d0 = pos.getX() + 0.5D;
@@ -164,12 +164,12 @@ public abstract class AbstractBlock extends BlockContainer {
 	}
 
 	@Override
-	public boolean hasComparatorInputOverride() {
+	public boolean hasComparatorInputOverride(IBlockState state) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorInputOverride(World worldIn, BlockPos pos) {
+	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos) {
 		return Container.calcRedstone(worldIn.getTileEntity(pos));
 	}
 }

@@ -21,6 +21,7 @@ public class ItemDust extends Item {
 		this.setCreativeTab(CreativeTab.tab1);
 		this.setHasSubtypes(true);
 		this.setUnlocalizedName(Furnus.MODID + ":dust");
+		// this.setRegistryName("dust");
 	}
 
 	@Override
@@ -34,6 +35,12 @@ public class ItemDust extends Item {
 	@Override
 	public String getUnlocalizedName(ItemStack stack) {
 		return this.getUnlocalizedName() + "_" + Dust.values()[stack.getItemDamage()].toString().toLowerCase();
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean isFull3D() {
+		return true;
 	}
 
 }

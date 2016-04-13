@@ -7,7 +7,7 @@ import mrriegel.furnus.gui.IOFGui;
 import mrriegel.furnus.gui.MachineContainer;
 import mrriegel.furnus.gui.MachineGUI;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 

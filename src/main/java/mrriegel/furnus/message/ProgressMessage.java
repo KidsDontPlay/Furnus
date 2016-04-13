@@ -6,8 +6,8 @@ import java.util.Map;
 
 import mrriegel.furnus.block.AbstractMachine;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.IThreadListener;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
