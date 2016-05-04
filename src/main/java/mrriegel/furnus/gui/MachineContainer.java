@@ -94,7 +94,7 @@ public class MachineContainer extends Container {
 			}
 			Integer guiID = tile instanceof TileFurnus ? GuiHandler.FURNUS : tile instanceof TilePulvus ? GuiHandler.PULVUS : null;
 			player.openGui(Furnus.instance, guiID, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
-			if (save != null) {
+			if (save != null && !player.worldObj.isRemote) {
 				player.inventory.setItemStack(save);
 				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);
 			}

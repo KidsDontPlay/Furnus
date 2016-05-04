@@ -288,7 +288,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		return newSate.getBlock() == Blocks.air;
+		return newSate.getBlock() == oldState.getBlock();
 	}
 
 	protected ArrayList<Integer> getOutputSlots() {
@@ -522,18 +522,19 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 					break;
 				}
 			} else if (ir instanceof ISidedInventory) {
-				for (int i : ((ISidedInventory) ir).getSlotsForFace(side)) {
-					if (ir.getStackInSlot(i) == null)
-						continue;
-					if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i), getDirection((TileEntity) ir, this)))
+				if (((ISidedInventory) ir).getSlotsForFace(side) != null)
+					for (int i : ((ISidedInventory) ir).getSlotsForFace(side)) {
+						if (ir.getStackInSlot(i) == null)
+							continue;
+						if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i), getDirection((TileEntity) ir, this)))
+							break;
+						int num = ir.getStackInSlot(i).stackSize;
+						int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
+						if (num == rest)
+							continue;
+						ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
 						break;
-					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
-					if (num == rest)
-						continue;
-					ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
-					break;
-				}
+					}
 			}
 		}
 	}

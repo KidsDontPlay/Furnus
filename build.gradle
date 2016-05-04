@@ -20,12 +20,12 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.8.9-1.73"
+version = "1.8.9-1.74"
 group= "mrriegel.furnus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Furnus"
 
 minecraft {
-    version = "1.8.9-11.15.1.1731"
+    version = "1.8.9-11.15.1.1875"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -91,6 +91,6 @@ minecraft {
 }
 
 dependencies {
-  deobfCompile "mezz.jei:jei_1.8.9:2.28.6.173"
+  deobfCompile "mezz.jei:jei_1.8.9:2.28.18.186"
 }
 }
