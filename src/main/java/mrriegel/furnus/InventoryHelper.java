@@ -95,6 +95,8 @@ public class InventoryHelper {
 	public static int addToSidedInventoryWithLeftover(ItemStack stack, ISidedInventory inventory, int side, boolean simulate) {
 		int left = stack.stackSize;
 		int max = Math.min(inventory.getInventoryStackLimit(), stack.getMaxStackSize());
+		if (inventory.getAccessibleSlotsFromSide(side) == null)
+			return left;
 		for (int i : inventory.getAccessibleSlotsFromSide(side)) {
 			ItemStack in = inventory.getStackInSlot(i);
 			if (!inventory.isItemValidForSlot(i, stack) || !inventory.canInsertItem(i, stack, side))

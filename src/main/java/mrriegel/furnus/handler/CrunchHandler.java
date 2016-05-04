@@ -68,8 +68,4 @@ public class CrunchHandler {
 		this.crushingList.put(in.copy(), out);
 		this.experienceList.put(out, Float.valueOf(p_151394_3_));
 	}
-
-	private String stack2String(ItemStack stack) {
-		return stack.getUnlocalizedName() + stack.getItemDamage();
-	}
 }
