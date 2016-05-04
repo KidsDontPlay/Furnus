@@ -4,6 +4,10 @@ import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
+import mrriegel.furnus.Furnus;
+import mrriegel.furnus.block.ModBlocks;
+import net.minecraft.item.ItemStack;
 
 @JEIPlugin
 public class PulvusJEIPlugin implements IModPlugin {
@@ -13,6 +17,9 @@ public class PulvusJEIPlugin implements IModPlugin {
 		registry.addRecipeCategories(new PulvusCategory(registry.getJeiHelpers().getGuiHelper()));
 		registry.addRecipeHandlers(new PulvusHandler());
 		registry.addRecipes(PulvusHandler.getRecipes());
+		
+		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.furnus), VanillaRecipeCategoryUid.SMELTING);
+		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.pulvus), Furnus.MODID + ".pulvus");
 	}
 
 	@Override
