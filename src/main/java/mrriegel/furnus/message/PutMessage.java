@@ -1,5 +1,6 @@
 package mrriegel.furnus.message;
 
+import net.minecraft.client.Minecraft;
 import io.netty.buffer.ByteBuf;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.AbstractMachine.Direction;
@@ -29,8 +30,10 @@ public class PutMessage implements IMessage, IMessageHandler<PutMessage, IMessag
 
 	@Override
 	public IMessage onMessage(PutMessage message, MessageContext ctx) {
-		AbstractMachine tile = (AbstractMachine) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
-		AbstractMachine.getMap(message.kind, tile).put(Direction.valueOf(message.i), Mode.valueOf(message.mode));
+		if (ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z) instanceof AbstractMachine) {
+			AbstractMachine tile = (AbstractMachine) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
+			AbstractMachine.getMap(message.kind, tile).put(Direction.valueOf(message.i), Mode.valueOf(message.mode));
+		}
 		return null;
 	}
 

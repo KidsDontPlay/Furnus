@@ -62,38 +62,45 @@ public abstract class AbstractBlock extends BlockContainer {
 
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack stack) {
-		AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
-		int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
-		if (l == 0) {
-			world.setBlockMetadataWithNotify(x, y, z, 2, 2);
+		if (world.getTileEntity(x, y, z) instanceof AbstractMachine) {
+			AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
+			int l = MathHelper.floor_double(player.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
+			if (l == 0) {
+				world.setBlockMetadataWithNotify(x, y, z, 2, 2);
+			}
+			if (l == 1) {
+				world.setBlockMetadataWithNotify(x, y, z, 5, 2);
+			}
+			if (l == 2) {
+				world.setBlockMetadataWithNotify(x, y, z, 3, 2);
+			}
+			if (l == 3) {
+				world.setBlockMetadataWithNotify(x, y, z, 4, 2);
+			}
+			world.markBlockForUpdate(x, y, z);
 		}
-		if (l == 1) {
-			world.setBlockMetadataWithNotify(x, y, z, 5, 2);
-		}
-		if (l == 2) {
-			world.setBlockMetadataWithNotify(x, y, z, 3, 2);
-		}
-		if (l == 3) {
-			world.setBlockMetadataWithNotify(x, y, z, 4, 2);
-		}
-		world.markBlockForUpdate(x, y, z);
 	}
 
 	@Override
 	public int getLightValue(IBlockAccess world, int x, int y, int z) {
-		AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
-		return tile.isBurning() ? 13 : 0;
+		if (world.getTileEntity(x, y, z) instanceof AbstractMachine) {
+			AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
+			return tile.isBurning() ? 13 : 0;
+		}
+		return 0;
 	}
 
 	@Override
 	public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-		AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
-		for (ItemStack s : tile.getInv()) {
-			if (s != null && !world.isRemote) {
-				EntityItem ei = new EntityItem(world, x + 0.5d, y + 1, z + 0.5d, s.copy());
-				if (s.hasTagCompound())
-					ei.getEntityItem().setTagCompound((NBTTagCompound) s.getTagCompound().copy());
-				world.spawnEntityInWorld(ei);
+		if (world.getTileEntity(x, y, z) instanceof AbstractMachine) {
+			AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
+			for (ItemStack s : tile.getInv()) {
+				if (s != null && !world.isRemote) {
+					EntityItem ei = new EntityItem(world, x + 0.5d, y + 1, z + 0.5d, s.copy());
+					if (s.hasTagCompound())
+						ei.getEntityItem().setTagCompound((NBTTagCompound) s.getTagCompound().copy());
+					world.spawnEntityInWorld(ei);
+				}
 			}
 		}
 		super.breakBlock(world, x, y, z, block, meta);
@@ -102,28 +109,30 @@ public abstract class AbstractBlock extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random rand) {
-		AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
-		if (tile.isBurning()) {
-			int l = world.getBlockMetadata(x, y, z);
-			float f = x + 0.5F;
-			float f1 = y + 0.0F + rand.nextFloat() * 6.0F / 16.0F;
-			float f2 = z + 0.5F;
-			float f3 = 0.52F;
-			float f4 = rand.nextFloat() * 0.6F - 0.3F;
-			for (int i = 0; i < tile.getSpeed() + 1; i++)
-				if (l == 4) {
-					world.spawnParticle("smoke", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-					world.spawnParticle("flame", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-				} else if (l == 5) {
-					world.spawnParticle("smoke", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-					world.spawnParticle("flame", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
-				} else if (l == 2) {
-					world.spawnParticle("smoke", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
-					world.spawnParticle("flame", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
-				} else if (l == 3) {
-					world.spawnParticle("smoke", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
-					world.spawnParticle("flame", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
-				}
+		if (world.getTileEntity(x, y, z) instanceof AbstractMachine) {
+			AbstractMachine tile = (AbstractMachine) world.getTileEntity(x, y, z);
+			if (tile.isBurning()) {
+				int l = world.getBlockMetadata(x, y, z);
+				float f = x + 0.5F;
+				float f1 = y + 0.0F + rand.nextFloat() * 6.0F / 16.0F;
+				float f2 = z + 0.5F;
+				float f3 = 0.52F;
+				float f4 = rand.nextFloat() * 0.6F - 0.3F;
+				for (int i = 0; i < tile.getSpeed() + 1; i++)
+					if (l == 4) {
+						world.spawnParticle("smoke", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+						world.spawnParticle("flame", f - f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+					} else if (l == 5) {
+						world.spawnParticle("smoke", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+						world.spawnParticle("flame", f + f3, f1, f2 + f4, 0.0D, 0.0D, 0.0D);
+					} else if (l == 2) {
+						world.spawnParticle("smoke", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
+						world.spawnParticle("flame", f + f4, f1, f2 - f3, 0.0D, 0.0D, 0.0D);
+					} else if (l == 3) {
+						world.spawnParticle("smoke", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
+						world.spawnParticle("flame", f + f4, f1, f2 + f3, 0.0D, 0.0D, 0.0D);
+					}
+			}
 		}
 	}
 

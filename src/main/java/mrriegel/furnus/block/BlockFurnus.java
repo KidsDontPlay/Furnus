@@ -28,13 +28,16 @@ public class BlockFurnus extends AbstractBlock {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-		TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
-		if (world.isRemote) {
-			return true;
-		} else {
-			player.openGui(Furnus.instance, GuiHandler.FURNUS, world, x, y, z);
-			return true;
+		if (world.getTileEntity(x, y, z) instanceof TileFurnus) {
+			TileFurnus tile = (TileFurnus) world.getTileEntity(x, y, z);
+			if (world.isRemote) {
+				return true;
+			} else {
+				player.openGui(Furnus.instance, GuiHandler.FURNUS, world, x, y, z);
+				return true;
+			}
 		}
+		return false;
 	}
 
 	@Override
