@@ -41,17 +41,19 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		mainThread.addScheduledTask(new Runnable() {
 			@Override
 			public void run() {
-				try {
-					AbstractMachine tile = (AbstractMachine) Minecraft.getMinecraft().theWorld.getTileEntity(new BlockPos(message.x, message.y, message.z));
-					if (tile == null)
+				if (Minecraft.getMinecraft().theWorld.getTileEntity(new BlockPos(message.x, message.y, message.z)) instanceof AbstractMachine) {
+					try {
+						AbstractMachine tile = (AbstractMachine) Minecraft.getMinecraft().theWorld.getTileEntity(new BlockPos(message.x, message.y, message.z));
+						if (tile == null)
+							return;
+						tile.setProgress(message.progress);
+						tile.setFuel(message.fuel);
+						tile.setMaxFuel(message.maxFuel);
+						tile.setBurning(message.burning);
 						return;
-					tile.setProgress(message.progress);
-					tile.setFuel(message.fuel);
-					tile.setMaxFuel(message.maxFuel);
-					tile.setBurning(message.burning);
-					return;
-				} catch (NullPointerException e) {
-					return;
+					} catch (NullPointerException e) {
+						return;
+					}
 				}
 			}
 		});

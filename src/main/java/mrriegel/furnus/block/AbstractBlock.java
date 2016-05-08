@@ -124,9 +124,11 @@ public abstract class AbstractBlock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		AbstractMachine tileentity = (AbstractMachine) worldIn.getTileEntity(pos);
-		InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
-		worldIn.updateComparatorOutputLevel(pos, this);
+		if (worldIn.getTileEntity(pos) instanceof AbstractMachine) {
+			AbstractMachine tileentity = (AbstractMachine) worldIn.getTileEntity(pos);
+			InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
+			worldIn.updateComparatorOutputLevel(pos, this);
+		}
 		super.breakBlock(worldIn, pos, state);
 	}
 
@@ -134,32 +136,34 @@ public abstract class AbstractBlock extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("incomplete-switch")
 	public void randomDisplayTick(IBlockState state, World worldIn, BlockPos pos, Random rand) {
-		if (state.getValue(STATE)) {
-			EnumFacing enumfacing = state.getValue(FACING);
-			double d0 = pos.getX() + 0.5D;
-			double d1 = pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
-			double d2 = pos.getZ() + 0.5D;
-			double d3 = 0.52D;
-			double d4 = rand.nextDouble() * 0.6D - 0.3D;
-			AbstractMachine tile = (AbstractMachine) worldIn.getTileEntity(pos);
-			for (int i = 0; i < tile.getSpeed() + 1; i++)
-				switch (enumfacing) {
-				case WEST:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-					break;
-				case EAST:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-					break;
-				case NORTH:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3, 0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D, 0.0D, 0.0D, new int[0]);
-					break;
-				case SOUTH:
-					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
-					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
-				}
+		if (worldIn.getTileEntity(pos) instanceof AbstractMachine) {
+			if (state.getValue(STATE)) {
+				EnumFacing enumfacing = state.getValue(FACING);
+				double d0 = pos.getX() + 0.5D;
+				double d1 = pos.getY() + rand.nextDouble() * 6.0D / 16.0D;
+				double d2 = pos.getZ() + 0.5D;
+				double d3 = 0.52D;
+				double d4 = rand.nextDouble() * 0.6D - 0.3D;
+				AbstractMachine tile = (AbstractMachine) worldIn.getTileEntity(pos);
+				for (int i = 0; i < tile.getSpeed() + 1; i++)
+					switch (enumfacing) {
+					case WEST:
+						worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 - d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+						worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 - d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+						break;
+					case EAST:
+						worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+						worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+						break;
+					case NORTH:
+						worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 - d3, 0.0D, 0.0D, 0.0D, new int[0]);
+						worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 - d3, 0.0D, 0.0D, 0.0D, new int[0]);
+						break;
+					case SOUTH:
+						worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
+						worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
+					}
+			}
 		}
 	}
 
