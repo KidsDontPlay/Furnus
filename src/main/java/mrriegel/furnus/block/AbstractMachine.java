@@ -288,7 +288,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		return newSate.getBlock() == oldState.getBlock();
+		return newSate.getBlock() != oldState.getBlock();
 	}
 
 	protected ArrayList<Integer> getOutputSlots() {

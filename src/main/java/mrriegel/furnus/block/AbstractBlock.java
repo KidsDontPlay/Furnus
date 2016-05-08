@@ -124,9 +124,11 @@ public abstract class AbstractBlock extends BlockContainer {
 
 	@Override
 	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		AbstractMachine tileentity = (AbstractMachine) worldIn.getTileEntity(pos);
-		InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
-		worldIn.updateComparatorOutputLevel(pos, this);
+		if (worldIn.getTileEntity(pos) instanceof AbstractMachine) {
+			AbstractMachine tileentity = (AbstractMachine) worldIn.getTileEntity(pos);
+			InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
+			worldIn.updateComparatorOutputLevel(pos, this);
+		}
 		super.breakBlock(worldIn, pos, state);
 	}
 
@@ -134,6 +136,7 @@ public abstract class AbstractBlock extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("incomplete-switch")
 	public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+		if (worldIn.getTileEntity(pos) instanceof AbstractMachine) {
 		if (state.getValue(STATE)) {
 			EnumFacing enumfacing = state.getValue(FACING);
 			double d0 = pos.getX() + 0.5D;
@@ -160,7 +163,7 @@ public abstract class AbstractBlock extends BlockContainer {
 					worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
 					worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + d4, d1, d2 + d3, 0.0D, 0.0D, 0.0D, new int[0]);
 				}
-		}
+		}}
 	}
 
 	@Override
