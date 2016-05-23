@@ -29,7 +29,7 @@ public abstract class AbstractBlock extends BlockContainer {
 	public static final PropertyBool STATE = PropertyBool.create("state");
 
 	public AbstractBlock() {
-		super(Material.rock);
+		super(Material.ROCK);
 		this.setHardness(4.0F);
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(STATE, false));
 		this.setCreativeTab(CreativeTab.tab1);

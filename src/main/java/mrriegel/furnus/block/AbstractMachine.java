@@ -13,7 +13,6 @@ import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -372,7 +371,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			if (getStackInSlot(i) == null)
 				continue;
 			ItemStack stack = getStackInSlot(i).copy();
-			player.dropPlayerItemWithRandomChoice(stack, false);
+			player.dropItem(stack, false);
 			setInventorySlotContents(i, null);
 
 		}

@@ -6,7 +6,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -56,7 +55,7 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 	protected abstract void readSyncableDataFromNBT(NBTTagCompound tag);
 
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		NBTTagList invList = new NBTTagList();
 		for (int i = 0; i < inv.length; i++) {
@@ -69,6 +68,7 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 		}
 		tag.setTag("crunchTE", invList);
 		writeSyncableDataToNBT(tag);
+		return tag;
 	}
 
 	protected abstract void writeSyncableDataToNBT(NBTTagCompound tag);
@@ -79,7 +79,7 @@ public abstract class CrunchTEInventory extends TileEntity implements IInventory
 	}
 
 	@Override
-	public final Packet getDescriptionPacket() {
+	public final SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound nbtTag = new NBTTagCompound();
 		this.writeToNBT(nbtTag);
 		return new SPacketUpdateTileEntity(this.pos, 0, nbtTag);

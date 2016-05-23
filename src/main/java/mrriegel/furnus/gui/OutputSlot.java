@@ -80,11 +80,11 @@ public class OutputSlot extends Slot {
 
 		if (inventory instanceof TileFurnus)
 			FMLCommonHandler.instance().firePlayerSmeltedEvent(thePlayer, stack);
-		if (stack.getItem() == Items.iron_ingot) {
-			this.thePlayer.addStat(AchievementList.acquireIron, 1);
+		if (stack.getItem() == Items.IRON_INGOT) {
+			this.thePlayer.addStat(AchievementList.ACQUIRE_IRON, 1);
 		}
-		if (stack.getItem() == Items.cooked_fish) {
-			this.thePlayer.addStat(AchievementList.cookFish, 1);
+		if (stack.getItem() == Items.COOKED_FISH) {
+			this.thePlayer.addStat(AchievementList.COOK_FISH, 1);
 		}
 	}
 

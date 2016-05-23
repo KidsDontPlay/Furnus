@@ -13,22 +13,22 @@ import net.minecraftforge.oredict.OreDictionary;
 public class CraftingRecipes {
 
 	public static void init() {
-		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.furnus), "ibi", "bob", "fbf", 'i', Items.iron_ingot, 'b', Blocks.brick_block, 'o', Blocks.furnace, 'f', Blocks.sand);
-		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.pulvus), "ibi", "bob", "fbf", 'i', Items.iron_ingot, 'b', Blocks.sandstone, 'o', Blocks.furnace, 'f', Items.flint);
+		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.furnus), "ibi", "bob", "fbf", 'i', Items.IRON_INGOT, 'b', Blocks.BRICK_BLOCK, 'o', Blocks.FURNACE, 'f', Blocks.SAND);
+		GameRegistry.addShapedRecipe(new ItemStack(ModBlocks.pulvus), "ibi", "bob", "fbf", 'i', Items.IRON_INGOT, 'b', Blocks.SANDSTONE, 'o', Blocks.FURNACE, 'f', Items.FLINT);
 		if (ConfigurationHandler.speed)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 0), "cgc", "rir", "crc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Items.gold_nugget, 'r', Blocks.redstone_block);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 0), "cgc", "rir", "crc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Items.GOLD_NUGGET, 'r', Blocks.REDSTONE_BLOCK);
 		if (ConfigurationHandler.effi)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 1), "csc", "gig", "csc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Items.gold_ingot, 's', Blocks.snow);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 1), "csc", "gig", "csc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Items.GOLD_INGOT, 's', Blocks.SNOW);
 		if (ConfigurationHandler.io)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 2), "chc", " i ", "cpc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'h', Blocks.hopper, 'p', Blocks.piston);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 2), "chc", " i ", "cpc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'h', Blocks.HOPPER, 'p', Blocks.PISTON);
 		if (ConfigurationHandler.slot)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 3), "chc", "hih", "chc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'h', Items.diamond);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 3), "chc", "hih", "chc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'h', Items.DIAMOND);
 		if (ConfigurationHandler.bonus)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 4), "cgc", "rir", "crc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Items.emerald, 'r', Blocks.lapis_block);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 4), "cgc", "rir", "crc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Items.EMERALD, 'r', Blocks.LAPIS_BLOCK);
 		if (ConfigurationHandler.xp)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 5), "cgc", "rir", "cgc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Items.slime_ball, 'r', Blocks.glowstone);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 5), "cgc", "rir", "cgc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Items.SLIME_BALL, 'r', Blocks.GLOWSTONE);
 		if (ConfigurationHandler.eco)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 6), "cgc", "rir", "cgc", 'c', Items.clay_ball, 'i', Items.iron_ingot, 'g', Blocks.coal_block, 'r', Items.blaze_powder);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 6), "cgc", "rir", "cgc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Blocks.COAL_BLOCK, 'r', Items.BLAZE_POWDER);
 		if (ConfigurationHandler.dusts)
 			for (int i = 0; i < Dust.values().length; i++) {
 				Dust dus = Dust.values()[i];

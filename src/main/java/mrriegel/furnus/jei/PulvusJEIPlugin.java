@@ -17,7 +17,7 @@ public class PulvusJEIPlugin implements IModPlugin {
 		registry.addRecipeCategories(new PulvusCategory(registry.getJeiHelpers().getGuiHelper()));
 		registry.addRecipeHandlers(new PulvusHandler());
 		registry.addRecipes(PulvusHandler.getRecipes());
-		
+
 		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.furnus), VanillaRecipeCategoryUid.SMELTING);
 		registry.addRecipeCategoryCraftingItem(new ItemStack(ModBlocks.pulvus), Furnus.MODID + ".pulvus");
 	}

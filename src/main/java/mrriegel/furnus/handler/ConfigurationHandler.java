@@ -3,6 +3,7 @@ package mrriegel.furnus.handler;
 import net.minecraftforge.common.config.Configuration;
 
 public class ConfigurationHandler {
+
 	public static Configuration config;
 
 	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti;
