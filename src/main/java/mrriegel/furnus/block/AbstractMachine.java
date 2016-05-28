@@ -74,6 +74,11 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	@Override
+	public NBTTagCompound getUpdateTag() {
+		return writeToNBT(new NBTTagCompound());
+	}
+
+	@Override
 	protected void readSyncableDataFromNBT(NBTTagCompound tag) {
 		burning = tag.getBoolean("burning");
 		eco = tag.getBoolean("eco");
