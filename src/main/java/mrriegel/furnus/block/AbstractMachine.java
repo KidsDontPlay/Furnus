@@ -26,11 +26,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.oredict.OreDictionary;
 import vazkii.botania.api.item.IExoflameHeatable;
+import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory, ITickable, IExoflameHeatable {
+public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory, ITickable, IExoflameHeatable, IEnergyReceiver {
 	protected AbstractMachine(int size) {
 		super(size);
 	}
@@ -394,12 +395,14 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		input();
 		split();
 		move();
-		if (fuel > 0 && !burning) {
-			burning = true;
-			((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
-		} else if (fuel <= 0 && burning) {
-			burning = false;
-			((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
+		if (worldObj.getTotalWorldTime() % 5 == 0) {
+			if (fuel > 0 && !burning) {
+				burning = true;
+				((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
+			} else if (fuel <= 0 && burning) {
+				burning = false;
+				((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
+			}
 		}
 
 		for (int i = 0; i <= speed * ConfigurationHandler.speedMulti; i++) {
@@ -589,6 +592,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		return lis;
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	Direction getWrongSide(EnumFacing side) {
 		if (side == EnumFacing.UP)
 			return Direction.TOP;
@@ -751,6 +755,36 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public void boostCookTime() {
+	}
+
+	private int mul = 3;
+
+	@Override
+	public int getEnergyStored(EnumFacing from) {
+		return fuel * mul;
+	}
+
+	@Override
+	public int getMaxEnergyStored(EnumFacing from) {
+		return Math.min(maxFuel, 40000) * mul;
+	}
+
+	@Override
+	public boolean canConnectEnergy(EnumFacing from) {
+		return ConfigurationHandler.rfEnabled;
+	}
+
+	@Override
+	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
+		if (fuel >= 10000 || getStackInSlot(9) != null || !canProcessAny())
+			return 0;
+		int energyReceived = Math.min(40000 - fuel, maxReceive) * mul;
+
+		if (!simulate) {
+			fuel += energyReceived;
+			maxFuel = fuel;
+		}
+		return energyReceived;
 	}
 
 	public static Map<Direction, Mode> getMap(String id, AbstractMachine tile) {

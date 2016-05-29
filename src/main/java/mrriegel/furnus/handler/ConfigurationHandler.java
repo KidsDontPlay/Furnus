@@ -8,7 +8,7 @@ public class ConfigurationHandler {
 
 	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti;
 	public static double effiMulti, bonusMulti, xpMulti, bonusFuelMulti, speedFuelMulti;
-	public static boolean dusts, speed, effi, io, slot, bonus, xp, eco;
+	public static boolean dusts, speed, effi, io, slot, bonus, xp, eco,rfEnabled;
 	public static String[] blacklistDusts;
 
 	public static void refreshConfig() {
@@ -31,6 +31,7 @@ public class ConfigurationHandler {
 		bonus = config.get("upgrade", "bonus", true, "Enable Bonus Upgrade").getBoolean();
 		xp = config.get("upgrade", "xp", true, "Enable XP Upgrade").getBoolean();
 		eco = config.get("upgrade", "eco", true, "Enable Eco Upgrade").getBoolean();
+		rfEnabled = config.get("RF", "rfEnabled", false, "RF can be used").getBoolean();
 		blacklistDusts = config.get("dust", "blacklistDusts", new String[] { "dustCoal" }, "Blacklist for dusts which should not be craftable in pulvus.").getStringList();
 		if (config.hasChanged()) {
 			config.save();
