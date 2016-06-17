@@ -36,7 +36,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		super(size);
 	}
 
-	protected boolean burning, eco, inout, split;
+	protected boolean burning, eco, inout, split, rf;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
 	protected Map<Direction, Mode> input, output, fuelput;
 	protected Map<Integer, Integer> progress;
@@ -85,6 +85,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		eco = tag.getBoolean("eco");
 		inout = tag.getBoolean("inout");
 		split = tag.getBoolean("split");
+		rf = tag.getBoolean("rf");
 		speed = tag.getInteger("speed");
 		effi = tag.getInteger("effi");
 		slots = tag.getInteger("slot");
@@ -109,6 +110,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		tag.setBoolean("eco", eco);
 		tag.setBoolean("inout", inout);
 		tag.setBoolean("split", split);
+		tag.setBoolean("rf", rf);
 		tag.setInteger("speed", speed);
 		tag.setInteger("effi", effi);
 		tag.setInteger("slot", slots);
@@ -153,6 +155,14 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	public void setSplit(boolean split) {
 		this.split = split;
+	}
+
+	public boolean isRf() {
+		return rf;
+	}
+
+	public void setRf(boolean rf) {
+		this.rf = rf;
 	}
 
 	public int getSpeed() {
@@ -332,7 +342,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	public void updateStats(EntityPlayer player) {
 		int s = getSlots();
 		Map<Integer, Integer> upgrades = new HashMap<Integer, Integer>();
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < 8; i++)
 			upgrades.put(i, 0);
 		for (int i = 10; i < 15; i++) {
 			ItemStack stack = getStackInSlot(i);
@@ -363,6 +373,9 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				break;
 			case 6:
 				setEco(ConfigurationHandler.eco ? e.getValue() > 0 ? true : false : false);
+				break;
+			case 7:
+				setRf(ConfigurationHandler.rf ? e.getValue() > 0 ? true : false : false);
 				break;
 			}
 		}
@@ -757,7 +770,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	public void boostCookTime() {
 	}
 
-	private int mul = 3;
+	private int mul = ConfigurationHandler.rfMulti;
 
 	@Override
 	public int getEnergyStored(EnumFacing from) {
@@ -771,7 +784,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public boolean canConnectEnergy(EnumFacing from) {
-		return ConfigurationHandler.rfEnabled;
+		return isRf();
 	}
 
 	@Override
@@ -782,7 +795,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 		if (!simulate) {
 			fuel += energyReceived;
-			maxFuel = fuel;
+			maxFuel = /* fuel */energyReceived;
 		}
 		return energyReceived;
 	}

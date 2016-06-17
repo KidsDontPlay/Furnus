@@ -29,6 +29,8 @@ public class CraftingRecipes {
 			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 5), "cgc", "rir", "cgc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Items.SLIME_BALL, 'r', Blocks.GLOWSTONE);
 		if (ConfigurationHandler.eco)
 			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 6), "cgc", "rir", "cgc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Blocks.COAL_BLOCK, 'r', Items.BLAZE_POWDER);
+		if (ConfigurationHandler.rf)
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 7), "cgc", "rir", "cgc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Items.GOLD_INGOT, 'r', Blocks.REDSTONE_BLOCK);
 		if (ConfigurationHandler.dusts)
 			for (int i = 0; i < Dust.values().length; i++) {
 				Dust dus = Dust.values()[i];

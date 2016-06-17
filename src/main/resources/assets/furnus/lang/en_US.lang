@@ -8,6 +8,7 @@ item.furnus:upgrade_3.name=Slot Upgrade
 item.furnus:upgrade_4.name=Bonus Upgrade
 item.furnus:upgrade_5.name=XP Upgrade
 item.furnus:upgrade_6.name=Eco Upgrade
+item.furnus:upgrade_7.name=RF Upgrade
 
 item.furnus:upgrade_0.tip=Increases speed. Increases fuel consumption.
 item.furnus:upgrade_1.tip=Decreases fuel consumption.
@@ -16,6 +17,7 @@ item.furnus:upgrade_3.tip=Adds one additional input slot (max. 2).
 item.furnus:upgrade_4.tip=Increases chance of more output. Increases fuel consumption.
 item.furnus:upgrade_5.tip=Increases XP output.
 item.furnus:upgrade_6.tip=Saves fuel.
+item.furnus:upgrade_7.tip=Enables RF support.
 
 item.furnus:dust_iron.name=Iron Dust
 item.furnus:dust_gold.name=Gold Dust

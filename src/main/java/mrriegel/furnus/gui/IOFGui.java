@@ -14,8 +14,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.translation.I18n;
 
 import org.lwjgl.opengl.GL11;
 
@@ -118,7 +118,7 @@ public class IOFGui extends GuiScreen {
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.imageWidth, this.imageHeight);
 		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
 		String pre = "gui.furnus.";
-		mc.fontRendererObj.drawString(id.equals("F") ? I18n.translateToLocal(pre + "fuel") : id.equals("I") ? I18n.translateToLocal(pre + "input") : I18n.translateToLocal(pre + "output"), guiLeft + 8, guiTop + 6, 4210752);
+		mc.fontRendererObj.drawString(id.equals("F") ? I18n.format(pre + "fuel") : id.equals("I") ? I18n.format(pre + "input") : I18n.format(pre + "output"), guiLeft + 8, guiTop + 6, 4210752);
 
 	}
 

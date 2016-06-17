@@ -6,9 +6,9 @@ public class ConfigurationHandler {
 
 	public static Configuration config;
 
-	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti;
+	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti, rfMulti;
 	public static double effiMulti, bonusMulti, xpMulti, bonusFuelMulti, speedFuelMulti;
-	public static boolean dusts, speed, effi, io, slot, bonus, xp, eco,rfEnabled;
+	public static boolean dusts, speed, effi, io, slot, bonus, xp, eco, rf;
 	public static String[] blacklistDusts;
 
 	public static void refreshConfig() {
@@ -18,6 +18,7 @@ public class ConfigurationHandler {
 		bonusSize = config.get("stacksize", "bonusStackSize", 8, "Stacksize of Bonus Upgrade").getInt();
 		xpSize = config.get("stacksize", "xpStackSize", 8, "Stacksize of XP Upgrade").getInt();
 		speedMulti = config.get("multiplier", "speedMulti", 1, "Multiplier of Speed Upgrade").getInt();
+		rfMulti = config.get("multiplier", "rfMulti", 4, "Multiplier of RF Upgrade").getInt();
 		effiMulti = config.get("multiplier", "effiMulti", 1.5, "Multiplier of Efficiency Upgrade").getDouble();
 		bonusMulti = config.get("multiplier", "bonusMulti", .06, "Multiplier of Bonus Upgrade (more than 1.0 won't work)").getDouble();
 		xpMulti = config.get("multiplier", "xpMulti", .25, "Multiplier of XP Upgrade").getDouble();
@@ -31,7 +32,7 @@ public class ConfigurationHandler {
 		bonus = config.get("upgrade", "bonus", true, "Enable Bonus Upgrade").getBoolean();
 		xp = config.get("upgrade", "xp", true, "Enable XP Upgrade").getBoolean();
 		eco = config.get("upgrade", "eco", true, "Enable Eco Upgrade").getBoolean();
-		rfEnabled = config.get("RF", "rfEnabled", false, "RF can be used").getBoolean();
+		rf = config.get("upgrade", "rf", false, "Enable RF Upgrade").getBoolean();
 		blacklistDusts = config.get("dust", "blacklistDusts", new String[] { "dustCoal" }, "Blacklist for dusts which should not be craftable in pulvus.").getStringList();
 		if (config.hasChanged()) {
 			config.save();

@@ -5,11 +5,11 @@ import java.util.List;
 import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.handler.ConfigurationHandler;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,13 +40,15 @@ public class ItemUpgrade extends Item {
 			list.add(new ItemStack(item, 1, 5));
 		if (ConfigurationHandler.eco)
 			list.add(new ItemStack(item, 1, 6));
+		if (ConfigurationHandler.rf)
+			list.add(new ItemStack(item, 1, 7));
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_, boolean p_77624_4_) {
 		super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
-		p_77624_3_.add(I18n.translateToLocal("item.furnus:upgrade_" + p_77624_1_.getItemDamage() + ".tip"));
+		p_77624_3_.add(I18n.format("item.furnus:upgrade_" + p_77624_1_.getItemDamage() + ".tip"));
 	}
 
 	@Override
@@ -70,6 +72,8 @@ public class ItemUpgrade extends Item {
 		case 5:
 			return ConfigurationHandler.xpSize;
 		case 6:
+			return 1;
+		case 7:
 			return 1;
 		}
 		return -1;

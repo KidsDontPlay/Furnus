@@ -44,7 +44,7 @@ import com.google.gson.reflect.TypeToken;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.80";
+	public static final String VERSION = "1.81";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -118,7 +118,7 @@ public class Furnus {
 		ItemModelMesher mesh = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
 		mesh.register(Item.getItemFromBlock(ModBlocks.furnus), 0, new ModelResourceLocation(Furnus.MODID + ":" + "furnus", "inventory"));
 		mesh.register(Item.getItemFromBlock(ModBlocks.pulvus), 0, new ModelResourceLocation(Furnus.MODID + ":" + "pulvus", "inventory"));
-		for (int i = 0; i < 7; i++) {
+		for (int i = 0; i < 8; i++) {
 			ModelBakery.registerItemVariants(ModItems.upgrade, new ResourceLocation(Furnus.MODID + ":" + "upgrade_" + i));
 			mesh.register(ModItems.upgrade, i, new ModelResourceLocation(Furnus.MODID + ":" + "upgrade_" + i, "inventory"));
 		}
