@@ -18,14 +18,13 @@ import com.google.gson.Gson;
 
 public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessage, IMessage> {
 	boolean burning;
-	int x, y, z, fuel, maxFuel;
+	int x, y, z, fuel, maxFuel, rf;
 	Map<Integer, Integer> progress;
 
 	public ProgressMessage() {
-
 	}
 
-	public ProgressMessage(boolean burning, int x, int y, int z, int fuel, int maxFuel, Map<Integer, Integer> progress) {
+	public ProgressMessage(boolean burning, int x, int y, int z, int fuel, int maxFuel, Map<Integer, Integer> progress, int rf) {
 		this.burning = burning;
 		this.x = x;
 		this.y = y;
@@ -33,6 +32,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		this.fuel = fuel;
 		this.maxFuel = maxFuel;
 		this.progress = progress;
+		this.rf = rf;
 	}
 
 	@Override
@@ -50,6 +50,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 						tile.setFuel(message.fuel);
 						tile.setMaxFuel(message.maxFuel);
 						tile.setBurning(message.burning);
+						tile.en.setEnergyStored(message.rf);
 						return;
 					} catch (NullPointerException e) {
 						return;
@@ -68,6 +69,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		this.z = buf.readInt();
 		this.fuel = buf.readInt();
 		this.maxFuel = buf.readInt();
+		this.rf = buf.readInt();
 		this.progress = new Gson().fromJson(ByteBufUtils.readUTF8String(buf), new TypeToken<Map<Integer, Integer>>() {
 		}.getType());
 	}
@@ -80,6 +82,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		buf.writeInt(this.z);
 		buf.writeInt(this.fuel);
 		buf.writeInt(this.maxFuel);
+		buf.writeInt(this.rf);
 		ByteBufUtils.writeUTF8String(buf, new Gson().toJson(this.progress));
 
 	}

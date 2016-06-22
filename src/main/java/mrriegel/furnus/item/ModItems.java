@@ -1,7 +1,7 @@
 package mrriegel.furnus.item;
 
 import mrriegel.furnus.Furnus;
-import mrriegel.furnus.handler.ConfigurationHandler;
+import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.item.ItemDust.Dust;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,7 +17,7 @@ public class ModItems {
 
 	public static void init() {
 		GameRegistry.registerItem(upgrade, "upgrade");
-		if (ConfigurationHandler.dusts) {
+		if (ConfigHandler.dusts) {
 			GameRegistry.registerItem(dust, "dust");
 			for (int i = 0; i < Dust.values().length; i++) {
 				Dust dus = Dust.values()[i];

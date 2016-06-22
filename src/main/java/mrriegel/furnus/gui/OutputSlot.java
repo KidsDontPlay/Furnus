@@ -2,7 +2,7 @@ package mrriegel.furnus.gui;
 
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
-import mrriegel.furnus.handler.ConfigurationHandler;
+import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.CrunchHandler;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
@@ -56,7 +56,7 @@ public class OutputSlot extends Slot {
 		if (!this.thePlayer.worldObj.isRemote) {
 			int i = this.field_75228_b;
 			float m = inventory instanceof TileFurnus ? FurnaceRecipes.instance().getSmeltingExperience(stack) : inventory instanceof TilePulvus ? CrunchHandler.instance().getExperience(stack) : 0f;
-			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : m + m * ((MachineContainer) thePlayer.openContainer).tile.getXp() * (float) ConfigurationHandler.xpMulti;
+			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : m + m * ((MachineContainer) thePlayer.openContainer).tile.getXp() * (float) ConfigHandler.xpMulti;
 			int j;
 
 			if (f == 0.0F) {

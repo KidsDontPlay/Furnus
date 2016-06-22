@@ -31,3 +31,14 @@ gui.furnus.split=Split
 gui.furnus.input=Input
 gui.furnus.output=Output
 gui.furnus.fuel=Fuel
+
+gui.furnus.X=Disabled
+gui.furnus.ENABLED=Enabled
+gui.furnus.AUTO=Automatic
+
+gui.furnus.top=Top
+gui.furnus.bottom=Bottom
+gui.furnus.back=Back
+gui.furnus.front=Front
+gui.furnus.left=Left
+gui.furnus.right=Right

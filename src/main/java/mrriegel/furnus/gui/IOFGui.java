@@ -19,6 +19,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.collect.Lists;
+
 public class IOFGui extends GuiScreen {
 	private static final ResourceLocation GuiTextures = new ResourceLocation(Furnus.MODID + ":textures/gui/iof.png");
 	AbstractMachine tile;
@@ -109,17 +111,28 @@ public class IOFGui extends GuiScreen {
 	}
 
 	@Override
-	public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
+	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(GuiTextures);
 		guiLeft = (this.width - this.imageWidth) / 2;
 		guiTop = (this.height - this.imageHeight) / 2;
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.imageWidth, this.imageHeight);
-		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
+		super.drawScreen(mouseX, mouseY, partialTicks);
 		String pre = "gui.furnus.";
 		mc.fontRendererObj.drawString(id.equals("F") ? I18n.format(pre + "fuel") : id.equals("I") ? I18n.format(pre + "input") : I18n.format(pre + "output"), guiLeft + 8, guiTop + 6, 4210752);
-
+		if (top.isMouseOver())
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "top") + " - " + I18n.format(pre + topMode.toString())), mouseX, mouseY);
+		if (bottom.isMouseOver())
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "bottom") + " - " + I18n.format(pre + bottomMode.toString())), mouseX, mouseY);
+		if (right.isMouseOver())
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "right") + " - " + I18n.format(pre + rightMode.toString())), mouseX, mouseY);
+		if (left.isMouseOver())
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "left") + " - " + I18n.format(pre + leftMode.toString())), mouseX, mouseY);
+		if (back.isMouseOver())
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "back") + " - " + I18n.format(pre + backMode.toString())), mouseX, mouseY);
+		if (front.isMouseOver())
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "front") + " - " + I18n.format(pre + frontMode.toString())), mouseX, mouseY);
 	}
 
 	@Override

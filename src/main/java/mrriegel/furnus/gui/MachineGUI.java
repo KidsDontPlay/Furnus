@@ -7,7 +7,7 @@ import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
-import mrriegel.furnus.handler.ConfigurationHandler;
+import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
 import net.minecraft.client.Minecraft;
@@ -95,14 +95,16 @@ public class MachineGUI extends GuiContainer {
 		int j = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
 			List<String> list = new ArrayList<String>();
-			double speed = (1.d + tile.getSpeed() * 1.d * ConfigurationHandler.speedMulti);
+			double speed = (1.d + tile.getSpeed() * 1.d * ConfigHandler.speedMulti);
 			list.add(I18n.format("gui.furnus.speed") + ": " + String.format("%.2f", speed) + "x");
-			double effi = (tile.getSpeed() * (ConfigurationHandler.speedFuelMulti / 10.) + tile.getBonus() * (ConfigurationHandler.bonusFuelMulti / 10.) + 1.) / (tile.getEffi() * (ConfigurationHandler.effiMulti / 10.) + 1.);
+			double effi = (tile.getSpeed() * (ConfigHandler.speedFuelMulti / 10.) + tile.getBonus() * (ConfigHandler.bonusFuelMulti / 10.) + 1.) / (tile.getEffi() * (ConfigHandler.effiMulti / 10.) + 1.);
 			list.add(I18n.format("gui.furnus.effi") + ": " + String.format("%.2f", effi) + "x");
-			int bonus = (tile.getBonus() * (int) (ConfigurationHandler.bonusMulti * 100.));
+			int bonus = (tile.getBonus() * (int) (ConfigHandler.bonusMulti * 100.));
 			list.add(I18n.format("gui.furnus.bonus") + ": " + String.format("%d", bonus) + "%");
-			double xp = (1.d + tile.getXp() * ConfigurationHandler.xpMulti);
+			double xp = (1.d + tile.getXp() * ConfigHandler.xpMulti);
 			list.add(I18n.format("gui.furnus.xp") + ": " + String.format("%.2f", xp) + "x");
+			if (tile.isRf())
+				list.add("RF: " + tile.en.getEnergyStored() + "/" + tile.en.getMaxEnergyStored());
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
 			this.drawHoveringText(list, i, j, fontRendererObj);

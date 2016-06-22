@@ -4,7 +4,7 @@ import java.util.List;
 
 import mrriegel.furnus.CreativeTab;
 import mrriegel.furnus.Furnus;
-import mrriegel.furnus.handler.ConfigurationHandler;
+import mrriegel.furnus.handler.ConfigHandler;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,21 +26,21 @@ public class ItemUpgrade extends Item {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs tab, List list) {
-		if (ConfigurationHandler.speed)
+		if (ConfigHandler.speed)
 			list.add(new ItemStack(item, 1, 0));
-		if (ConfigurationHandler.effi)
+		if (ConfigHandler.effi)
 			list.add(new ItemStack(item, 1, 1));
-		if (ConfigurationHandler.io)
+		if (ConfigHandler.io)
 			list.add(new ItemStack(item, 1, 2));
-		if (ConfigurationHandler.slot)
+		if (ConfigHandler.slot)
 			list.add(new ItemStack(item, 1, 3));
-		if (ConfigurationHandler.bonus)
+		if (ConfigHandler.bonus)
 			list.add(new ItemStack(item, 1, 4));
-		if (ConfigurationHandler.xp)
+		if (ConfigHandler.xp)
 			list.add(new ItemStack(item, 1, 5));
-		if (ConfigurationHandler.eco)
+		if (ConfigHandler.eco)
 			list.add(new ItemStack(item, 1, 6));
-		if (ConfigurationHandler.rf)
+		if (ConfigHandler.rf)
 			list.add(new ItemStack(item, 1, 7));
 	}
 
@@ -60,17 +60,17 @@ public class ItemUpgrade extends Item {
 	public int getItemStackLimit(ItemStack stack) {
 		switch (stack.getItemDamage()) {
 		case 0:
-			return ConfigurationHandler.speedSize;
+			return ConfigHandler.speedSize;
 		case 1:
-			return ConfigurationHandler.effiSize;
+			return ConfigHandler.effiSize;
 		case 2:
 			return 1;
 		case 3:
 			return 2;
 		case 4:
-			return ConfigurationHandler.bonusSize;
+			return ConfigHandler.bonusSize;
 		case 5:
-			return ConfigurationHandler.xpSize;
+			return ConfigHandler.xpSize;
 		case 6:
 			return 1;
 		case 7:

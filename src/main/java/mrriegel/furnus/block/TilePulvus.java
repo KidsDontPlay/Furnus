@@ -1,7 +1,7 @@
 package mrriegel.furnus.block;
 
 import mrriegel.furnus.gui.UpgradeSlot;
-import mrriegel.furnus.handler.ConfigurationHandler;
+import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.item.ModItems;
 import net.minecraft.item.ItemStack;
@@ -37,7 +37,7 @@ public class TilePulvus extends AbstractMachine {
 			} catch (NullPointerException e) {
 				valid = true;
 			}
-			if ((worldObj.rand.nextInt(100) < bonus * 100 * ConfigurationHandler.bonusMulti)) {
+			if ((worldObj.rand.nextInt(100) < bonus * 100 * ConfigHandler.bonusMulti)) {
 				if (valid) {
 					int ran = worldObj.rand.nextInt(itemstack.stackSize) + 1;
 					if (getStackInSlot(slot + 6) == null) {

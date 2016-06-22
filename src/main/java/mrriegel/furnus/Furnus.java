@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import mrriegel.furnus.block.ModBlocks;
-import mrriegel.furnus.handler.ConfigurationHandler;
+import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
@@ -54,11 +54,13 @@ public class Furnus {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws IOException {
 		File configFile = event.getSuggestedConfigurationFile();
-		ConfigurationHandler.config = new Configuration(configFile);
-		ConfigurationHandler.config.load();
-		ConfigurationHandler.refreshConfig();
+		ConfigHandler.config = new Configuration(configFile);
+		ConfigHandler.config.load();
+		ConfigHandler.refreshConfig();
 		PacketHandler.init();
 		File questFile = new File(event.getModConfigurationDirectory(), "furnus_recipes.json");
+		if(!questFile.exists())
+			questFile = new File(event.getModConfigurationDirectory(), "pulvus_recipes.json");
 		if (!questFile.exists()) {
 			questFile.createNewFile();
 			FileWriter fw = new FileWriter(questFile);
@@ -148,7 +150,7 @@ public class Furnus {
 					CrunchHandler.instance().addItemStack(in, out, r.experience);
 
 		}
-		List<String> black = Arrays.asList(ConfigurationHandler.blacklistDusts);
+		List<String> black = Arrays.asList(ConfigHandler.blacklistDusts);
 		for (String ore : OreDictionary.getOreNames()) {
 			if (ore.startsWith("ore") && !OreDictionary.getOres("dust" + ore.substring(3)).isEmpty() && !black.contains("dust" + ore.substring(3)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
@@ -213,4 +215,5 @@ public class Furnus {
 			this.experience = exp;
 		}
 	}
+	
 }
