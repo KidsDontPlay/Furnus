@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mrriegel.furnus.InventoryHelper;
+import mrriegel.furnus.InvHelper;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.ProgressMessage;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,13 +22,15 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import vazkii.botania.api.item.IExoflameHeatable;
 import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyReceiver;
 
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -446,11 +446,11 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		if (getStackInSlot(9) != null && TileEntityFurnace.isItemFuel(getStackInSlot(9))) {
 			fuelTime = TileEntityFurnace.getItemBurnTime(getStackInSlot(9)) * 100;
 			if (getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)) == null)
-				InventoryHelper.decrStackSize(this, 9, 1);
+				decrStackSize(9, 1);
 			else
 				setInventorySlotContents(9, getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
 		} else {
-			int fac = 25;
+			int fac = ConfigHandler.RF;
 			fuelTime = (int) ((consumeRF(1600 * fac) / new Double(fac).doubleValue()) * 100);
 		}
 		fuel += fuelTime;
@@ -517,26 +517,18 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	protected void output() {
 		if (!inout || worldObj.getTotalWorldTime() % 50 / (speed + slots + 1) != 0)
 			return;
-		for (IInventory ir : getIInventories()) {
+		for (TileEntity t : getIInventories()) {
 			for (int i : getOutputSlots()) {
-				if (getStackInSlot(i) == null || output.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
+				if (getStackInSlot(i) == null || output.get(getWrongSide(getDirection(this, t))) != Mode.AUTO)
 					continue;
-
-				if (!(ir instanceof ISidedInventory)) {
-					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToInventoryWithLeftover(getStackInSlot(i).copy(), ir, false);
-					if (num == rest)
-						continue;
-					setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest) : null);
-					break;
-				} else if (ir instanceof ISidedInventory) {
-					int num = getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(getStackInSlot(i).copy(), (ISidedInventory) ir, getDirection((TileEntity) ir, this), false);
-					if (num == rest)
-						continue;
-					setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(getStackInSlot(i).copy(), rest) : null);
-					break;
-				}
+				IItemHandler ir = InvHelper.getItemHandler(t, getDirection(this, t).getOpposite());
+				int num = getStackInSlot(i).stackSize;
+				ItemStack res = ItemHandlerHelper.insertItem(ir, getStackInSlot(i).copy(), false);
+				int rest = res == null ? 0 : res.stackSize;
+				if (num == rest)
+					continue;
+				setInventorySlotContents(i, rest > 0 ? ItemHandlerHelper.copyStackWithSize(getStackInSlot(i).copy(), rest) : null);
+				break;
 			}
 		}
 	}
@@ -544,35 +536,25 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	protected void input() {
 		if (!inout || worldObj.getTotalWorldTime() % 60 / (speed + slots + 1) != 0)
 			return;
-		for (IInventory ir : getIInventories()) {
-			if (input.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO && fuelput.get(getWrongSide(getDirection(this, (TileEntity) ir))) != Mode.AUTO)
+		for (TileEntity t : getIInventories()) {
+			if (input.get(getWrongSide(getDirection(this, t))) != Mode.AUTO && fuelput.get(getWrongSide(getDirection(this, t))) != Mode.AUTO)
 				continue;
-			EnumFacing side = getDirection(this, (TileEntity) ir);
-			if (!(ir instanceof ISidedInventory)) {
-				for (int i = 0; i < ir.getSizeInventory(); i++) {
-					if (ir.getStackInSlot(i) == null)
-						continue;
-					int num = ir.getStackInSlot(i).stackSize;
-					int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
-					if (num == rest)
-						continue;
-					ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
-					break;
-				}
-			} else if (ir instanceof ISidedInventory) {
-				if (((ISidedInventory) ir).getSlotsForFace(side) != null)
-					for (int i : ((ISidedInventory) ir).getSlotsForFace(side)) {
-						if (ir.getStackInSlot(i) == null)
-							continue;
-						if (!((ISidedInventory) ir).canExtractItem(i, ir.getStackInSlot(i), getDirection((TileEntity) ir, this)))
-							break;
-						int num = ir.getStackInSlot(i).stackSize;
-						int rest = InventoryHelper.addToSidedInventoryWithLeftover(ir.getStackInSlot(i).copy(), this, side, false);
-						if (num == rest)
-							continue;
-						ir.setInventorySlotContents(i, rest > 0 ? InventoryHelper.copyStack(ir.getStackInSlot(i).copy(), rest) : null);
-						break;
-					}
+			IItemHandler ir = InvHelper.getItemHandler(t, getDirection(this, t).getOpposite());
+			IItemHandler that = InvHelper.getItemHandler(this, getDirection(this, t));
+			for (int i = 0; i < ir.getSlots(); i++) {
+				if (ir.getStackInSlot(i) == null)
+					continue;
+				int num = ir.getStackInSlot(i).stackSize;
+				ItemStack res = ItemHandlerHelper.insertItem(that, ir.getStackInSlot(i).copy(), true);
+				int rest = res == null ? 0 : res.stackSize;
+				if (num == rest)
+					continue;
+				int inserted = num - rest;
+				ItemStack exed = ir.extractItem(i, inserted, false);
+				if (exed == null)
+					continue;
+				ItemHandlerHelper.insertItem(that, exed.copy(), false);
+				break;
 			}
 		}
 	}
@@ -593,32 +575,13 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		return null;
 	}
 
-	protected List<IInventory> getIInventories() {
-		ArrayList<IInventory> lis = new ArrayList<IInventory>();
-		TileEntity a = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() + 1, getPos().getZ()));
-		if (a != null && a instanceof IInventory)
-			lis.add((IInventory) a);
-
-		TileEntity b = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY() - 1, getPos().getZ()));
-		if (b != null && b instanceof IInventory)
-			lis.add((IInventory) b);
-
-		TileEntity c = worldObj.getTileEntity(new BlockPos(getPos().getX() + 1, getPos().getY(), getPos().getZ()));
-		if (c != null && c instanceof IInventory)
-			lis.add((IInventory) c);
-
-		TileEntity d = worldObj.getTileEntity(new BlockPos(getPos().getX() - 1, getPos().getY(), getPos().getZ()));
-		if (d != null && d instanceof IInventory)
-			lis.add((IInventory) d);
-
-		TileEntity e = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ() + 1));
-		if (e != null && e instanceof IInventory)
-			lis.add((IInventory) e);
-
-		TileEntity f = worldObj.getTileEntity(new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ() - 1));
-		if (f != null && f instanceof IInventory)
-			lis.add((IInventory) f);
-
+	protected List<TileEntity> getIInventories() {
+		List<TileEntity> lis = Lists.newArrayList();
+		for (EnumFacing face : EnumFacing.values()) {
+			BlockPos p = getPos().offset(face);
+			if (InvHelper.hasItemHandler(worldObj, p, face.getOpposite()))
+				lis.add(worldObj.getTileEntity(p));
+		}
 		return lis;
 	}
 
@@ -737,7 +700,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
 			return;
 		} else {
-			if (InventoryHelper.areStacksEqual(stack1, stack2, true)) {
+			if (ItemHandlerHelper.canItemStacksStack(stack1, stack2)) {
 				int s = stack1.stackSize + stack2.stackSize;
 				stack1.stackSize = split(s)[0];
 				stack2.stackSize = split(s)[1];
@@ -763,17 +726,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		return false;
 	}
 
-	public void syncWithClient() {
-		if (!hasWorldObj())
-			return;
-		for (EntityPlayer p : worldObj.playerEntities) {
-			if (p.getPosition().getDistance(pos.getX(), pos.getY(), pos.getZ()) < 32) {
-				((EntityPlayerMP) p).connection.sendPacket(getUpdatePacket());
-			}
-		}
-
-	}
-
 	@Override
 	public boolean canSmelt() {
 		if (worldObj.isRemote)
@@ -797,8 +749,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	@Override
 	public void boostCookTime() {
 	}
-
-	// private int mul = ConfigHandler.rfMulti;
 
 	boolean consumeRF(int num, boolean simulate) {
 		int value = num;

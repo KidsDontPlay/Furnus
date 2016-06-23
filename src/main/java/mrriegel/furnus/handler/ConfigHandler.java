@@ -6,7 +6,7 @@ public class ConfigHandler {
 
 	public static Configuration config;
 
-	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti, rfMulti;
+	public static int speedSize, effiSize, bonusSize, xpSize, speedMulti, RF;
 	public static double effiMulti, bonusMulti, xpMulti, bonusFuelMulti, speedFuelMulti;
 	public static boolean dusts, speed, effi, io, slot, bonus, xp, eco, rf;
 	public static String[] blacklistDusts;
@@ -18,7 +18,7 @@ public class ConfigHandler {
 		bonusSize = config.get("stacksize", "bonusStackSize", 8, "Stacksize of Bonus Upgrade").getInt();
 		xpSize = config.get("stacksize", "xpStackSize", 8, "Stacksize of XP Upgrade").getInt();
 		speedMulti = config.get("multiplier", "speedMulti", 1, "Multiplier of Speed Upgrade").getInt();
-		rfMulti = config.get("multiplier", "rfMulti", 4, "Multiplier of RF Upgrade").getInt();
+		RF = config.get("multiplier", "RF", 25, "Multiplier of RF Upgrade").getInt();
 		effiMulti = config.get("multiplier", "effiMulti", 1.5, "Multiplier of Efficiency Upgrade").getDouble();
 		bonusMulti = config.get("multiplier", "bonusMulti", .06, "Multiplier of Bonus Upgrade (more than 1.0 won't work)").getDouble();
 		xpMulti = config.get("multiplier", "xpMulti", .25, "Multiplier of XP Upgrade").getDouble();

@@ -44,7 +44,7 @@ import com.google.gson.reflect.TypeToken;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.81";
+	public static final String VERSION = "1.82";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -59,7 +59,7 @@ public class Furnus {
 		ConfigHandler.refreshConfig();
 		PacketHandler.init();
 		File questFile = new File(event.getModConfigurationDirectory(), "furnus_recipes.json");
-		if(!questFile.exists())
+		if (!questFile.exists())
 			questFile = new File(event.getModConfigurationDirectory(), "pulvus_recipes.json");
 		if (!questFile.exists()) {
 			questFile.createNewFile();
@@ -158,10 +158,10 @@ public class Furnus {
 			else if (ore.startsWith("ore") && !OreDictionary.getOres("gem" + ore.substring(3)).isEmpty() && !black.contains("gem" + ore.substring(3)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
 					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(3)).get(0), 2), 0.4F);
-			if (ore.startsWith("oreNether") && !OreDictionary.getOres("dust" + ore.substring(9)).isEmpty() && !black.contains("dust" + ore.substring(9)) && !OreDictionary.getOres(ore).isEmpty())
+			else if (ore.startsWith("oreNether") && !OreDictionary.getOres("dust" + ore.substring(9)).isEmpty() && !black.contains("dust" + ore.substring(9)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
 					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("dust" + ore.substring(9)).get(0), 4), 1F);
-			if (ore.startsWith("oreNether") && !OreDictionary.getOres("gem" + ore.substring(9)).isEmpty() && !black.contains("gem" + ore.substring(9)) && !OreDictionary.getOres(ore).isEmpty())
+			else if (ore.startsWith("oreNether") && !OreDictionary.getOres("gem" + ore.substring(9)).isEmpty() && !black.contains("gem" + ore.substring(9)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))
 					CrunchHandler.instance().addItemStack(stack, CrunchHandler.resize(OreDictionary.getOres("gem" + ore.substring(9)).get(0), 4), 1.2F);
 			else if (ore.startsWith("denseore") && !OreDictionary.getOres("dust" + ore.substring(8)).isEmpty() && !black.contains("dust" + ore.substring(8)) && !OreDictionary.getOres(ore).isEmpty())
@@ -215,5 +215,5 @@ public class Furnus {
 			this.experience = exp;
 		}
 	}
-	
+
 }

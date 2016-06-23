@@ -22,14 +22,14 @@ public interface IExoflameHeatable {
 	public boolean canSmelt();
 
 	/**
-	 * Gets the amount of ticks left for the fuel. If below 2, the exoflame
-	 * will call boostBurnTime.
+	 * Gets the amount of ticks left for the fuel. If below 2, the exoflame will
+	 * call boostBurnTime.
 	 */
 	public int getBurnTime();
 
 	/**
-	 * Called to increase the amount of time this furnace should be burning
-	 * the fuel for. Even if it doesn't have any fuel.
+	 * Called to increase the amount of time this furnace should be burning the
+	 * fuel for. Even if it doesn't have any fuel.
 	 */
 	public void boostBurnTime();
 
