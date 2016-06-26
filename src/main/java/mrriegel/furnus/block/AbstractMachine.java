@@ -224,6 +224,14 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		return maxFuel;
 	}
 
+	public int getRemainTicks() {
+		return remainTicks;
+	}
+
+	public void setRemainTicks(int remainTicks) {
+		this.remainTicks = remainTicks;
+	}
+
 	public void setMaxFuel(int maxFuel) {
 		this.maxFuel = maxFuel;
 	}
@@ -478,8 +486,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progress.put(slot, 0);
 		}
 		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
-			double effi = (getSpeed() * (ConfigHandler.speedFuelMulti / 10.) + getBonus() * (ConfigHandler.bonusFuelMulti / 10.) + 1.) / (getEffi() * (ConfigHandler.effiMulti / 10.) + 1.);
-			fuel -= effi * 100;
+			fuel -= getCalc() * 100;
 		}
 		calculateTicks();
 		sendMessage();
@@ -491,9 +498,12 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		int ticks = (fuel / 100);
 		ticks /= (speed * ConfigHandler.speedMulti + 1);
 		ticks /= (slots + 1);
-		double effi = (getSpeed() * (ConfigHandler.speedFuelMulti / 10.) + getBonus() * (ConfigHandler.bonusFuelMulti / 10.) + 1.) / (getEffi() * (ConfigHandler.effiMulti / 10.) + 1.);
-		ticks /= effi;
+		ticks /= getCalc();
 		remainTicks = ticks;
+	}
+
+	public double getCalc() {
+		return (getSpeed() * (ConfigHandler.speedFuelMulti / 10.) + getBonus() * (ConfigHandler.bonusFuelMulti / 10.) + 1.) / (getEffi() * (ConfigHandler.effiMulti / 10.) + 1.);
 	}
 
 	boolean progressing(int slot) {
@@ -507,7 +517,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	void sendMessage() {
-		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress, en.getEnergyStored()), new TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
+		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress, en.getEnergyStored(), remainTicks), new TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
 	}
 
 	protected abstract void processItem(int slot);

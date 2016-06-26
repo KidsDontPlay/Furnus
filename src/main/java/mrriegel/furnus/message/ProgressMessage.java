@@ -18,13 +18,13 @@ import com.google.gson.Gson;
 
 public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessage, IMessage> {
 	boolean burning;
-	int x, y, z, fuel, maxFuel, rf;
+	int x, y, z, fuel, maxFuel, rf, ticks;
 	Map<Integer, Integer> progress;
 
 	public ProgressMessage() {
 	}
 
-	public ProgressMessage(boolean burning, int x, int y, int z, int fuel, int maxFuel, Map<Integer, Integer> progress, int rf) {
+	public ProgressMessage(boolean burning, int x, int y, int z, int fuel, int maxFuel, Map<Integer, Integer> progress, int rf, int ticks) {
 		this.burning = burning;
 		this.x = x;
 		this.y = y;
@@ -33,6 +33,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		this.maxFuel = maxFuel;
 		this.progress = progress;
 		this.rf = rf;
+		this.ticks = ticks;
 	}
 
 	@Override
@@ -50,6 +51,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 						tile.setFuel(message.fuel);
 						tile.setMaxFuel(message.maxFuel);
 						tile.setBurning(message.burning);
+						tile.setRemainTicks(message.ticks);
 						tile.en.setEnergyStored(message.rf);
 						return;
 					} catch (NullPointerException e) {
@@ -70,6 +72,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		this.fuel = buf.readInt();
 		this.maxFuel = buf.readInt();
 		this.rf = buf.readInt();
+		this.ticks = buf.readInt();
 		this.progress = new Gson().fromJson(ByteBufUtils.readUTF8String(buf), new TypeToken<Map<Integer, Integer>>() {
 		}.getType());
 	}
@@ -83,6 +86,7 @@ public class ProgressMessage implements IMessage, IMessageHandler<ProgressMessag
 		buf.writeInt(this.fuel);
 		buf.writeInt(this.maxFuel);
 		buf.writeInt(this.rf);
+		buf.writeInt(this.ticks);
 		ByteBufUtils.writeUTF8String(buf, new Gson().toJson(this.progress));
 
 	}

@@ -103,8 +103,19 @@ public class MachineGUI extends GuiContainer {
 			list.add(I18n.format("gui.furnus.bonus") + ": " + String.format("%d", bonus) + "%");
 			double xp = (1.d + tile.getXp() * ConfigHandler.xpMulti);
 			list.add(I18n.format("gui.furnus.xp") + ": " + String.format("%.2f", xp) + "x");
-			if (tile.isRf())
+			if (tile.isRf()) {
+				list.add((int) ((ConfigHandler.RF * 200) * tile.getCalc()) + " RF per Operation");
 				list.add("RF: " + tile.en.getEnergyStored() + "/" + tile.en.getMaxEnergyStored());
+			}
+			GlStateManager.pushMatrix();
+			GlStateManager.disableLighting();
+			this.drawHoveringText(list, i, j, fontRendererObj);
+			GlStateManager.popMatrix();
+			GlStateManager.enableLighting();
+		}
+		if (i > guiLeft + 45 && i < guiLeft + 45 + 16 && j > guiTop + 102 && j < guiTop + 102 + 16) {
+			List<String> list = new ArrayList<String>();
+			list.add((int) (tile.getBurnTime() / 20.) + " Seconds");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
 			this.drawHoveringText(list, i, j, fontRendererObj);
