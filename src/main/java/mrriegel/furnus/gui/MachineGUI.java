@@ -97,8 +97,7 @@ public class MachineGUI extends GuiContainer {
 			List<String> list = new ArrayList<String>();
 			double speed = (1.d + tile.getSpeed() * 1.d * ConfigHandler.speedMulti);
 			list.add(I18n.format("gui.furnus.speed") + ": " + String.format("%.2f", speed) + "x");
-			double effi = (tile.getSpeed() * (ConfigHandler.speedFuelMulti / 10.) + tile.getBonus() * (ConfigHandler.bonusFuelMulti / 10.) + 1.) / (tile.getEffi() * (ConfigHandler.effiMulti / 10.) + 1.);
-			list.add(I18n.format("gui.furnus.effi") + ": " + String.format("%.2f", effi) + "x");
+			list.add(I18n.format("gui.furnus.effi") + ": " + String.format("%.2f", tile.getCalc()) + "x");
 			int bonus = (tile.getBonus() * (int) (ConfigHandler.bonusMulti * 100.));
 			list.add(I18n.format("gui.furnus.bonus") + ": " + String.format("%d", bonus) + "%");
 			double xp = (1.d + tile.getXp() * ConfigHandler.xpMulti);

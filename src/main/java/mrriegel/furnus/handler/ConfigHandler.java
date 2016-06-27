@@ -12,7 +12,6 @@ public class ConfigHandler {
 	public static String[] blacklistDusts;
 
 	public static void refreshConfig() {
-
 		speedSize = config.get("stacksize", "speedStackSize", 8, "Stacksize of Speed Upgrade").getInt();
 		effiSize = config.get("stacksize", "effiStackSize", 8, "Stacksize of Efficiency Upgrade").getInt();
 		bonusSize = config.get("stacksize", "bonusStackSize", 8, "Stacksize of Bonus Upgrade").getInt();

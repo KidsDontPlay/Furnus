@@ -497,7 +497,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			remainTicks = 0;
 		int ticks = (fuel / 100);
 		ticks /= (speed * ConfigHandler.speedMulti + 1);
-		ticks /= (slots + 1);
+		ticks /= Math.max(1, processes());
 		ticks /= getCalc();
 		remainTicks = ticks;
 	}
@@ -734,6 +734,15 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return true;
 		}
 		return false;
+	}
+
+	int processes() {
+		int processes = 0;
+		for (int i : getInputSlots()) {
+			if (canProcess(i))
+				processes++;
+		}
+		return processes;
 	}
 
 	@Override
