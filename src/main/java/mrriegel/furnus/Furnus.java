@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +22,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -32,11 +32,11 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -44,7 +44,7 @@ import com.google.gson.reflect.TypeToken;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION)
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.83";
+	public static final String VERSION = "1.9";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -64,7 +64,7 @@ public class Furnus {
 		if (!questFile.exists()) {
 			questFile.createNewFile();
 			FileWriter fw = new FileWriter(questFile);
-			List<Recipe> lis = new ArrayList<Recipe>();
+			List<Recipe> lis = Lists.newArrayList();
 			lis.add(new Recipe("cobblestone:1", "minecraft:gravel:0:1", .1F));
 			lis.add(new Recipe("minecraft:gravel:0:1", "minecraft:sand:0:1", .1F));
 			lis.add(new Recipe("stone:1", "cobblestone:1", .1F));
@@ -102,39 +102,36 @@ public class Furnus {
 		}
 		recipes = new Gson().fromJson(new BufferedReader(new FileReader(questFile)), new TypeToken<List<Recipe>>() {
 		}.getType());
+		ModBlocks.init();
+		ModItems.init();
+		CraftingRecipes.init();
+		if (event.getSide().isClient()) {
+			initModels();
+		}
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
-		ModBlocks.init();
-		ModItems.init();
-		CraftingRecipes.init();
-		if (event.getSide() == Side.CLIENT) {
-			initModels();
-		}
 		// MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	private void initModels() {
-		ItemModelMesher mesh = Minecraft.getMinecraft().getRenderItem().getItemModelMesher();
-		mesh.register(Item.getItemFromBlock(ModBlocks.furnus), 0, new ModelResourceLocation(Furnus.MODID + ":" + "furnus", "inventory"));
-		mesh.register(Item.getItemFromBlock(ModBlocks.pulvus), 0, new ModelResourceLocation(Furnus.MODID + ":" + "pulvus", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.furnus), 0, new ModelResourceLocation(Furnus.MODID + ":" + "furnus", "inventory"));
+		ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(ModBlocks.pulvus), 0, new ModelResourceLocation(Furnus.MODID + ":" + "pulvus", "inventory"));
 		for (int i = 0; i < 8; i++) {
-			ModelBakery.registerItemVariants(ModItems.upgrade, new ResourceLocation(Furnus.MODID + ":" + "upgrade_" + i));
-			mesh.register(ModItems.upgrade, i, new ModelResourceLocation(Furnus.MODID + ":" + "upgrade_" + i, "inventory"));
+			ModelLoader.setCustomModelResourceLocation(ModItems.upgrade, i, new ModelResourceLocation(Furnus.MODID + ":" + "upgrade_" + i, "inventory"));
 		}
 		for (int i = 0; i < Dust.values().length; i++) {
-			ModelBakery.registerItemVariants(ModItems.dust, new ResourceLocation(Furnus.MODID + ":" + "dust_" + Dust.values()[i].toString().toLowerCase()));
-			mesh.register(ModItems.dust, i, new ModelResourceLocation(Furnus.MODID + ":" + "dust_" + Dust.values()[i].toString().toLowerCase(), "inventory"));
+			ModelLoader.setCustomModelResourceLocation(ModItems.dust, i, new ModelResourceLocation(Furnus.MODID + ":" + "dust_" + Dust.values()[i].toString().toLowerCase(), "inventory"));
 		}
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		for (Recipe r : recipes) {
-			List<ItemStack> inl = new ArrayList<ItemStack>();
-			List<ItemStack> outl = new ArrayList<ItemStack>();
+			List<ItemStack> inl = Lists.newArrayList();
+			List<ItemStack> outl = Lists.newArrayList();
 			if (string2Stack(r.inputItem) != null)
 				inl.add(string2Stack(r.inputItem));
 			else
@@ -191,7 +188,7 @@ public class Furnus {
 	}
 
 	private List<ItemStack> oreName2Stacklist(String s) {
-		List<ItemStack> lis = new ArrayList<ItemStack>();
+		List<ItemStack> lis = Lists.newArrayList();
 		if (StringUtils.countMatches(s, ":") == 1) {
 			if (!OreDictionary.getOres(s.split(":")[0]).isEmpty()) {
 				for (ItemStack ore : OreDictionary.getOres(s.split(":")[0])) {

@@ -69,7 +69,7 @@ public abstract class AbstractBlock extends BlockContainer {
 			tileentity.validate();
 			world.setTileEntity(pos, tileentity);
 		}
-		// world.markBlockForUpdate(pos);
+		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
 
 	}
 
@@ -96,7 +96,7 @@ public abstract class AbstractBlock extends BlockContainer {
 			}
 
 			worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
-			// worldIn.markBlockForUpdate(pos);
+			worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 8);
 		}
 	}
 
@@ -108,7 +108,7 @@ public abstract class AbstractBlock extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(STATE, false), 2);
-		// worldIn.markBlockForUpdate(pos);
+		worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 8);
 
 	}
 

@@ -5,7 +5,6 @@ import mrriegel.furnus.message.CheckMessage;
 import mrriegel.furnus.message.OpenMessage;
 import mrriegel.furnus.message.ProgressMessage;
 import mrriegel.furnus.message.PutMessage;
-import mrriegel.furnus.message.StackMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -17,7 +16,6 @@ public class PacketHandler {
 		INSTANCE.registerMessage(CheckMessage.class, CheckMessage.class, id++, Side.SERVER);
 		INSTANCE.registerMessage(OpenMessage.class, OpenMessage.class, id++, Side.SERVER);
 		INSTANCE.registerMessage(PutMessage.class, PutMessage.class, id++, Side.SERVER);
-		INSTANCE.registerMessage(StackMessage.class, StackMessage.class, id++, Side.CLIENT);
 		INSTANCE.registerMessage(ProgressMessage.class, ProgressMessage.class, id++, Side.CLIENT);
 	}
 }

@@ -1,6 +1,5 @@
 package mrriegel.furnus.block;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +21,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -31,13 +33,11 @@ import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory, ITickable, IExoflameHeatable, IEnergyReceiver {
-	protected AbstractMachine(int size) {
-		super(size);
-	}
 
 	protected boolean burning, eco, inout, split, rf;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
@@ -46,11 +46,11 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	public EnergyStorage en = new EnergyStorage(64000, Integer.MAX_VALUE - 10, 0);
 
-	protected AbstractMachine() {
+	public AbstractMachine() {
 		super(15);
-		input = new HashMap<Direction, Mode>();
-		output = new HashMap<Direction, Mode>();
-		fuelput = new HashMap<Direction, Mode>();
+		input = Maps.newHashMap();
+		output = Maps.newHashMap();
+		fuelput = Maps.newHashMap();
 		for (Direction f : Direction.values()) {
 			input.put(f, Mode.X);
 			output.put(f, Mode.X);
@@ -82,6 +82,11 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	@Override
 	public NBTTagCompound getUpdateTag() {
 		return writeToNBT(new NBTTagCompound());
+	}
+
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
+		return oldState.getBlock() != newSate.getBlock();
 	}
 
 	@Override
@@ -272,7 +277,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	public int[] getSlotsForFace(EnumFacing side) {
 		if (!inout)
 			return new int[] {};
-		ArrayList<Integer> lis = new ArrayList<Integer>();
+		List<Integer> lis = Lists.newArrayList();
 		Direction wrongSide = getWrongSide(side);
 		if (input.get(wrongSide) != Mode.X)
 			lis.addAll(getInputSlots());
@@ -316,27 +321,22 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		return false;
 	}
 
-	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		return newSate.getBlock() != oldState.getBlock();
+	protected List<Integer> getOutputSlots() {
+		if (slots == 2)
+			return Lists.newArrayList(3, 4, 5, 6, 7, 8);
+		if (slots == 1)
+			return Lists.newArrayList(3, 4, 6, 7);
+		else
+			return Lists.newArrayList(3, 6);
 	}
 
-	protected ArrayList<Integer> getOutputSlots() {
+	protected List<Integer> getInputSlots() {
 		if (slots == 2)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4, 5, 6, 7, 8 }));
+			return Lists.newArrayList(0, 1, 2);
 		if (slots == 1)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 4, 6, 7 }));
+			return Lists.newArrayList(0, 1);
 		else
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 3, 6 }));
-	}
-
-	protected ArrayList<Integer> getInputSlots() {
-		if (slots == 2)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0, 1, 2 }));
-		if (slots == 1)
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0, 1 }));
-		else
-			return new ArrayList<Integer>(Arrays.asList(new Integer[] { 0 }));
+			return Lists.newArrayList(0);
 	}
 
 	protected boolean equalOreDict(ItemStack a, ItemStack b) {
@@ -397,7 +397,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 		if (s <= getSlots())
 			return;
-		ArrayList<Integer> lis = new ArrayList<Integer>();
+		List<Integer> lis = Lists.newArrayList();
 		lis.addAll(Arrays.asList(new Integer[] { 2, 5, 8 }));
 		if (getSlots() == 0)
 			lis.addAll(Arrays.asList(new Integer[] { 1, 4, 7 }));
@@ -409,16 +409,15 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			setInventorySlotContents(i, null);
 
 		}
-		// worldObj.markBlockForUpdate(new BlockPos(getPos().getX(),
-		// getPos().getY(), getPos().getZ()));
+		worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
 
 	}
 
 	@Override
 	public void update() {
-		if (worldObj.isRemote) {
-			return;
-		}
+//		if (worldObj.isRemote) {
+//			return;
+//		}
 		output();
 		input();
 		split();
@@ -459,10 +458,11 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				setInventorySlotContents(9, getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
 		} else {
 			int fac = ConfigHandler.RF;
-			fuelTime = (int) ((consumeRF(1600 * fac) / new Double(fac).doubleValue()) * 100);
+			fuelTime = (int) ((consumeRF(1600 * fac) / (double) fac) * 100);
 		}
 		fuel += fuelTime;
 		maxFuel = fuelTime;
+		sendMessage();
 	}
 
 	protected void burn(int slot) {
@@ -478,6 +478,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progressed = true;
 				if (progress.get(slot) >= 200) {
 					processItem(slot);
+					sendMessage();
 					progress.put(slot, 0);
 				}
 			}
@@ -489,7 +490,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			fuel -= getCalc() * 100;
 		}
 		calculateTicks();
-		sendMessage();
+//		sendMessage();
 	}
 
 	private void calculateTicks() {
@@ -803,6 +804,52 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	@Override
 	public int receiveEnergy(EnumFacing from, int maxReceive, boolean simulate) {
 		return en.receiveEnergy(maxReceive, simulate);
+	}
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		return (isRf() && capability == CapabilityEnergy.ENERGY) || super.hasCapability(capability, facing);
+	}
+
+	private IEnergyStorage energy = new IEnergyStorage() {
+
+		@Override
+		public int receiveEnergy(int maxReceive, boolean simulate) {
+			return en.receiveEnergy(maxReceive, simulate);
+		}
+
+		@Override
+		public int getMaxEnergyStored() {
+			return en.getMaxEnergyStored();
+		}
+
+		@Override
+		public int getEnergyStored() {
+			return en.getEnergyStored();
+		}
+
+		@Override
+		public int extractEnergy(int maxExtract, boolean simulate) {
+			return en.extractEnergy(maxExtract, simulate);
+		}
+
+		@Override
+		public boolean canReceive() {
+			return true;
+		}
+
+		@Override
+		public boolean canExtract() {
+			return false;
+		}
+	};
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (isRf() && capability == CapabilityEnergy.ENERGY) {
+			return (T) energy;
+		}
+		return super.getCapability(capability, facing);
 	}
 
 	public static Map<Direction, Mode> getMap(String id, AbstractMachine tile) {

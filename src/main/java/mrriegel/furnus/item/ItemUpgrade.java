@@ -25,7 +25,7 @@ public class ItemUpgrade extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item item, CreativeTabs tab, List list) {
+	public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> list) {
 		if (ConfigHandler.speed)
 			list.add(new ItemStack(item, 1, 0));
 		if (ConfigHandler.effi)
@@ -46,7 +46,7 @@ public class ItemUpgrade extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List p_77624_3_, boolean p_77624_4_) {
+	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List<String> p_77624_3_, boolean p_77624_4_) {
 		super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
 		p_77624_3_.add(I18n.format("item.furnus:upgrade_" + p_77624_1_.getItemDamage() + ".tip"));
 	}

@@ -3,6 +3,7 @@ package mrriegel.furnus.jei;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.BlankRecipeWrapper;
 import net.minecraft.item.ItemStack;
 
@@ -17,13 +18,18 @@ public class PulvusWrapper extends BlankRecipeWrapper {
 	}
 
 	@Override
-	public List getInputs() {
+	public List<ItemStack> getInputs() {
 		return Collections.singletonList(input);
 	}
 
 	@Override
-	public List getOutputs() {
+	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(output);
+	}
+
+	@Override
+	public void getIngredients(IIngredients ingredients) {
+		
 	}
 
 }

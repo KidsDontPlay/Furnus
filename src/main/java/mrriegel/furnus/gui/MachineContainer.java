@@ -1,16 +1,12 @@
 package mrriegel.furnus.gui;
 
-import java.util.ArrayList;
-
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.handler.GuiHandler;
-import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ModItems;
-import mrriegel.furnus.message.StackMessage;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -18,7 +14,10 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.network.play.server.SPacketSetSlot;
 import net.minecraft.tileentity.TileEntityFurnace;
+
+import com.google.common.collect.Lists;
 
 public class MachineContainer extends Container {
 	AbstractMachine tile;
@@ -36,8 +35,8 @@ public class MachineContainer extends Container {
 	}
 
 	void initSlots() {
-		inventoryItemStacks = new ArrayList();
-		inventorySlots = new ArrayList();
+		inventoryItemStacks = Lists.newArrayList();
+		inventorySlots = Lists.newArrayList();
 		switch (tile.getSlots()) {
 		case 0:
 			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48));
@@ -96,7 +95,7 @@ public class MachineContainer extends Container {
 			player.openGui(Furnus.instance, guiID, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
 			if (save != null && !player.worldObj.isRemote) {
 				player.inventory.setItemStack(save);
-				PacketHandler.INSTANCE.sendTo(new StackMessage(save), (EntityPlayerMP) player);
+				((EntityPlayerMP)player).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
 			}
 		}
 	}

@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.google.common.collect.Lists;
+
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mrriegel.furnus.Furnus;
@@ -36,7 +38,7 @@ public class PulvusHandler implements IRecipeHandler<PulvusWrapper> {
 	}
 
 	public static List<PulvusWrapper> getRecipes() {
-		List<PulvusWrapper> recipes = new ArrayList<PulvusWrapper>();
+		List<PulvusWrapper> recipes = Lists.newArrayList();
 		for (Entry<ItemStack, ItemStack> e : CrunchHandler.instance().crushingList.entrySet())
 			recipes.add(new PulvusWrapper(e.getKey(), e.getValue()));
 		Collections.sort(recipes, new Comparator<PulvusWrapper>() {

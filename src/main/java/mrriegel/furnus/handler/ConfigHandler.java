@@ -31,7 +31,7 @@ public class ConfigHandler {
 		bonus = config.get("upgrade", "bonus", true, "Enable Bonus Upgrade").getBoolean();
 		xp = config.get("upgrade", "xp", true, "Enable XP Upgrade").getBoolean();
 		eco = config.get("upgrade", "eco", true, "Enable Eco Upgrade").getBoolean();
-		rf = config.get("upgrade", "rf", false, "Enable RF Upgrade").getBoolean();
+		rf = config.get("upgrade", "rf", true, "Enable RF Upgrade").getBoolean();
 		blacklistDusts = config.get("dust", "blacklistDusts", new String[] { "dustCoal" }, "Blacklist for dusts which should not be craftable in pulvus.").getStringList();
 		if (config.hasChanged()) {
 			config.save();

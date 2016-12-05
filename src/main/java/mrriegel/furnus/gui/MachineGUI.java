@@ -10,14 +10,13 @@ import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.message.CheckMessage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -26,7 +25,7 @@ import com.google.common.collect.Lists;
 
 public class MachineGUI extends GuiContainer {
 	private static ResourceLocation texture;
-	Button i, o, f, check;
+	GuiButton i, o, f, check;
 	AbstractMachine tile;
 
 	public MachineGUI(Container p_i1072_1_) {
@@ -43,13 +42,13 @@ public class MachineGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		check = new Button(0, guiLeft + 46, guiTop + 4, tile.isSplit() ? "X" : " ");
+		check = new GuiButtonExt(0, guiLeft + 46, guiTop + 4, 14, 14, tile.isSplit() ? "X" : " ");
 		buttonList.add(check);
-		i = new Button(1, guiLeft + 115, guiTop + 108, "I");
+		i = new GuiButtonExt(1, guiLeft + 115, guiTop + 108, 14, 14, "I");
 		buttonList.add(i);
-		o = new Button(2, guiLeft + 134, guiTop + 108, "O");
+		o = new GuiButtonExt(2, guiLeft + 134, guiTop + 108, 14, 14, "O");
 		buttonList.add(o);
-		f = new Button(3, guiLeft + 153, guiTop + 108, "F");
+		f = new GuiButtonExt(3, guiLeft + 153, guiTop + 108, 14, 14, "F");
 		buttonList.add(f);
 	}
 
@@ -94,7 +93,7 @@ public class MachineGUI extends GuiContainer {
 		int i = Mouse.getX() * this.width / this.mc.displayWidth;
 		int j = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
-			List<String> list = new ArrayList<String>();
+			List<String> list = Lists.newArrayList();
 			double speed = (1.d + tile.getSpeed() * 1.d * ConfigHandler.speedMulti);
 			list.add(I18n.format("gui.furnus.speed") + ": " + String.format("%.2f", speed) + "x");
 			list.add(I18n.format("gui.furnus.effi") + ": " + String.format("%.2f", tile.getCalc()) + "x");
@@ -192,41 +191,6 @@ public class MachineGUI extends GuiContainer {
 		int percent = (int) (((float) tile.getFuel()) / ((float) tile.getMaxFuel()) * 100f);
 		int d = 13 - ((int) (14 * (percent / 100.0f)));
 		drawTexturedModalRect(k + 45, l + 102 + d, 176, 0 + d, 14, 14 - d);
-	}
-
-	class Button extends GuiButton {
-
-		public Button(int p_i1021_1_, int p_i1021_2_, int p_i1021_3_, String p_i1021_6_) {
-			super(p_i1021_1_, p_i1021_2_, p_i1021_3_, 16, 16, p_i1021_6_);
-		}
-
-		@Override
-		public void drawButton(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_) {
-			if (this.visible) {
-				FontRenderer fontrenderer = p_146112_1_.fontRendererObj;
-				p_146112_1_.getTextureManager().bindTexture(texture);
-				GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.hovered = p_146112_2_ >= this.xPosition && p_146112_3_ >= this.yPosition && p_146112_2_ < this.xPosition + this.width && p_146112_3_ < this.yPosition + this.height;
-				int k = this.getHoverState(this.hovered);
-				GlStateManager.enableBlend();
-				GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-				GlStateManager.blendFunc(770, 771);
-				this.drawTexturedModalRect(this.xPosition, this.yPosition, 160 + 16 * k, 90, 16, 16);
-				this.mouseDragged(p_146112_1_, p_146112_2_, p_146112_3_);
-				int l = 14737632;
-
-				if (packedFGColour != 0) {
-					l = packedFGColour;
-				} else if (!this.enabled) {
-					l = 10526880;
-				} else if (this.hovered) {
-					l = 16777120;
-				}
-
-				this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, l);
-			}
-		}
-
 	}
 
 }

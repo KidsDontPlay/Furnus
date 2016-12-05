@@ -26,7 +26,7 @@ public class ItemDust extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(Item item, CreativeTabs tab, List list) {
+	public void getSubItems(Item item, CreativeTabs tab, List<ItemStack> list) {
 		for (int i = 0; i < Dust.values().length; i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
