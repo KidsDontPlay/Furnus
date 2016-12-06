@@ -1,14 +1,16 @@
 package mrriegel.furnus.gui;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.PacketHandler;
+import mrriegel.furnus.jei.PulvusJEIPlugin;
 import mrriegel.furnus.message.CheckMessage;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -17,6 +19,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.common.Loader;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -112,13 +115,34 @@ public class MachineGUI extends GuiContainer {
 			GlStateManager.enableLighting();
 		}
 		if (i > guiLeft + 45 && i < guiLeft + 45 + 16 && j > guiTop + 102 && j < guiTop + 102 + 16) {
-			List<String> list = new ArrayList<String>();
-			list.add((int) (tile.getBurnTime() / 20.) + " Seconds");
+			List<String> list = Lists.newArrayList();
+			double seconds = tile.getBurnTime() / 20.;
+			if (seconds > 2)
+				list.add((int) (seconds) + " Seconds");
+			else
+				list.add(String.format("%.1f", seconds) + " Seconds");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
 			this.drawHoveringText(list, i, j, fontRendererObj);
 			GlStateManager.popMatrix();
 			GlStateManager.enableLighting();
+		}
+		if (i > guiLeft + 40 && i < guiLeft + 65 && j > guiTop + 20 && j < guiTop + 95 && Loader.isModLoaded("JEI")) {
+			List<String> list = Lists.newArrayList();
+			list.add("Show Recipes");
+			GlStateManager.pushMatrix();
+			GlStateManager.disableLighting();
+			this.drawHoveringText(list, i, j, fontRendererObj);
+			GlStateManager.popMatrix();
+			GlStateManager.enableLighting();
+		}
+	}
+
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("JEI")) {
+			PulvusJEIPlugin.showCategory(tile instanceof TileFurnus ? VanillaRecipeCategoryUid.SMELTING : Furnus.MODID + ".pulvus");
 		}
 	}
 
@@ -144,7 +168,7 @@ public class MachineGUI extends GuiContainer {
 			tile.setSplit(chek);
 			PacketHandler.INSTANCE.sendToServer(new CheckMessage(chek));
 		} else {
-			mc.thePlayer.closeScreen();
+			//			mc.thePlayer.closeScreen();
 			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
 		}
 	}

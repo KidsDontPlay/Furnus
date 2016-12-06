@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import mrriegel.furnus.block.ModBlocks;
@@ -15,13 +14,9 @@ import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.item.ItemDust.Dust;
 import mrriegel.furnus.item.ModItems;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemModelMesher;
-import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
@@ -147,7 +142,7 @@ public class Furnus {
 					CrunchHandler.instance().addItemStack(in, out, r.experience);
 
 		}
-		List<String> black = Arrays.asList(ConfigHandler.blacklistDusts);
+		List<String> black = Lists.newArrayList(ConfigHandler.blacklistDusts);
 		for (String ore : OreDictionary.getOreNames()) {
 			if (ore.startsWith("ore") && !OreDictionary.getOres("dust" + ore.substring(3)).isEmpty() && !black.contains("dust" + ore.substring(3)) && !OreDictionary.getOres(ore).isEmpty())
 				for (ItemStack stack : OreDictionary.getOres(ore))

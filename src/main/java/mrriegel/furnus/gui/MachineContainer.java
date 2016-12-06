@@ -95,7 +95,7 @@ public class MachineContainer extends Container {
 			player.openGui(Furnus.instance, guiID, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
 			if (save != null && !player.worldObj.isRemote) {
 				player.inventory.setItemStack(save);
-				((EntityPlayerMP)player).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
+				((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
 			}
 		}
 	}

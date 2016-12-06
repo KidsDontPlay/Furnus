@@ -30,16 +30,10 @@ public abstract class AbstractBlock extends BlockContainer {
 
 	public AbstractBlock() {
 		super(Material.ROCK);
-		this.setHardness(4.0F);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(STATE, false));
+		this.setHardness(3.0F);
+		this.setDefaultState(getDefaultState().withProperty(FACING, EnumFacing.NORTH).withProperty(STATE, false));
 		this.setCreativeTab(CreativeTab.tab1);
 	}
-
-	// @Override
-	// @SideOnly(Side.CLIENT)
-	// public IBlockState getStateForEntityRender(IBlockState state) {
-	// return this.getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
-	// }
 
 	@Override
 	public IBlockState getStateFromMeta(int meta) {

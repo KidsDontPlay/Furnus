@@ -29,7 +29,7 @@ public class PulvusWrapper extends BlankRecipeWrapper {
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-		
+
 	}
 
 }

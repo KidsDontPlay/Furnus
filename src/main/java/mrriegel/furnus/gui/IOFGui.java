@@ -1,5 +1,7 @@
 package mrriegel.furnus.gui;
 
+import java.io.IOException;
+
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.AbstractMachine.Direction;
@@ -17,6 +19,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
@@ -41,12 +44,12 @@ public class IOFGui extends GuiScreen {
 		else if (iD == 3)
 			id = "F";
 
-		topMode = AbstractMachine.getMap(id, tile).get(Direction.TOP);
-		frontMode = AbstractMachine.getMap(id, tile).get(Direction.FRONT);
-		leftMode = AbstractMachine.getMap(id, tile).get(Direction.LEFT);
-		rightMode = AbstractMachine.getMap(id, tile).get(Direction.RIGHT);
-		bottomMode = AbstractMachine.getMap(id, tile).get(Direction.BOTTOM);
-		backMode = AbstractMachine.getMap(id, tile).get(Direction.BACK);
+		topMode = tile.getMap(id).get(Direction.TOP);
+		frontMode = tile.getMap(id).get(Direction.FRONT);
+		leftMode = tile.getMap(id).get(Direction.LEFT);
+		rightMode = tile.getMap(id).get(Direction.RIGHT);
+		bottomMode = tile.getMap(id).get(Direction.BOTTOM);
+		backMode = tile.getMap(id).get(Direction.BACK);
 	}
 
 	@Override
@@ -74,37 +77,37 @@ public class IOFGui extends GuiScreen {
 		case 0:
 			topMode = topMode.next();
 			top.displayString = topMode.toString().substring(0, 1).toUpperCase();
-			AbstractMachine.getMap(id, tile).put(Direction.TOP, topMode);
+			tile.getMap(id).put(Direction.TOP, topMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, topMode.toString()));
 			break;
 		case 1:
 			frontMode = frontMode.next();
 			front.displayString = frontMode.toString().substring(0, 1).toUpperCase();
-			AbstractMachine.getMap(id, tile).put(Direction.FRONT, frontMode);
+			tile.getMap(id).put(Direction.FRONT, frontMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.FRONT.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, frontMode.toString()));
 			break;
 		case 2:
 			leftMode = leftMode.next();
 			left.displayString = leftMode.toString().substring(0, 1).toUpperCase();
-			AbstractMachine.getMap(id, tile).put(Direction.LEFT, leftMode);
+			tile.getMap(id).put(Direction.LEFT, leftMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.LEFT.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, leftMode.toString()));
 			break;
 		case 3:
 			rightMode = rightMode.next();
 			right.displayString = rightMode.toString().substring(0, 1).toUpperCase();
-			AbstractMachine.getMap(id, tile).put(Direction.RIGHT, rightMode);
+			tile.getMap(id).put(Direction.RIGHT, rightMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.RIGHT.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, rightMode.toString()));
 			break;
 		case 4:
 			bottomMode = bottomMode.next();
 			bottom.displayString = bottomMode.toString().substring(0, 1).toUpperCase();
-			AbstractMachine.getMap(id, tile).put(Direction.BOTTOM, bottomMode);
+			tile.getMap(id).put(Direction.BOTTOM, bottomMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BOTTOM.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, bottomMode.toString()));
 			break;
 		case 5:
 			backMode = backMode.next();
 			back.displayString = backMode.toString().substring(0, 1).toUpperCase();
-			AbstractMachine.getMap(id, tile).put(Direction.BACK, backMode);
+			tile.getMap(id).put(Direction.BACK, backMode);
 			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BACK.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, backMode.toString()));
 			break;
 		}
@@ -142,8 +145,16 @@ public class IOFGui extends GuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		int id = tile instanceof TileFurnus ? GuiHandler.FURNUS : tile instanceof TilePulvus ? GuiHandler.PULVUS : -1;
-		PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id));
+
+	}
+
+	@Override
+	protected void keyTyped(char typedChar, int keyCode) throws IOException {
+		if (keyCode == Keyboard.KEY_ESCAPE) {
+			int id = tile instanceof TileFurnus ? GuiHandler.FURNUS : tile instanceof TilePulvus ? GuiHandler.PULVUS : -1;
+			PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id));
+		} else
+			super.keyTyped(typedChar, keyCode);
 	}
 
 	class Button extends GuiButton {

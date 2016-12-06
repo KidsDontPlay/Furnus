@@ -415,9 +415,9 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 
 	@Override
 	public void update() {
-//		if (worldObj.isRemote) {
-//			return;
-//		}
+		//		if (worldObj.isRemote) {
+		//			return;
+		//		}
 		output();
 		input();
 		split();
@@ -477,7 +477,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progress.put(slot, progress.get(slot) + 1);
 				progressed = true;
 				if (progress.get(slot) >= 200) {
-					processItem(slot);
+					if (!worldObj.isRemote)
+						processItem(slot);
 					sendMessage();
 					progress.put(slot, 0);
 				}
@@ -490,7 +491,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			fuel -= getCalc() * 100;
 		}
 		calculateTicks();
-//		sendMessage();
+		//		sendMessage();
 	}
 
 	private void calculateTicks() {
@@ -518,7 +519,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	void sendMessage() {
-		PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress, en.getEnergyStored(), remainTicks), new TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
+		if (!worldObj.isRemote)
+			PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress, en.getEnergyStored(), remainTicks), new TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
 	}
 
 	protected abstract void processItem(int slot);
@@ -852,13 +854,13 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		return super.getCapability(capability, facing);
 	}
 
-	public static Map<Direction, Mode> getMap(String id, AbstractMachine tile) {
+	public Map<Direction, Mode> getMap(String id) {
 		if (id.equals("I"))
-			return tile.getInput();
+			return getInput();
 		if (id.equals("O"))
-			return tile.getOutput();
+			return getOutput();
 		if (id.equals("F"))
-			return tile.getFuelput();
+			return getFuelput();
 		return null;
 	}
 }

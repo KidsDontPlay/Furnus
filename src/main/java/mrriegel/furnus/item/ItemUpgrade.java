@@ -79,10 +79,4 @@ public class ItemUpgrade extends Item {
 		return -1;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public boolean isFull3D() {
-		return true;
-	}
-
 }

@@ -1,12 +1,9 @@
 package mrriegel.furnus.jei;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
-
-import com.google.common.collect.Lists;
 
 import mezz.jei.api.recipe.IRecipeHandler;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -14,6 +11,8 @@ import mrriegel.furnus.Furnus;
 import mrriegel.furnus.handler.CrunchHandler;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import com.google.common.collect.Lists;
 
 public class PulvusHandler implements IRecipeHandler<PulvusWrapper> {
 
@@ -45,8 +44,8 @@ public class PulvusHandler implements IRecipeHandler<PulvusWrapper> {
 
 			@Override
 			public int compare(PulvusWrapper o1, PulvusWrapper o2) {
-				Integer id1 = Item.getIdFromItem(((ItemStack) o1.getOutputs().get(0)).getItem());
-				Integer id2 = Item.getIdFromItem(((ItemStack) o2.getOutputs().get(0)).getItem());
+				Integer id1 = Item.getIdFromItem(o1.getOutputs().get(0).getItem());
+				Integer id2 = Item.getIdFromItem(o2.getOutputs().get(0).getItem());
 				return id1.compareTo(id2);
 			}
 
@@ -55,8 +54,8 @@ public class PulvusHandler implements IRecipeHandler<PulvusWrapper> {
 
 			@Override
 			public int compare(PulvusWrapper o1, PulvusWrapper o2) {
-				Integer id1 = ((ItemStack) o1.getOutputs().get(0)).getItemDamage();
-				Integer id2 = ((ItemStack) o2.getOutputs().get(0)).getItemDamage();
+				Integer id1 = o1.getOutputs().get(0).getItemDamage();
+				Integer id2 = o2.getOutputs().get(0).getItemDamage();
 				return id1.compareTo(id2);
 			}
 
