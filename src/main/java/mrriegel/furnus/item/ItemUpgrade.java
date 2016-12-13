@@ -3,8 +3,8 @@ package mrriegel.furnus.item;
 import java.util.List;
 
 import mrriegel.furnus.CreativeTab;
-import mrriegel.furnus.Furnus;
 import mrriegel.furnus.handler.ConfigHandler;
+import mrriegel.limelib.item.CommonSubtypeItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,14 +13,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemUpgrade extends Item {
+public class ItemUpgrade extends CommonSubtypeItem {
 
 	public ItemUpgrade() {
-		super();
+		super("upgrade", 8);
 		this.setCreativeTab(CreativeTab.tab1);
-		this.setHasSubtypes(true);
-		this.setUnlocalizedName(Furnus.MODID + ":upgrade");
-		// this.setRegistryName("upgrade");
 	}
 
 	@Override
@@ -46,14 +43,9 @@ public class ItemUpgrade extends Item {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack p_77624_1_, EntityPlayer p_77624_2_, List<String> p_77624_3_, boolean p_77624_4_) {
-		super.addInformation(p_77624_1_, p_77624_2_, p_77624_3_, p_77624_4_);
-		p_77624_3_.add(I18n.format("item.furnus:upgrade_" + p_77624_1_.getItemDamage() + ".tip"));
-	}
-
-	@Override
-	public String getUnlocalizedName(ItemStack stack) {
-		return this.getUnlocalizedName() + "_" + stack.getItemDamage();
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced) {
+		super.addInformation(stack, player, tooltip, advanced);
+		tooltip.add(I18n.format("item.furnus:upgrade_" + stack.getItemDamage() + ".tip"));
 	}
 
 	@Override
@@ -76,7 +68,7 @@ public class ItemUpgrade extends Item {
 		case 7:
 			return 1;
 		}
-		return -1;
+		return 0;
 	}
 
 }

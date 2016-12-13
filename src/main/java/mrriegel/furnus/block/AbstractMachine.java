@@ -6,30 +6,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mrriegel.furnus.InvHelper;
+import mrriegel.furnus.Furnus;
 import mrriegel.furnus.handler.ConfigHandler;
-import mrriegel.furnus.handler.PacketHandler;
-import mrriegel.furnus.message.ProgressMessage;
-import net.minecraft.block.state.IBlockState;
+import mrriegel.limelib.helper.InvHelper;
+import mrriegel.limelib.tile.CommonTileInventory;
+import mrriegel.limelib.util.EnergyStorageExt;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.oredict.OreDictionary;
 import vazkii.botania.api.item.IExoflameHeatable;
-import cofh.api.energy.EnergyStorage;
 import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.collect.Lists;
@@ -37,20 +37,17 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-public abstract class AbstractMachine extends CrunchTEInventory implements ISidedInventory, ITickable, IExoflameHeatable, IEnergyReceiver {
+public abstract class AbstractMachine extends CommonTileInventory implements ISidedInventory, ITickable, IExoflameHeatable, IEnergyReceiver {
 
 	protected boolean burning, eco, inout, split, rf;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
-	protected Map<Direction, Mode> input, output, fuelput;
+	protected Map<Direction, Mode> input = Maps.newHashMap(), output = Maps.newHashMap(), fuelput = Maps.newHashMap();
 	protected Map<Integer, Integer> progress;
 
-	public EnergyStorage en = new EnergyStorage(64000, Integer.MAX_VALUE - 10, 0);
+	public EnergyStorageExt en = new EnergyStorageExt(64000, Integer.MAX_VALUE - 10, 0);
 
 	public AbstractMachine() {
 		super(15);
-		input = Maps.newHashMap();
-		output = Maps.newHashMap();
-		fuelput = Maps.newHashMap();
 		for (Direction f : Direction.values()) {
 			input.put(f, Mode.X);
 			output.put(f, Mode.X);
@@ -61,7 +58,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			if (f != Direction.TOP && f != Direction.BOTTOM)
 				fuelput.put(f, Mode.ENABLED);
 		output.put(Direction.BOTTOM, Mode.ENABLED);
-		progress = new HashMap<Integer, Integer>();
+		progress = Maps.newHashMap();
 		for (int i = 0; i < 3; i++)
 			progress.put(i, 0);
 	}
@@ -80,197 +77,125 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	}
 
 	@Override
-	public NBTTagCompound getUpdateTag() {
-		return writeToNBT(new NBTTagCompound());
+	public void readFromNBT(NBTTagCompound compound) {
+		burning = compound.getBoolean("burning");
+		eco = compound.getBoolean("eco");
+		inout = compound.getBoolean("inout");
+		split = compound.getBoolean("split");
+		rf = compound.getBoolean("rf");
+		speed = compound.getInteger("speed");
+		effi = compound.getInteger("effi");
+		slots = compound.getInteger("slot");
+		bonus = compound.getInteger("bonus");
+		xp = compound.getInteger("xp");
+		fuel = compound.getInteger("fuel");
+		maxFuel = compound.getInteger("maxFuel");
+		remainTicks = compound.getInteger("remainTicks");
+		input = new Gson().fromJson(compound.getString("input"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
+		output = new Gson().fromJson(compound.getString("output"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
+		fuelput = new Gson().fromJson(compound.getString("fuelput"), new TypeToken<Map<Direction, Mode>>() {
+		}.getType());
+		progress = new Gson().fromJson(compound.getString("progress"), new TypeToken<Map<Integer, Integer>>() {
+		}.getType());
+		super.readFromNBT(compound);
+		NBTTagList invList = compound.getTagList("crunchTE", Constants.NBT.TAG_COMPOUND);
+		for (int i = 0; i < invList.tagCount(); i++) {
+			NBTTagCompound stackTag = invList.getCompoundTagAt(i);
+			int slot = stackTag.getByte("Slot");
+			if (slot >= 0 && slot < getSizeInventory()) {
+				setInventorySlotContents(slot, ItemStack.loadItemStackFromNBT(stackTag));
+			}
+		}
 	}
 
 	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-		return oldState.getBlock() != newSate.getBlock();
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		compound.setBoolean("burning", burning);
+		compound.setBoolean("eco", eco);
+		compound.setBoolean("inout", inout);
+		compound.setBoolean("split", split);
+		compound.setBoolean("rf", rf);
+		compound.setInteger("speed", speed);
+		compound.setInteger("effi", effi);
+		compound.setInteger("slot", slots);
+		compound.setInteger("bonus", bonus);
+		compound.setInteger("xp", xp);
+		compound.setInteger("fuel", fuel);
+		compound.setInteger("maxFuel", maxFuel);
+		compound.setInteger("remainTicks", remainTicks);
+		compound.setString("input", new Gson().toJson(input));
+		compound.setString("output", new Gson().toJson(output));
+		compound.setString("fuelput", new Gson().toJson(fuelput));
+		compound.setString("progress", new Gson().toJson(progress));
+		super.writeToNBT(compound);
+		NBTTagList invList = new NBTTagList();
+		for (int i = 0; i < getSizeInventory(); i++) {
+			if (getStackInSlot(i) != null) {
+				NBTTagCompound stackTag = new NBTTagCompound();
+				stackTag.setByte("Slot", (byte) i);
+				getStackInSlot(i).writeToNBT(stackTag);
+				invList.appendTag(stackTag);
+			}
+		}
+		compound.setTag("crunchTE", invList);
+		return compound;
 	}
 
 	@Override
-	protected void readSyncableDataFromNBT(NBTTagCompound tag) {
-		burning = tag.getBoolean("burning");
-		eco = tag.getBoolean("eco");
-		inout = tag.getBoolean("inout");
-		split = tag.getBoolean("split");
-		rf = tag.getBoolean("rf");
-		speed = tag.getInteger("speed");
-		effi = tag.getInteger("effi");
-		slots = tag.getInteger("slot");
-		bonus = tag.getInteger("bonus");
-		xp = tag.getInteger("xp");
-		fuel = tag.getInteger("fuel");
-		maxFuel = tag.getInteger("maxFuel");
-		remainTicks = tag.getInteger("remainTicks");
-		input = new Gson().fromJson(tag.getString("input"), new TypeToken<Map<Direction, Mode>>() {
-		}.getType());
-		output = new Gson().fromJson(tag.getString("output"), new TypeToken<Map<Direction, Mode>>() {
-		}.getType());
-		fuelput = new Gson().fromJson(tag.getString("fuelput"), new TypeToken<Map<Direction, Mode>>() {
-		}.getType());
-		progress = new Gson().fromJson(tag.getString("progress"), new TypeToken<Map<Integer, Integer>>() {
-		}.getType());
-		en.readFromNBT(tag);
-	}
-
-	@Override
-	protected void writeSyncableDataToNBT(NBTTagCompound tag) {
-		tag.setBoolean("burning", burning);
-		tag.setBoolean("eco", eco);
-		tag.setBoolean("inout", inout);
-		tag.setBoolean("split", split);
-		tag.setBoolean("rf", rf);
-		tag.setInteger("speed", speed);
-		tag.setInteger("effi", effi);
-		tag.setInteger("slot", slots);
-		tag.setInteger("bonus", bonus);
-		tag.setInteger("xp", xp);
-		tag.setInteger("fuel", fuel);
-		tag.setInteger("maxFuel", maxFuel);
-		tag.setInteger("remainTicks", remainTicks);
-		tag.setString("input", new Gson().toJson(input));
-		tag.setString("output", new Gson().toJson(output));
-		tag.setString("fuelput", new Gson().toJson(fuelput));
-		tag.setString("progress", new Gson().toJson(progress));
-		en.writeToNBT(tag);
-	}
+	public abstract boolean openGUI(EntityPlayerMP player);
 
 	public boolean isBurning() {
 		return burning;
-	}
-
-	public void setBurning(boolean burning) {
-		this.burning = burning;
 	}
 
 	public boolean isEco() {
 		return eco;
 	}
 
-	public void setEco(boolean eco) {
-		this.eco = eco;
-	}
-
 	public boolean isInout() {
 		return inout;
-	}
-
-	public void setInout(boolean inout) {
-		this.inout = inout;
 	}
 
 	public boolean isSplit() {
 		return split;
 	}
 
-	public void setSplit(boolean split) {
-		this.split = split;
-	}
-
 	public boolean isRf() {
 		return rf;
-	}
-
-	public void setRf(boolean rf) {
-		this.rf = rf;
 	}
 
 	public int getSpeed() {
 		return speed;
 	}
 
-	public void setSpeed(int speed) {
-		this.speed = speed;
-	}
-
 	public int getEffi() {
 		return effi;
-	}
-
-	public void setEffi(int effi) {
-		this.effi = effi;
 	}
 
 	public int getSlots() {
 		return slots;
 	}
 
-	public void setSlots(int slots) {
-		this.slots = slots;
-	}
-
 	public int getBonus() {
 		return bonus;
-	}
-
-	public void setBonus(int bonus) {
-		this.bonus = bonus;
 	}
 
 	public int getXp() {
 		return xp;
 	}
 
-	public void setXp(int xp) {
-		this.xp = xp;
-	}
-
 	public int getFuel() {
 		return fuel;
-	}
-
-	public void setFuel(int fuel) {
-		this.fuel = fuel;
 	}
 
 	public int getMaxFuel() {
 		return maxFuel;
 	}
 
-	public int getRemainTicks() {
-		return remainTicks;
-	}
-
-	public void setRemainTicks(int remainTicks) {
-		this.remainTicks = remainTicks;
-	}
-
-	public void setMaxFuel(int maxFuel) {
-		this.maxFuel = maxFuel;
-	}
-
-	public Map<Direction, Mode> getInput() {
-		return input;
-	}
-
-	public void setInput(Map<Direction, Mode> input) {
-		this.input = input;
-	}
-
-	public Map<Direction, Mode> getOutput() {
-		return output;
-	}
-
-	public void setOutput(Map<Direction, Mode> output) {
-		this.output = output;
-	}
-
-	public Map<Direction, Mode> getFuelput() {
-		return fuelput;
-	}
-
-	public void setFuelput(Map<Direction, Mode> fuelput) {
-		this.fuelput = fuelput;
-	}
-
 	public Map<Integer, Integer> getProgress() {
 		return progress;
-	}
-
-	public void setProgress(Map<Integer, Integer> progress) {
-		this.progress = progress;
 	}
 
 	@Override
@@ -369,28 +294,28 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		for (Entry<Integer, Integer> e : upgrades.entrySet()) {
 			switch (e.getKey()) {
 			case 0:
-				setSpeed(ConfigHandler.speed ? e.getValue() : 0);
+				speed = ConfigHandler.speed ? e.getValue() : 0;
 				break;
 			case 1:
-				setEffi(ConfigHandler.effi ? e.getValue() : 0);
+				effi = ConfigHandler.effi ? e.getValue() : 0;
 				break;
 			case 2:
-				setInout(ConfigHandler.io ? e.getValue() > 0 ? true : false : false);
+				inout = ConfigHandler.io ? e.getValue() > 0 ? true : false : false;
 				break;
 			case 3:
-				setSlots(ConfigHandler.slot ? e.getValue() : 0);
+				slots = ConfigHandler.slot ? e.getValue() : 0;
 				break;
 			case 4:
-				setBonus(ConfigHandler.bonus ? e.getValue() : 0);
+				bonus = ConfigHandler.bonus ? e.getValue() : 0;
 				break;
 			case 5:
-				setXp(ConfigHandler.xp ? e.getValue() : 0);
+				xp = ConfigHandler.xp ? e.getValue() : 0;
 				break;
 			case 6:
-				setEco(ConfigHandler.eco ? e.getValue() > 0 ? true : false : false);
+				eco = ConfigHandler.eco ? e.getValue() > 0 ? true : false : false;
 				break;
 			case 7:
-				setRf(ConfigHandler.rf ? e.getValue() > 0 ? true : false : false);
+				rf = ConfigHandler.rf ? e.getValue() > 0 ? true : false : false;
 				break;
 			}
 		}
@@ -429,10 +354,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		if (worldObj.getTotalWorldTime() % 5 == 0) {
 			if (fuel > 0 && !burning) {
 				burning = true;
-				((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
+				((AbstractBlock<?>) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
 			} else if (fuel <= 0 && burning) {
 				burning = false;
-				((AbstractBlock) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
+				((AbstractBlock<?>) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
 			}
 		}
 
@@ -444,6 +369,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				burn(1);
 		}
 
+	}
+
+	public int neededTicks() {
+		return 160;
 	}
 
 	protected void fuelUp(int slot) {
@@ -460,9 +389,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			int fac = ConfigHandler.RF;
 			fuelTime = (int) ((consumeRF(1600 * fac) / (double) fac) * 100);
 		}
+		fuelTime *= (neededTicks() / 200.) + .01;
 		fuel += fuelTime;
 		maxFuel = fuelTime;
-		sendMessage();
+		markForSync();
 	}
 
 	protected void burn(int slot) {
@@ -476,10 +406,10 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			if (canProcess(slot)) {
 				progress.put(slot, progress.get(slot) + 1);
 				progressed = true;
-				if (progress.get(slot) >= 200) {
+				if (progress.get(slot) >= neededTicks()) {
 					if (!worldObj.isRemote)
 						processItem(slot);
-					sendMessage();
+					markForSync();
 					progress.put(slot, 0);
 				}
 			}
@@ -488,7 +418,8 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				progress.put(slot, 0);
 		}
 		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
-			fuel -= getCalc() * 100;
+			if (canProcessAny() || slot == 0)
+				fuel -= getCalc() * 100;
 		}
 		calculateTicks();
 		//		sendMessage();
@@ -516,11 +447,6 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 				return true;
 		}
 		return false;
-	}
-
-	void sendMessage() {
-		if (!worldObj.isRemote)
-			PacketHandler.INSTANCE.sendToAllAround(new ProgressMessage(burning, getPos().getX(), getPos().getY(), getPos().getZ(), fuel, maxFuel, progress, en.getEnergyStored(), remainTicks), new TargetPoint(worldObj.provider.getDimension(), getPos().getX(), getPos().getY(), getPos().getZ(), 12));
 	}
 
 	protected abstract void processItem(int slot);
@@ -604,7 +530,7 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 			return Direction.TOP;
 		if (side == EnumFacing.DOWN)
 			return Direction.BOTTOM;
-		EnumFacing face = worldObj.getBlockState(pos).getValue(AbstractBlock.FACING);
+		EnumFacing face = worldObj.getBlockState(pos).getValue(BlockHorizontal.FACING);
 		if (face == EnumFacing.NORTH) {
 			switch (side) {
 			case NORTH:
@@ -772,6 +698,22 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 	public void boostCookTime() {
 	}
 
+	@Override
+	public void handleMessage(EntityPlayer player, NBTTagCompound nbt) {
+		switch (nbt.getInteger("id")) {
+		case 0:
+			split ^= true;
+			break;
+		case 1:
+			getMap(nbt.getString("kind")).put(Direction.values()[nbt.getInteger("dir")], getMap(nbt.getString("kind")).get(Direction.values()[nbt.getInteger("dir")]).next());
+			break;
+		case 2:
+			player.openGui(Furnus.instance, nbt.getInteger("gui"), worldObj, getX(), getY(), getZ());
+		default:
+			break;
+		}
+	}
+
 	boolean consumeRF(int num, boolean simulate) {
 		int value = num;
 		if (en.getEnergyStored() < value)
@@ -813,54 +755,21 @@ public abstract class AbstractMachine extends CrunchTEInventory implements ISide
 		return (isRf() && capability == CapabilityEnergy.ENERGY) || super.hasCapability(capability, facing);
 	}
 
-	private IEnergyStorage energy = new IEnergyStorage() {
-
-		@Override
-		public int receiveEnergy(int maxReceive, boolean simulate) {
-			return en.receiveEnergy(maxReceive, simulate);
-		}
-
-		@Override
-		public int getMaxEnergyStored() {
-			return en.getMaxEnergyStored();
-		}
-
-		@Override
-		public int getEnergyStored() {
-			return en.getEnergyStored();
-		}
-
-		@Override
-		public int extractEnergy(int maxExtract, boolean simulate) {
-			return en.extractEnergy(maxExtract, simulate);
-		}
-
-		@Override
-		public boolean canReceive() {
-			return true;
-		}
-
-		@Override
-		public boolean canExtract() {
-			return false;
-		}
-	};
-
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (isRf() && capability == CapabilityEnergy.ENERGY) {
-			return (T) energy;
+			return (T) en;
 		}
 		return super.getCapability(capability, facing);
 	}
 
 	public Map<Direction, Mode> getMap(String id) {
 		if (id.equals("I"))
-			return getInput();
+			return input;
 		if (id.equals("O"))
-			return getOutput();
+			return output;
 		if (id.equals("F"))
-			return getFuelput();
+			return fuelput;
 		return null;
 	}
 }

@@ -9,14 +9,12 @@ import mrriegel.furnus.block.AbstractMachine.Mode;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.GuiHandler;
-import mrriegel.furnus.handler.PacketHandler;
-import mrriegel.furnus.message.OpenMessage;
-import mrriegel.furnus.message.PutMessage;
+import mrriegel.limelib.gui.CommonGuiScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Keyboard;
@@ -24,16 +22,11 @@ import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 
-public class IOFGui extends GuiScreen {
+public class IOFGui extends CommonGuiScreen {
 	private static final ResourceLocation GuiTextures = new ResourceLocation(Furnus.MODID + ":textures/gui/iof.png");
 	AbstractMachine tile;
 	Button top, front, left, right, bottom, back;
-	int imageWidth = 101;
-	int imageHeight = 101;
-	int guiLeft, guiTop;
 	String id;
-
-	Mode topMode, frontMode, leftMode, rightMode, bottomMode, backMode;
 
 	public IOFGui(AbstractMachine tileEntity, int iD) {
 		tile = tileEntity;
@@ -43,99 +36,69 @@ public class IOFGui extends GuiScreen {
 			id = "O";
 		else if (iD == 3)
 			id = "F";
-
-		topMode = tile.getMap(id).get(Direction.TOP);
-		frontMode = tile.getMap(id).get(Direction.FRONT);
-		leftMode = tile.getMap(id).get(Direction.LEFT);
-		rightMode = tile.getMap(id).get(Direction.RIGHT);
-		bottomMode = tile.getMap(id).get(Direction.BOTTOM);
-		backMode = tile.getMap(id).get(Direction.BACK);
+		xSize = 101;
+		ySize = 101;
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
-		guiLeft = (this.width - this.imageWidth) / 2;
-		guiTop = (this.height - this.imageHeight) / 2;
-		top = new Button(0, guiLeft + 40, guiTop + 20, 20, 20, topMode.toString().substring(0, 1).toUpperCase());
+		top = new Button(0, guiLeft + 40, guiTop + 20, 20, 20, getMode(Direction.TOP).toString().substring(0, 1).toUpperCase());
 		buttonList.add(top);
-		front = new Button(1, guiLeft + 40, guiTop + 42, 20, 20, frontMode.toString().substring(0, 1).toUpperCase());
+		front = new Button(1, guiLeft + 40, guiTop + 42, 20, 20, getMode(Direction.FRONT).toString().substring(0, 1).toUpperCase());
 		buttonList.add(front);
-		left = new Button(2, guiLeft + 18, guiTop + 42, 20, 20, leftMode.toString().substring(0, 1).toUpperCase());
+		left = new Button(2, guiLeft + 18, guiTop + 42, 20, 20, getMode(Direction.LEFT).toString().substring(0, 1).toUpperCase());
 		buttonList.add(left);
-		right = new Button(3, guiLeft + 62, guiTop + 42, 20, 20, rightMode.toString().substring(0, 1).toUpperCase());
+		right = new Button(3, guiLeft + 62, guiTop + 42, 20, 20, getMode(Direction.RIGHT).toString().substring(0, 1).toUpperCase());
 		buttonList.add(right);
-		bottom = new Button(4, guiLeft + 40, guiTop + 64, 20, 20, bottomMode.toString().substring(0, 1).toUpperCase());
+		bottom = new Button(4, guiLeft + 40, guiTop + 64, 20, 20, getMode(Direction.BOTTOM).toString().substring(0, 1).toUpperCase());
 		buttonList.add(bottom);
-		back = new Button(5, guiLeft + 62, guiTop + 64, 20, 20, backMode.toString().substring(0, 1).toUpperCase());
+		back = new Button(5, guiLeft + 62, guiTop + 64, 20, 20, getMode(Direction.BACK).toString().substring(0, 1).toUpperCase());
 		buttonList.add(back);
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton p_146284_1_) {
-		switch (p_146284_1_.id) {
-		case 0:
-			topMode = topMode.next();
-			top.displayString = topMode.toString().substring(0, 1).toUpperCase();
-			tile.getMap(id).put(Direction.TOP, topMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.TOP.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, topMode.toString()));
-			break;
-		case 1:
-			frontMode = frontMode.next();
-			front.displayString = frontMode.toString().substring(0, 1).toUpperCase();
-			tile.getMap(id).put(Direction.FRONT, frontMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.FRONT.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, frontMode.toString()));
-			break;
-		case 2:
-			leftMode = leftMode.next();
-			left.displayString = leftMode.toString().substring(0, 1).toUpperCase();
-			tile.getMap(id).put(Direction.LEFT, leftMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.LEFT.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, leftMode.toString()));
-			break;
-		case 3:
-			rightMode = rightMode.next();
-			right.displayString = rightMode.toString().substring(0, 1).toUpperCase();
-			tile.getMap(id).put(Direction.RIGHT, rightMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.RIGHT.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, rightMode.toString()));
-			break;
-		case 4:
-			bottomMode = bottomMode.next();
-			bottom.displayString = bottomMode.toString().substring(0, 1).toUpperCase();
-			tile.getMap(id).put(Direction.BOTTOM, bottomMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BOTTOM.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, bottomMode.toString()));
-			break;
-		case 5:
-			backMode = backMode.next();
-			back.displayString = backMode.toString().substring(0, 1).toUpperCase();
-			tile.getMap(id).put(Direction.BACK, backMode);
-			PacketHandler.INSTANCE.sendToServer(new PutMessage(Direction.BACK.toString(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id, backMode.toString()));
-			break;
-		}
+	protected void actionPerformed(GuiButton button) {
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setInteger("id", 1);
+		nbt.setInteger("dir", button.id);
+		nbt.setString("kind", id);
+		tile.sendMessage(nbt);
+		tile.handleMessage(mc.thePlayer, nbt);
+
+		top.displayString = getMode(Direction.TOP).toString().substring(0, 1).toUpperCase();
+		front.displayString = getMode(Direction.FRONT).toString().substring(0, 1).toUpperCase();
+		left.displayString = getMode(Direction.LEFT).toString().substring(0, 1).toUpperCase();
+		right.displayString = getMode(Direction.RIGHT).toString().substring(0, 1).toUpperCase();
+		bottom.displayString = getMode(Direction.BOTTOM).toString().substring(0, 1).toUpperCase();
+		back.displayString = getMode(Direction.BACK).toString().substring(0, 1).toUpperCase();
+	}
+
+	private Mode getMode(Direction d) {
+		return tile.getMap(id).get(d);
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawDefaultBackground();
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(GuiTextures);
-		guiLeft = (this.width - this.imageWidth) / 2;
-		guiTop = (this.height - this.imageHeight) / 2;
-		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.imageWidth, this.imageHeight);
+		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		String pre = "gui.furnus.";
 		mc.fontRendererObj.drawString(id.equals("F") ? I18n.format(pre + "fuel") : id.equals("I") ? I18n.format(pre + "input") : I18n.format(pre + "output"), guiLeft + 8, guiTop + 6, 4210752);
 		if (top.isMouseOver())
-			drawHoveringText(Lists.newArrayList(I18n.format(pre + "top") + " - " + I18n.format(pre + topMode.toString())), mouseX, mouseY);
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "top") + " - " + I18n.format(pre + getMode(Direction.TOP).toString())), mouseX, mouseY);
 		if (bottom.isMouseOver())
-			drawHoveringText(Lists.newArrayList(I18n.format(pre + "bottom") + " - " + I18n.format(pre + bottomMode.toString())), mouseX, mouseY);
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "bottom") + " - " + I18n.format(pre + getMode(Direction.BOTTOM).toString())), mouseX, mouseY);
 		if (right.isMouseOver())
-			drawHoveringText(Lists.newArrayList(I18n.format(pre + "right") + " - " + I18n.format(pre + rightMode.toString())), mouseX, mouseY);
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "right") + " - " + I18n.format(pre + getMode(Direction.RIGHT).toString())), mouseX, mouseY);
 		if (left.isMouseOver())
-			drawHoveringText(Lists.newArrayList(I18n.format(pre + "left") + " - " + I18n.format(pre + leftMode.toString())), mouseX, mouseY);
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "left") + " - " + I18n.format(pre + getMode(Direction.LEFT).toString())), mouseX, mouseY);
 		if (back.isMouseOver())
-			drawHoveringText(Lists.newArrayList(I18n.format(pre + "back") + " - " + I18n.format(pre + backMode.toString())), mouseX, mouseY);
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "back") + " - " + I18n.format(pre + getMode(Direction.BACK).toString())), mouseX, mouseY);
 		if (front.isMouseOver())
-			drawHoveringText(Lists.newArrayList(I18n.format(pre + "front") + " - " + I18n.format(pre + frontMode.toString())), mouseX, mouseY);
+			drawHoveringText(Lists.newArrayList(I18n.format(pre + "front") + " - " + I18n.format(pre + getMode(Direction.FRONT).toString())), mouseX, mouseY);
 	}
 
 	@Override
@@ -144,15 +107,13 @@ public class IOFGui extends GuiScreen {
 	}
 
 	@Override
-	public void onGuiClosed() {
-
-	}
-
-	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (keyCode == Keyboard.KEY_ESCAPE) {
 			int id = tile instanceof TileFurnus ? GuiHandler.FURNUS : tile instanceof TilePulvus ? GuiHandler.PULVUS : -1;
-			PacketHandler.INSTANCE.sendToServer(new OpenMessage(tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ(), id));
+			NBTTagCompound nbt = new NBTTagCompound();
+			nbt.setInteger("gui", id);
+			nbt.setInteger("id", 2);
+			tile.sendMessage(nbt);
 		} else
 			super.keyTyped(typedChar, keyCode);
 	}

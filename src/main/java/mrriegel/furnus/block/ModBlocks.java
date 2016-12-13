@@ -1,20 +1,24 @@
 package mrriegel.furnus.block;
 
+import java.util.Map;
+
 import mrriegel.furnus.Furnus;
-import net.minecraft.block.Block;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import mrriegel.limelib.block.CommonBlock;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.registry.GameRegistry.ObjectHolder;
 
 @ObjectHolder(value = Furnus.MODID)
 public class ModBlocks {
-	public static final Block furnus = new BlockFurnus();
-	public static final Block pulvus = new BlockPulvus();
+	public static final CommonBlock furnus = new BlockFurnus();
+	public static final CommonBlock pulvus = new BlockPulvus();
 
 	public static void init() {
-		GameRegistry.registerBlock(furnus, "furnus");
-		GameRegistry.registerTileEntity(TileFurnus.class, "tileFurnus");
-		GameRegistry.registerBlock(pulvus, "pulvus");
-		GameRegistry.registerTileEntity(TilePulvus.class, "tilePulvus");
+		Map<String, Class<?>> teMappings = ObfuscationReflectionHelper.getPrivateValue(TileEntity.class, null, "field_" + "145855_i", "nameToClassMap");
+		furnus.registerBlock();
+		teMappings.put("tileFurnus", TileFurnus.class);
+		pulvus.registerBlock();
+		teMappings.put("tilePulvus", TilePulvus.class);
 	}
 
 }

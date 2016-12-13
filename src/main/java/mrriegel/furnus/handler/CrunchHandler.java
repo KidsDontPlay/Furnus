@@ -21,14 +21,6 @@ public class CrunchHandler {
 	private CrunchHandler() {
 	}
 
-	public static ItemStack resize(ItemStack stack, int size) {
-		if (stack == null || size <= 0)
-			return null;
-		ItemStack stack2 = stack.copy();
-		stack2.stackSize = size;
-		return stack2;
-	}
-
 	public ItemStack getResult(ItemStack stack) {
 		for (Entry<ItemStack, ItemStack> entry : crushingList.entrySet()) {
 			ItemStack in = entry.getKey().copy();

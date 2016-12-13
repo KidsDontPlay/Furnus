@@ -1,12 +1,16 @@
 package mrriegel.furnus.block;
 
+import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.CrunchHandler;
+import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.item.ModItems;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 public class TilePulvus extends AbstractMachine {
 
@@ -41,7 +45,7 @@ public class TilePulvus extends AbstractMachine {
 				if (valid) {
 					int ran = worldObj.rand.nextInt(itemstack.stackSize) + 1;
 					if (getStackInSlot(slot + 6) == null) {
-						setInventorySlotContents(slot + 6, CrunchHandler.resize(itemstack, ran));
+						setInventorySlotContents(slot + 6, ItemHandlerHelper.copyStackWithSize(itemstack, ran));
 					} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
 						if (getStackInSlot(slot + 6).stackSize + itemstack.stackSize <= itemstack.getMaxStackSize())
 							getStackInSlot(slot + 6).stackSize += ran;
@@ -79,6 +83,12 @@ public class TilePulvus extends AbstractMachine {
 	@Override
 	protected boolean fit(ItemStack stack, int slot) {
 		return getStackInSlot(slot + 3) == null || (CrunchHandler.instance().getResult(stack).isItemEqual(getStackInSlot(slot + 3)) && getStackInSlot(slot + 3).stackSize + CrunchHandler.instance().getResult(stack).stackSize <= getStackInSlot(slot + 3).getMaxStackSize());
+	}
+
+	@Override
+	public boolean openGUI(EntityPlayerMP player) {
+		player.openGui(Furnus.instance, GuiHandler.PULVUS, worldObj, getX(), getY(), getZ());
+		return true;
 	}
 
 }

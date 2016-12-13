@@ -1,14 +1,16 @@
 package mrriegel.furnus.block;
 
+import static net.minecraft.block.BlockHorizontal.FACING;
+
 import java.util.Random;
 
 import mrriegel.furnus.CreativeTab;
+import mrriegel.limelib.block.CommonBlockContainer;
+import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,7 +18,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -24,12 +25,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class AbstractBlock extends BlockContainer {
-	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+public abstract class AbstractBlock<T extends CommonTile> extends CommonBlockContainer<T> {
 	public static final PropertyBool STATE = PropertyBool.create("state");
 
-	public AbstractBlock() {
-		super(Material.ROCK);
+	public AbstractBlock(String name) {
+		super(Material.ROCK, name);
 		this.setHardness(3.0F);
 		this.setDefaultState(getDefaultState().withProperty(FACING, EnumFacing.NORTH).withProperty(STATE, false));
 		this.setCreativeTab(CreativeTab.tab1);
@@ -38,7 +38,6 @@ public abstract class AbstractBlock extends BlockContainer {
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
 		EnumFacing enumfacing = EnumFacing.getFront(meta % 6);
-
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
@@ -64,7 +63,6 @@ public abstract class AbstractBlock extends BlockContainer {
 			world.setTileEntity(pos, tileentity);
 		}
 		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
-
 	}
 
 	@Override
@@ -103,17 +101,11 @@ public abstract class AbstractBlock extends BlockContainer {
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
 		worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(STATE, false), 2);
 		worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 8);
-
 	}
 
 	@Override
 	public int getLightValue(IBlockState state) {
 		return state.getValue(STATE) ? 13 : 0;
-	}
-
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.MODEL;
 	}
 
 	@Override

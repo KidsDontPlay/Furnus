@@ -9,24 +9,21 @@ import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigHandler;
-import mrriegel.furnus.handler.PacketHandler;
 import mrriegel.furnus.jei.PulvusJEIPlugin;
-import mrriegel.furnus.message.CheckMessage;
+import mrriegel.limelib.gui.CommonGuiContainer;
+import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.Container;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.common.Loader;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.collect.Lists;
 
-public class MachineGUI extends GuiContainer {
+public class MachineGUI extends CommonGuiContainer {
 	private static ResourceLocation texture;
 	GuiButton i, o, f, check;
 	AbstractMachine tile;
@@ -45,31 +42,32 @@ public class MachineGUI extends GuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		check = new GuiButtonExt(0, guiLeft + 46, guiTop + 4, 14, 14, tile.isSplit() ? "X" : " ");
-		buttonList.add(check);
-		i = new GuiButtonExt(1, guiLeft + 115, guiTop + 108, 14, 14, "I");
-		buttonList.add(i);
-		o = new GuiButtonExt(2, guiLeft + 134, guiTop + 108, 14, 14, "O");
-		buttonList.add(o);
-		f = new GuiButtonExt(3, guiLeft + 153, guiTop + 108, 14, 14, "F");
-		buttonList.add(f);
+		buttonList.add(check = new GuiButtonExt(0, guiLeft + 46, guiTop + 4, 14, 14, tile.isSplit() ? "X" : " "));
+		buttonList.add(i = new GuiButtonExt(1, guiLeft + 115, guiTop + 108, 14, 14, "I"));
+		buttonList.add(o = new GuiButtonExt(2, guiLeft + 134, guiTop + 108, 14, 14, "O"));
+		buttonList.add(f = new GuiButtonExt(3, guiLeft + 153, guiTop + 108, 14, 14, "F"));
+		if (!tile.isSplit())
+			check.visible = false;
+		if (!tile.isInout()) {
+			i.visible = false;
+			o.visible = false;
+			f.visible = false;
+		}
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float p_146976_1_, int p_146976_2_, int p_146976_3_) {
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.getTextureManager().bindTexture(texture);
-		int k = (width - xSize) / 2;
-		int l = (height - ySize) / 2;
-		drawTexturedModalRect(k, l, 0, 0, xSize, ySize);
-		drawMore(k, l);
+		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+		drawMore(guiLeft, guiTop);
 		if (tile.getSlots() > 0)
 			mc.fontRendererObj.drawString(I18n.format("gui.furnus.split"), guiLeft + 22, guiTop + 7, 4210752);
 
 	}
 
 	@Override
-	public void drawScreen(int p_73863_1_, int p_73863_2_, float p_73863_3_) {
+	public void updateScreen() {
 		if (tile.getSlots() < 1) {
 			check.enabled = false;
 			check.visible = false;
@@ -77,6 +75,7 @@ public class MachineGUI extends GuiContainer {
 			check.enabled = true;
 			check.visible = true;
 		}
+		check.displayString = tile.isSplit() ? "X" : " ";
 		if (tile.isInout()) {
 			i.enabled = true;
 			i.visible = true;
@@ -92,10 +91,13 @@ public class MachineGUI extends GuiContainer {
 			f.enabled = false;
 			f.visible = false;
 		}
-		super.drawScreen(p_73863_1_, p_73863_2_, p_73863_3_);
-		int i = Mouse.getX() * this.width / this.mc.displayWidth;
-		int j = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
-		if (i > guiLeft + 3 && i < guiLeft + 19 && j > guiTop + 3 && j < guiTop + 19) {
+		super.updateScreen();
+	}
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float particleTicks) {
+		super.drawScreen(mouseX, mouseY, particleTicks);
+		if (mouseX > guiLeft + 3 && mouseX < guiLeft + 19 && mouseY > guiTop + 3 && mouseY < guiTop + 19) {
 			List<String> list = Lists.newArrayList();
 			double speed = (1.d + tile.getSpeed() * 1.d * ConfigHandler.speedMulti);
 			list.add(I18n.format("gui.furnus.speed") + ": " + String.format("%.2f", speed) + "x");
@@ -105,16 +107,16 @@ public class MachineGUI extends GuiContainer {
 			double xp = (1.d + tile.getXp() * ConfigHandler.xpMulti);
 			list.add(I18n.format("gui.furnus.xp") + ": " + String.format("%.2f", xp) + "x");
 			if (tile.isRf()) {
-				list.add((int) ((ConfigHandler.RF * 200) * tile.getCalc()) + " RF per Operation");
+				list.add((int) ((ConfigHandler.RF * tile.neededTicks()) * tile.getCalc()) + " RF per Operation");
 				list.add("RF: " + tile.en.getEnergyStored() + "/" + tile.en.getMaxEnergyStored());
 			}
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-			this.drawHoveringText(list, i, j, fontRendererObj);
-			GlStateManager.popMatrix();
+			this.drawHoveringText(list, mouseX, mouseY, fontRendererObj);
 			GlStateManager.enableLighting();
+			GlStateManager.popMatrix();
 		}
-		if (i > guiLeft + 45 && i < guiLeft + 45 + 16 && j > guiTop + 102 && j < guiTop + 102 + 16) {
+		if (mouseX > guiLeft + 45 && mouseX < guiLeft + 45 + 16 && mouseY > guiTop + 102 && mouseY < guiTop + 102 + 16) {
 			List<String> list = Lists.newArrayList();
 			double seconds = tile.getBurnTime() / 20.;
 			if (seconds > 2)
@@ -123,18 +125,18 @@ public class MachineGUI extends GuiContainer {
 				list.add(String.format("%.1f", seconds) + " Seconds");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-			this.drawHoveringText(list, i, j, fontRendererObj);
-			GlStateManager.popMatrix();
+			this.drawHoveringText(list, mouseX, mouseY, fontRendererObj);
 			GlStateManager.enableLighting();
+			GlStateManager.popMatrix();
 		}
-		if (i > guiLeft + 40 && i < guiLeft + 65 && j > guiTop + 20 && j < guiTop + 95 && Loader.isModLoaded("JEI")) {
+		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("JEI")) {
 			List<String> list = Lists.newArrayList();
 			list.add("Show Recipes");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-			this.drawHoveringText(list, i, j, fontRendererObj);
-			GlStateManager.popMatrix();
+			this.drawHoveringText(list, mouseX, mouseY, fontRendererObj);
 			GlStateManager.enableLighting();
+			GlStateManager.popMatrix();
 		}
 	}
 
@@ -158,18 +160,13 @@ public class MachineGUI extends GuiContainer {
 	}
 
 	@Override
-	protected void actionPerformed(GuiButton p_146284_1_) {
-		if (p_146284_1_.id == 0) {
-			if (check.displayString.equals("X"))
-				check.displayString = " ";
-			else
-				check.displayString = "X";
-			boolean chek = check.displayString.equals("X");
-			tile.setSplit(chek);
-			PacketHandler.INSTANCE.sendToServer(new CheckMessage(chek));
+	protected void actionPerformed(GuiButton button) {
+		if (button.id == 0) {
+			tile.sendMessage(NBTHelper.setInt(new NBTTagCompound(), "id", 0));
+			tile.handleMessage(mc.thePlayer, NBTHelper.setInt(new NBTTagCompound(), "id", 0));
 		} else {
 			//			mc.thePlayer.closeScreen();
-			mc.thePlayer.openGui(Furnus.instance, p_146284_1_.id, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
+			mc.thePlayer.openGui(Furnus.instance, button.id, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
 		}
 	}
 
@@ -180,7 +177,7 @@ public class MachineGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14, (int) (tile.getProgress().get(0) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, (int) (tile.getProgress().get(0) / (tile.neededTicks() / 24.)), 17);
 			break;
 		case 1:
 			drawTexturedModalRect(k + 19, l + 47 - 13, 176, 31, 18, 18);
@@ -191,8 +188,8 @@ public class MachineGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49 + 14, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 14, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 14, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14, (int) (tile.getProgress().get(0) / (200. / 24.)), 17);
-			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14, (int) (tile.getProgress().get(1) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 - 13, 176, 14, (int) (tile.getProgress().get(0) / (tile.neededTicks() / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 + 14, 176, 14, (int) (tile.getProgress().get(1) / (tile.neededTicks() / 24.)), 17);
 			break;
 		case 2:
 			drawTexturedModalRect(k + 19, l + 47 - 27, 176, 31, 18, 18);
@@ -207,9 +204,9 @@ public class MachineGUI extends GuiContainer {
 			drawTexturedModalRect(k + 43, l + 49 + 27, 176, 75, 22, 15);
 			drawTexturedModalRect(k + 72, l + 43 + 27, 176, 49, 26, 26);
 			drawTexturedModalRect(k + 106, l + 47 + 27, 176, 31, 18, 18);
-			drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, (int) (tile.getProgress().get(0) / (200. / 24.)), 17);
-			drawTexturedModalRect(k + 42, l + 49, 176, 14, (int) (tile.getProgress().get(1) / (200. / 24.)), 17);
-			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, (int) (tile.getProgress().get(2) / (200. / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 - 27, 176, 14, (int) (tile.getProgress().get(0) / (tile.neededTicks() / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49, 176, 14, (int) (tile.getProgress().get(1) / (tile.neededTicks() / 24.)), 17);
+			drawTexturedModalRect(k + 42, l + 49 + 27, 176, 14, (int) (tile.getProgress().get(2) / (tile.neededTicks() / 24.)), 17);
 			break;
 		}
 		int percent = (int) (((float) tile.getFuel()) / ((float) tile.getMaxFuel()) * 100f);

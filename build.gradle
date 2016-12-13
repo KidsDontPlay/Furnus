@@ -15,13 +15,11 @@ version = "1.10.2-1.9"
 group= "mrriegel.furnus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "furnus"
 
-sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.
-compileJava {
-    sourceCompatibility = targetCompatibility = "1.6"
-}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 minecraft {
-    version = "1.10.2-12.18.2.2099"
+    version = "1.10.2-12.18.3.2185"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.

@@ -1,5 +1,7 @@
 package mrriegel.furnus.gui;
 
+import java.util.List;
+
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.TileFurnus;
@@ -7,10 +9,12 @@ import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.item.ModItems;
+import mrriegel.limelib.gui.CommonContainerTileInventory;
+import mrriegel.limelib.gui.slot.SlotFilter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -19,94 +23,90 @@ import net.minecraft.tileentity.TileEntityFurnace;
 
 import com.google.common.collect.Lists;
 
-public class MachineContainer extends Container {
-	AbstractMachine tile;
+public class MachineContainer extends CommonContainerTileInventory<AbstractMachine> {
 	EntityPlayer player;
 	int startSlot;
 	int tileSlots;
 	boolean burn;
 
 	public MachineContainer(InventoryPlayer inventory, AbstractMachine tileEntity) {
-		tile = tileEntity;
+		super(inventory, tileEntity);
 		player = inventory.player;
-		initSlots();
-		startSlot = tile.getSlots();
-		burn = tile.isBurning();
+		startSlot = getTile().getSlots();
+		burn = getTile().isBurning();
 	}
 
-	void initSlots() {
+	@Override
+	protected void modifyInvs() {
+		super.modifyInvs();
+		player = invPlayer.player;
+	}
+
+	@Override
+	protected void initSlots() {
 		inventoryItemStacks = Lists.newArrayList();
 		inventorySlots = Lists.newArrayList();
-		switch (tile.getSlots()) {
+		switch (getTile().getSlots()) {
 		case 0:
-			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48));
-			this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 48));
-			this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 48));
+			this.addSlotToContainer(new InputSlot(getTile(), 0, 20, 48));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 3, 77, 48));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 6, 107, 48));
 			break;
 		case 1:
-			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48 - 13));
-			this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 48 - 13));
-			this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 48 - 13));
-			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48 + 14));
-			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48 + 14));
-			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48 + 14));
+			this.addSlotToContainer(new InputSlot(getTile(), 0, 20, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 3, 77, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 6, 107, 48 - 13));
+			this.addSlotToContainer(new InputSlot(getTile(), 1, 20, 48 + 14));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 4, 77, 48 + 14));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 7, 107, 48 + 14));
 			break;
 		case 2:
-			this.addSlotToContainer(new InputSlot(tile, 0, 20, 48 - 27));
-			this.addSlotToContainer(new OutputSlot(player, tile, 3, 77, 48 - 27));
-			this.addSlotToContainer(new OutputSlot(player, tile, 6, 107, 48 - 27));
-			this.addSlotToContainer(new InputSlot(tile, 1, 20, 48));
-			this.addSlotToContainer(new OutputSlot(player, tile, 4, 77, 48));
-			this.addSlotToContainer(new OutputSlot(player, tile, 7, 107, 48));
-			this.addSlotToContainer(new InputSlot(tile, 2, 20, 48 + 27));
-			this.addSlotToContainer(new OutputSlot(player, tile, 5, 77, 48 + 27));
-			this.addSlotToContainer(new OutputSlot(player, tile, 8, 107, 48 + 27));
+			this.addSlotToContainer(new InputSlot(getTile(), 0, 20, 48 - 27));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 3, 77, 48 - 27));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 6, 107, 48 - 27));
+			this.addSlotToContainer(new InputSlot(getTile(), 1, 20, 48));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 4, 77, 48));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 7, 107, 48));
+			this.addSlotToContainer(new InputSlot(getTile(), 2, 20, 48 + 27));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 5, 77, 48 + 27));
+			this.addSlotToContainer(new OutputSlot(player, getTile(), 8, 107, 48 + 27));
 			break;
 		}
-		this.addSlotToContainer(new FuelSlot(tile, 9, 20, 21 + 27 * 3));
+		this.addSlotToContainer(new SlotFilter(getTile(), 9, 20, 21 + 27 * 3, s -> TileEntityFurnace.isItemFuel(s)));
 
 		int index = 10;
 		for (int i = 0; i < 5; i++) {
-			this.addSlotToContainer(new UpgradeSlot(this, player, tile, index++, 152, 12 + i * 18));
+			this.addSlotToContainer(new UpgradeSlot(this, player, getTile(), index++, 152, 12 + i * 18));
 		}
 		tileSlots = inventorySlots.size();
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 9; ++j) {
-				this.addSlotToContainer(new Slot(player.inventory, j + i * 9 + 9, 8 + j * 18, 84 + 47 + i * 18));
+				this.addSlotToContainer(new Slot(invPlayer, j + i * 9 + 9, 8 + j * 18, 84 + 47 + i * 18));
 			}
 		}
 		for (int i = 0; i < 9; ++i) {
-			this.addSlotToContainer(new Slot(player.inventory, i, 8 + i * 18, 142 + 47));
+			this.addSlotToContainer(new Slot(invPlayer, i, 8 + i * 18, 142 + 47));
 		}
 	}
 
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		if (startSlot != tile.getSlots() || burn != tile.isBurning()) {
-			startSlot = tile.getSlots();
-			burn = tile.isBurning();
+		if (startSlot != getTile().getSlots() || burn != getTile().isBurning()) {
+			startSlot = getTile().getSlots();
+			burn = getTile().isBurning();
 			ItemStack save = null;
 			if (player.inventory.getItemStack() != null) {
 				save = player.inventory.getItemStack().copy();
 				player.inventory.setItemStack(null);
 			}
-			Integer guiID = tile instanceof TileFurnus ? GuiHandler.FURNUS : tile instanceof TilePulvus ? GuiHandler.PULVUS : null;
-			player.openGui(Furnus.instance, guiID, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
+			Integer guiID = getTile() instanceof TileFurnus ? GuiHandler.FURNUS : getTile() instanceof TilePulvus ? GuiHandler.PULVUS : null;
+			player.openGui(Furnus.instance, guiID, getTile().getWorld(), getTile().getX(), getTile().getY(), getTile().getZ());
 			if (save != null && !player.worldObj.isRemote) {
 				player.inventory.setItemStack(save);
 				((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
 			}
 		}
-	}
-
-	@Override
-	public boolean canInteractWith(EntityPlayer p_75145_1_) {
-		return true;
-	}
-
-	public AbstractMachine getTile() {
-		return tile;
 	}
 
 	int[] getInputSlots() {
@@ -198,7 +198,7 @@ public class MachineContainer extends Container {
 						merged = true;
 					}
 				}
-				boolean canProcess = tile instanceof TileFurnus ? FurnaceRecipes.instance().getSmeltingResult(itemstack1) != null : tile instanceof TilePulvus ? CrunchHandler.instance().getResult(itemstack1) != null : false;
+				boolean canProcess = getTile() instanceof TileFurnus ? FurnaceRecipes.instance().getSmeltingResult(itemstack1) != null : getTile() instanceof TilePulvus ? CrunchHandler.instance().getResult(itemstack1) != null : false;
 				if (!merged && canProcess) {
 					for (int i = 0; i < getInputSlots().length; i++)
 						if (this.mergeItemStack(itemstack1, getInputSlots()[i], getInputSlots()[i] + 1, false)) {
@@ -225,5 +225,10 @@ public class MachineContainer extends Container {
 		}
 
 		return itemstack;
+	}
+
+	@Override
+	protected List<Area> allowedSlots(ItemStack stack, IInventory inv, int index) {
+		return null;
 	}
 }
