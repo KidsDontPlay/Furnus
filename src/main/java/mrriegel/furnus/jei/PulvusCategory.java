@@ -52,13 +52,10 @@ public class PulvusCategory extends FurnaceRecipeCategory<PulvusWrapper> {
 	@Override
 	public void setRecipe(IRecipeLayout recipeLayout, PulvusWrapper recipeWrapper, IIngredients ingredients) {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
-
 		itemStacks.init(inputSlot, true, 0, 0);
 		itemStacks.init(outputSlot, false, 60, 18);
-		if (recipeWrapper instanceof PulvusWrapper) {
-			itemStacks.setFromRecipe(inputSlot, recipeWrapper.getInputs());
-			itemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
-		}
+		itemStacks.setFromRecipe(inputSlot, recipeWrapper.getInputs());
+		itemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
 
 	}
 

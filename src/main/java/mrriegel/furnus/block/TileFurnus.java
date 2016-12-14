@@ -6,6 +6,7 @@ import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.item.ModItems;
+import mrriegel.limelib.helper.StackHelper;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -37,7 +38,7 @@ public class TileFurnus extends AbstractMachine {
 			}
 			boolean valid;
 			try {
-				valid = !getStackInSlot(slot).isItemEqual(CrunchHandler.instance().getResult(getStackInSlot(slot + 3))) && !equalOreDict(getStackInSlot(slot), CrunchHandler.instance().getResult(getStackInSlot(slot + 3)));
+				valid = !getStackInSlot(slot).isItemEqual(CrunchHandler.instance().getResult(getStackInSlot(slot + 3))) && !StackHelper.equalOreDict(getStackInSlot(slot), CrunchHandler.instance().getResult(getStackInSlot(slot + 3)));
 			} catch (NullPointerException e) {
 				valid = true;
 			}

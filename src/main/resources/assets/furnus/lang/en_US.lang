@@ -16,7 +16,7 @@ item.furnus:upgrade_2.tip=Enables automation.
 item.furnus:upgrade_3.tip=Adds one additional input slot (max. 2).
 item.furnus:upgrade_4.tip=Increases chance of more output. Increases fuel consumption.
 item.furnus:upgrade_5.tip=Increases XP output.
-item.furnus:upgrade_6.tip=Saves fuel.
+item.furnus:upgrade_6.tip=Saves heat.
 item.furnus:upgrade_7.tip=Enables RF support.
 
 item.furnus:dust_iron.name=Iron Dust

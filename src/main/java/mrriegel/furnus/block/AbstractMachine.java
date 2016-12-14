@@ -1,7 +1,5 @@
 package mrriegel.furnus.block;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,8 +7,10 @@ import java.util.Map.Entry;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.limelib.helper.InvHelper;
+import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.util.EnergyStorageExt;
+import mrriegel.limelib.util.Utils;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,12 +28,12 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.oredict.OreDictionary;
 import vazkii.botania.api.item.IExoflameHeatable;
 import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Ints;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -76,6 +76,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		TOP, FRONT, LEFT, RIGHT, BOTTOM, BACK;
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		burning = compound.getBoolean("burning");
@@ -90,7 +91,6 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		xp = compound.getInteger("xp");
 		fuel = compound.getInteger("fuel");
 		maxFuel = compound.getInteger("maxFuel");
-		remainTicks = compound.getInteger("remainTicks");
 		input = new Gson().fromJson(compound.getString("input"), new TypeToken<Map<Direction, Mode>>() {
 		}.getType());
 		output = new Gson().fromJson(compound.getString("output"), new TypeToken<Map<Direction, Mode>>() {
@@ -124,7 +124,6 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		compound.setInteger("xp", xp);
 		compound.setInteger("fuel", fuel);
 		compound.setInteger("maxFuel", maxFuel);
-		compound.setInteger("remainTicks", remainTicks);
 		compound.setString("input", new Gson().toJson(input));
 		compound.setString("output", new Gson().toJson(output));
 		compound.setString("fuelput", new Gson().toJson(fuelput));
@@ -200,26 +199,26 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 
 	@Override
 	public int[] getSlotsForFace(EnumFacing side) {
-		if (!inout)
-			return new int[] {};
-		List<Integer> lis = Lists.newArrayList();
 		Direction wrongSide = getWrongSide(side);
+		if (!inout) {
+			if (side == EnumFacing.UP)
+				return Ints.toArray(getInputSlots());
+			if (side == EnumFacing.DOWN)
+				return Ints.toArray(getOutputSlots());
+			return new int[] { 9 };
+		}
+		List<Integer> lis = Lists.newArrayList();
 		if (input.get(wrongSide) != Mode.X)
 			lis.addAll(getInputSlots());
 		if (output.get(wrongSide) != Mode.X)
 			lis.addAll(getOutputSlots());
 		if (fuelput.get(wrongSide) != Mode.X)
 			lis.add(9);
-		int[] end = new int[lis.size()];
-		for (int i = 0; i < lis.size(); i++)
-			end[i] = lis.get(i);
-		return end;
+		return Ints.toArray(lis);
 	}
 
 	@Override
 	public boolean canInsertItem(int slot, ItemStack stack, EnumFacing side) {
-		if (!inout)
-			return false;
 		if (!getInputSlots().contains(slot) && slot != 9)
 			return false;
 		Direction wrongSide = getWrongSide(side);
@@ -233,8 +232,6 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack stack, EnumFacing side) {
-		if (!inout)
-			return false;
 		if (!getOutputSlots().contains(slot) && slot != 9)
 			return false;
 		Direction wrongSide = getWrongSide(side);
@@ -264,24 +261,12 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 			return Lists.newArrayList(0);
 	}
 
-	protected boolean equalOreDict(ItemStack a, ItemStack b) {
-		if (a == null || b == null)
-			return false;
-		int[] ar = OreDictionary.getOreIDs(a);
-		int[] br = OreDictionary.getOreIDs(b);
-		for (int i = 0; i < ar.length; i++)
-			for (int j = 0; j < br.length; j++)
-				if (ar[i] == br[j])
-					return true;
-		return false;
-	}
-
 	@Override
 	public abstract boolean isItemValidForSlot(int slot, ItemStack stack);
 
 	public void updateStats(EntityPlayer player) {
 		int s = getSlots();
-		Map<Integer, Integer> upgrades = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> upgrades = Maps.newHashMap();
 		for (int i = 0; i < 8; i++)
 			upgrades.put(i, 0);
 		for (int i = 10; i < 15; i++) {
@@ -320,19 +305,18 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 			}
 		}
 
-		if (s <= getSlots())
-			return;
-		List<Integer> lis = Lists.newArrayList();
-		lis.addAll(Arrays.asList(new Integer[] { 2, 5, 8 }));
-		if (getSlots() == 0)
-			lis.addAll(Arrays.asList(new Integer[] { 1, 4, 7 }));
-		for (int i : lis) {
-			if (getStackInSlot(i) == null)
-				continue;
-			ItemStack stack = getStackInSlot(i).copy();
-			player.dropItem(stack, false);
-			setInventorySlotContents(i, null);
+		if (s > getSlots()) {
+			List<Integer> lis = Lists.newArrayList(2, 5, 8);
+			if (getSlots() == 0)
+				lis.addAll(Lists.newArrayList(1, 4, 7));
+			for (int i : lis) {
+				if (getStackInSlot(i) == null)
+					continue;
+				ItemStack stack = getStackInSlot(i).copy();
+				player.dropItem(stack, false);
+				setInventorySlotContents(i, null);
 
+			}
 		}
 		worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
 
@@ -623,38 +607,25 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		if (stack1 == null) {
 			if (stack2.stackSize <= 1 || !fit(stack2, i1))
 				return;
-			stack1 = stack2.copy();
-			stack1.stackSize = split(stack2.stackSize)[0];
-			stack2.stackSize = split(stack2.stackSize)[1];
-			setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1 : null);
-			setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
+			List<ItemStack> splitted = StackHelper.split(stack2);
+			setInventorySlotContents(i1, splitted.get(0));
+			setInventorySlotContents(i2, splitted.get(1));
 			return;
 		} else if (stack2 == null) {
 			if (stack1.stackSize <= 1 || !fit(stack1, i2))
 				return;
-			stack2 = stack1.copy();
-			stack2.stackSize = split(stack1.stackSize)[0];
-			stack1.stackSize = split(stack1.stackSize)[1];
-			setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1 : null);
-			setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
+			List<ItemStack> splitted = StackHelper.split(stack1);
+			setInventorySlotContents(i1, splitted.get(0));
+			setInventorySlotContents(i2, splitted.get(1));
 			return;
 		} else {
 			if (ItemHandlerHelper.canItemStacksStack(stack1, stack2)) {
 				int s = stack1.stackSize + stack2.stackSize;
-				stack1.stackSize = split(s)[0];
-				stack2.stackSize = split(s)[1];
-				setInventorySlotContents(i1, stack1.stackSize > 0 ? stack1 : null);
-				setInventorySlotContents(i2, stack2.stackSize > 0 ? stack2 : null);
+				setInventorySlotContents(i1, ItemHandlerHelper.copyStackWithSize(stack1, Utils.split(s, 2).get(0)));
+				setInventorySlotContents(i2, ItemHandlerHelper.copyStackWithSize(stack1, Utils.split(s, 2).get(1)));
 				return;
 			}
 		}
-	}
-
-	int[] split(int a) {
-		if (a % 2 == 0)
-			return new int[] { a / 2, a / 2 };
-		else
-			return new int[] { a / 2 + 1, a / 2 };
 	}
 
 	boolean canProcessAny() {

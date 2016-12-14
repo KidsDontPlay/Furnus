@@ -11,14 +11,11 @@ import mrriegel.furnus.block.ModBlocks;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.handler.CrunchHandler;
 import mrriegel.furnus.handler.GuiHandler;
-import mrriegel.furnus.item.ItemDust.Dust;
 import mrriegel.furnus.item.ModItems;
 import mrriegel.limelib.LimeLib;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -109,8 +106,7 @@ public class Furnus {
 		ModBlocks.furnus.initModel();
 		ModBlocks.pulvus.initModel();
 		ModItems.upgrade.initModel();
-		for (int i = 0; i < Dust.values().length; i++)
-			ModelLoader.setCustomModelResourceLocation(ModItems.dust, i, new ModelResourceLocation(Furnus.MODID + ":" + "dust_" + Dust.values()[i].toString().toLowerCase(), "inventory"));
+		ModItems.dust.initModel();
 	}
 
 	@EventHandler

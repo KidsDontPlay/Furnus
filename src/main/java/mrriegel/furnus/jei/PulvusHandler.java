@@ -46,16 +46,8 @@ public class PulvusHandler implements IRecipeHandler<PulvusWrapper> {
 			public int compare(PulvusWrapper o1, PulvusWrapper o2) {
 				Integer id1 = Item.getIdFromItem(o1.getOutputs().get(0).getItem());
 				Integer id2 = Item.getIdFromItem(o2.getOutputs().get(0).getItem());
-				return id1.compareTo(id2);
-			}
-
-		});
-		Collections.sort(recipes, new Comparator<PulvusWrapper>() {
-
-			@Override
-			public int compare(PulvusWrapper o1, PulvusWrapper o2) {
-				Integer id1 = o1.getOutputs().get(0).getItemDamage();
-				Integer id2 = o2.getOutputs().get(0).getItemDamage();
+				if (id1.compareTo(id2) == 0)
+					return new Integer(o1.getOutputs().get(0).getItemDamage()).compareTo(o2.getOutputs().get(0).getItemDamage());
 				return id1.compareTo(id2);
 			}
 

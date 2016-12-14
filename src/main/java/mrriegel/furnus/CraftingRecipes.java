@@ -20,7 +20,7 @@ public class CraftingRecipes {
 		if (ConfigHandler.effi)
 			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 1), "csc", "gig", "csc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'g', Items.GOLD_INGOT, 's', Blocks.SNOW);
 		if (ConfigHandler.io)
-			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 2), "chc", " i ", "cpc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'h', Blocks.HOPPER, 'p', Blocks.PISTON);
+			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 2, 2), "chc", " i ", "cpc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'h', Blocks.HOPPER, 'p', Blocks.PISTON);
 		if (ConfigHandler.slot)
 			GameRegistry.addShapedRecipe(new ItemStack(ModItems.upgrade, 1, 3), "chc", "hih", "chc", 'c', Items.CLAY_BALL, 'i', Items.IRON_INGOT, 'h', Items.DIAMOND);
 		if (ConfigHandler.bonus)
