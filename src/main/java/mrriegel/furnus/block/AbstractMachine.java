@@ -141,7 +141,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		compound.setTag("crunchTE", invList);
 		return compound;
 	}
-
+	
 	@Override
 	public abstract boolean openGUI(EntityPlayerMP player);
 
@@ -742,5 +742,10 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		if (id.equals("F"))
 			return fuelput;
 		return null;
+	}
+	
+	@Override
+	public boolean isUseableByPlayer(EntityPlayer player) {
+		return this.worldObj.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
 	}
 }

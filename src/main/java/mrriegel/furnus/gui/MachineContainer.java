@@ -301,4 +301,9 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 	protected List<Area> allowedSlots(ItemStack stack, IInventory inv, int index) {
 		return null;
 	}
+
+//	@Override
+//	public boolean canInteractWith(EntityPlayer playerIn) {
+//		return getTile() != null && getTile().isUseableByPlayer(playerIn);
+//	}
 }
