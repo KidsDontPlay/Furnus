@@ -27,7 +27,7 @@ public class CrunchHandler {
 			if (in.isItemEqual(stack) || (in.getItem() == stack.getItem() && in.getItemDamage() == OreDictionary.WILDCARD_VALUE))
 				return entry.getValue().copy();
 		}
-		return null;
+		return ItemStack.EMPTY;
 	}
 
 	public float getExperience(ItemStack stack) {
@@ -39,21 +39,21 @@ public class CrunchHandler {
 		return 0f;
 	}
 
-	public void addBlock(Block p_151393_1_, ItemStack p_151393_2_, float p_151393_3_) {
-		this.addItem(Item.getItemFromBlock(p_151393_1_), p_151393_2_, p_151393_3_);
+	public void addBlock(Block block, ItemStack stack, float exp) {
+		this.addItem(Item.getItemFromBlock(block), stack, exp);
 	}
 
-	public void addItem(Item p_151396_1_, ItemStack p_151396_2_, float p_151396_3_) {
-		this.addItemStack(new ItemStack(p_151396_1_, 1, 32767), p_151396_2_, p_151396_3_);
+	public void addItem(Item item, ItemStack stack, float exp) {
+		this.addItemStack(new ItemStack(item, 1, 32767), stack, exp);
 	}
 
-	public void addItemStack(ItemStack in, ItemStack out, float p_151394_3_) {
-		if (in == null || out == null)
+	public void addItemStack(ItemStack in, ItemStack out, float exp) {
+		if (in.isEmpty() || out.isEmpty())
 			return;
 		for (ItemStack stack : crushingList.keySet())
 			if (in.isItemEqual(stack))
 				return;
 		this.crushingList.put(in.copy(), out);
-		this.experienceList.put(out, Float.valueOf(p_151394_3_));
+		this.experienceList.put(out, Float.valueOf(exp));
 	}
 }

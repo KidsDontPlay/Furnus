@@ -32,16 +32,16 @@ public class OutputSlot extends Slot {
 	@Override
 	public ItemStack decrStackSize(int p_75209_1_) {
 		if (this.getHasStack()) {
-			this.field_75228_b += Math.min(p_75209_1_, this.getStack().stackSize);
+			this.field_75228_b += Math.min(p_75209_1_, this.getStack().getCount());
 		}
 
 		return super.decrStackSize(p_75209_1_);
 	}
 
 	@Override
-	public void onPickupFromSlot(EntityPlayer p_82870_1_, ItemStack p_82870_2_) {
+	public ItemStack onTake(EntityPlayer p_82870_1_, ItemStack p_82870_2_) {
 		this.onCrafting(p_82870_2_);
-		super.onPickupFromSlot(p_82870_1_, p_82870_2_);
+		return super.onTake(p_82870_1_, p_82870_2_);
 	}
 
 	@Override
@@ -52,8 +52,8 @@ public class OutputSlot extends Slot {
 
 	@Override
 	protected void onCrafting(ItemStack stack) {
-		stack.onCrafting(this.thePlayer.worldObj, this.thePlayer, this.field_75228_b);
-		if (!this.thePlayer.worldObj.isRemote) {
+		stack.onCrafting(this.thePlayer.world, this.thePlayer, this.field_75228_b);
+		if (!this.thePlayer.world.isRemote) {
 			int i = this.field_75228_b;
 			float m = inventory instanceof TileFurnus ? FurnaceRecipes.instance().getSmeltingExperience(stack) : inventory instanceof TilePulvus ? CrunchHandler.instance().getExperience(stack) : 0f;
 			float f = thePlayer.capabilities.isCreativeMode ? 0.0f : m + m * ((MachineContainer) thePlayer.openContainer).getTile().getXp() * (float) ConfigHandler.xpMulti;
@@ -62,9 +62,9 @@ public class OutputSlot extends Slot {
 			if (f == 0.0F) {
 				i = 0;
 			} else if (f < 1.0F) {
-				j = MathHelper.floor_float(i * f);
+				j = MathHelper.floor(i * f);
 
-				if (j < MathHelper.ceiling_float_int(i * f) && (float) Math.random() < i * f - j) {
+				if (j < MathHelper.ceil(i * f) && (float) Math.random() < i * f - j) {
 					++j;
 				}
 				i = j;
@@ -72,7 +72,7 @@ public class OutputSlot extends Slot {
 			while (i > 0) {
 				j = EntityXPOrb.getXPSplit(i);
 				i -= j;
-				this.thePlayer.worldObj.spawnEntityInWorld(new EntityXPOrb(this.thePlayer.worldObj, this.thePlayer.posX, this.thePlayer.posY + 0.5D, this.thePlayer.posZ + 0.5D, j));
+				this.thePlayer.world.spawnEntity(new EntityXPOrb(this.thePlayer.world, this.thePlayer.posX, this.thePlayer.posY + 0.5D, this.thePlayer.posZ + 0.5D, j));
 			}
 		}
 
@@ -93,7 +93,7 @@ public class OutputSlot extends Slot {
 		if (obj == null)
 			return false;
 		Slot e = ((Slot) obj);
-		return e.xDisplayPosition == xDisplayPosition && e.yDisplayPosition == yDisplayPosition;
+		return e.xPos == xPos && e.yPos == yPos;
 	}
 
 }

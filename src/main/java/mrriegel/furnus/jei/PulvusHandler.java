@@ -22,11 +22,6 @@ public class PulvusHandler implements IRecipeHandler<PulvusWrapper> {
 	}
 
 	@Override
-	public String getRecipeCategoryUid() {
-		return Furnus.MODID + ".pulvus";
-	}
-
-	@Override
 	public IRecipeWrapper getRecipeWrapper(PulvusWrapper recipe) {
 		return recipe;
 	}

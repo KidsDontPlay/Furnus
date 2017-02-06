@@ -2,12 +2,7 @@ package mrriegel.furnus.gui;
 
 import java.util.List;
 
-import mrriegel.furnus.Furnus;
 import mrriegel.furnus.block.AbstractMachine;
-import mrriegel.furnus.block.TileFurnus;
-import mrriegel.furnus.block.TilePulvus;
-import mrriegel.furnus.handler.CrunchHandler;
-import mrriegel.furnus.handler.GuiHandler;
 import mrriegel.furnus.item.ModItems;
 import mrriegel.limelib.gui.CommonContainerTileInventory;
 import mrriegel.limelib.gui.slot.SlotFilter;
@@ -17,10 +12,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.network.play.server.SPacketSetSlot;
 import net.minecraft.tileentity.TileEntityFurnace;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraft.util.NonNullList;
 
 import com.google.common.collect.Lists;
 
@@ -44,7 +38,7 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 
 	@Override
 	protected void initSlots() {
-		inventoryItemStacks = Lists.newArrayList();
+		inventoryItemStacks = NonNullList.create();
 		inventorySlots = Lists.newArrayList();
 		switch (getTile().getSlots()) {
 		case 0:
@@ -95,14 +89,14 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 		if (startSlot != getTile().getSlots() || burn != getTile().isBurning()) {
 			startSlot = getTile().getSlots();
 			burn = getTile().isBurning();
-			ItemStack save = null;
-			if (player.inventory.getItemStack() != null) {
+			ItemStack save = ItemStack.EMPTY;
+			if (!player.inventory.getItemStack().isEmpty()) {
 				save = player.inventory.getItemStack().copy();
-				player.inventory.setItemStack(null);
+				player.inventory.setItemStack(ItemStack.EMPTY);
 			}
-			Integer guiID = getTile() instanceof TileFurnus ? GuiHandler.FURNUS : getTile() instanceof TilePulvus ? GuiHandler.PULVUS : null;
-			player.openGui(Furnus.instance, guiID, getTile().getWorld(), getTile().getX(), getTile().getY(), getTile().getZ());
-			if (save != null && !player.worldObj.isRemote) {
+			if (!player.world.isRemote)
+				getTile().openGUI((EntityPlayerMP) player);
+			if (!save.isEmpty() && !player.world.isRemote) {
 				player.inventory.setItemStack(save);
 				((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
 			}
@@ -160,7 +154,7 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 	int getSlotWithUpgrade(int meta) {
 		for (int i : getUpgradeSlots()) {
 			ItemStack s = getSlot(i).getStack();
-			if (s == null)
+			if (s.isEmpty())
 				continue;
 			if (s.getItemDamage() == meta)
 				return i;
@@ -170,7 +164,7 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int slotIndex) {
-		ItemStack itemstack = null;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(slotIndex);
 
 		if (slot != null && slot.getHasStack()) {
@@ -178,8 +172,8 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 			itemstack = itemstack1.copy();
 
 			if (slotIndex <= tileSlots - 1) {
-				if (!this.mergeItemStack(itemstack1, tileSlots, tileSlots + 36, true)) {
-					return null;
+				if (!this.mergeItemStack(itemstack1, tileSlots, tileSlots + player.inventory.mainInventory.size(), true)) {
+					return ItemStack.EMPTY;
 				}
 				slot.onSlotChange(itemstack1, itemstack);
 			} else {
@@ -198,112 +192,35 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 						merged = true;
 					}
 				}
-				boolean canProcess = getTile() instanceof TileFurnus ? FurnaceRecipes.instance().getSmeltingResult(itemstack1) != null : getTile() instanceof TilePulvus ? CrunchHandler.instance().getResult(itemstack1) != null : false;
+				boolean canProcess = !getTile().getResult(itemstack1).isEmpty();
 				if (!merged && canProcess) {
 					for (int i = 0; i < getInputSlots().length; i++)
 						if (this.mergeItemStack(itemstack1, getInputSlots()[i], getInputSlots()[i] + 1, false)) {
 							merged = true;
 							break;
 						}
-
 				}
 				if (!merged)
-					return null;
+					return ItemStack.EMPTY;
 
 			}
-			if (itemstack1.stackSize == 0) {
-				slot.putStack((ItemStack) null);
+			if (itemstack1.getCount() == 0) {
+				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}
 
-			if (itemstack1.stackSize == itemstack.stackSize) {
-				return null;
+			if (itemstack1.getCount() == itemstack.getCount()) {
+				return ItemStack.EMPTY;
 			}
 
-			slot.onPickupFromSlot(player, itemstack1);
+			slot.onTake(player, itemstack1);
 		}
-
 		return itemstack;
-	}
-
-	@Override
-	protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
-		boolean flag = false;
-		int i = startIndex;
-
-		if (reverseDirection) {
-			i = endIndex - 1;
-		}
-
-		if (stack.isStackable()) {
-			while (stack.stackSize > 0 && (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex)) {
-				Slot slot = this.inventorySlots.get(i);
-				ItemStack itemstack = slot.getStack();
-
-				if (itemstack != null && ItemHandlerHelper.canItemStacksStack(stack, itemstack)) {
-					int j = itemstack.stackSize + stack.stackSize;
-					int maxSize = Math.min(slot.getSlotStackLimit(), stack.getMaxStackSize());
-
-					if (j <= maxSize) {
-						stack.stackSize = 0;
-						itemstack.stackSize = j;
-						slot.onSlotChanged();
-						flag = true;
-					} else if (itemstack.stackSize < maxSize) {
-						stack.stackSize -= maxSize - itemstack.stackSize;
-						itemstack.stackSize = maxSize;
-						slot.onSlotChanged();
-						flag = true;
-					}
-				}
-
-				if (reverseDirection) {
-					--i;
-				} else {
-					++i;
-				}
-			}
-		}
-
-		if (stack.stackSize > 0) {
-			if (reverseDirection) {
-				i = endIndex - 1;
-			} else {
-				i = startIndex;
-			}
-
-			while (!reverseDirection && i < endIndex || reverseDirection && i >= startIndex) {
-				Slot slot1 = this.inventorySlots.get(i);
-				ItemStack itemstack1 = slot1.getStack();
-
-				if (itemstack1 == null && slot1.isItemValid(stack)) // Forge: Make sure to respect isItemValid in the slot.
-				{
-					slot1.putStack(stack.copy());
-					slot1.onSlotChanged();
-					stack.stackSize = 0;
-					flag = true;
-					break;
-				}
-
-				if (reverseDirection) {
-					--i;
-				} else {
-					++i;
-				}
-			}
-		}
-
-		return flag;
 	}
 
 	@Override
 	protected List<Area> allowedSlots(ItemStack stack, IInventory inv, int index) {
 		return null;
 	}
-
-//	@Override
-//	public boolean canInteractWith(EntityPlayer playerIn) {
-//		return getTile() != null && getTile().isUseableByPlayer(playerIn);
-//	}
 }

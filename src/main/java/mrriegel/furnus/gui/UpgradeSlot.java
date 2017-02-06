@@ -22,7 +22,7 @@ public class UpgradeSlot extends Slot {
 
 	public static boolean in(ItemStack stack, int slot, AbstractMachine t) {
 		for (int i = 10; i < 15; i++) {
-			if (t.getStackInSlot(i) != null && t.getStackInSlot(i).getItemDamage() == stack.getItemDamage() && i != slot)
+			if (!t.getStackInSlot(i).isEmpty() && t.getStackInSlot(i).getItemDamage() == stack.getItemDamage() && i != slot)
 				return false;
 		}
 		return true;

@@ -36,17 +36,9 @@ public class PulvusCategory extends FurnaceRecipeCategory<PulvusWrapper> {
 
 	@Override
 	public void drawExtras(Minecraft minecraft) {
-	}
-
-	@Override
-	public void drawAnimations(Minecraft minecraft) {
 		flame.draw(minecraft, 2, 20);
 		arrow.draw(minecraft, 24, 18);
 		minecraft.fontRendererObj.drawString("grind", 24, 36, 0x404040);
-	}
-
-	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, PulvusWrapper recipeWrapper) {
 	}
 
 	@Override
@@ -54,9 +46,8 @@ public class PulvusCategory extends FurnaceRecipeCategory<PulvusWrapper> {
 		IGuiItemStackGroup itemStacks = recipeLayout.getItemStacks();
 		itemStacks.init(inputSlot, true, 0, 0);
 		itemStacks.init(outputSlot, false, 60, 18);
-		itemStacks.setFromRecipe(inputSlot, recipeWrapper.getInputs());
-		itemStacks.setFromRecipe(outputSlot, recipeWrapper.getOutputs());
-
+		itemStacks.set(inputSlot, recipeWrapper.getInputs());
+		itemStacks.set(outputSlot, recipeWrapper.getOutputs());
 	}
 
 }

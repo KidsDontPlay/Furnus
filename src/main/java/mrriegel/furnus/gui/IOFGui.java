@@ -64,7 +64,7 @@ public class IOFGui extends CommonGuiScreen {
 		nbt.setInteger("dir", button.id);
 		nbt.setString("kind", id);
 		tile.sendMessage(nbt);
-		tile.handleMessage(mc.thePlayer, nbt);
+		tile.handleMessage(mc.player, nbt);
 
 		top.displayString = getMode(Direction.TOP).toString().substring(0, 1).toUpperCase();
 		front.displayString = getMode(Direction.FRONT).toString().substring(0, 1).toUpperCase();

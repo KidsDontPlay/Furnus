@@ -15,10 +15,10 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -86,14 +86,13 @@ public abstract class AbstractBlock<T extends CommonTile> extends CommonBlockCon
 			} else if (enumfacing == EnumFacing.EAST && block3.isFullBlock(state) && !block2.isFullBlock(state)) {
 				enumfacing = EnumFacing.WEST;
 			}
-
 			worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
 			worldIn.notifyBlockUpdate(pos, worldIn.getBlockState(pos), worldIn.getBlockState(pos), 8);
 		}
 	}
 
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 		return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite()).withProperty(STATE, false);
 	}
 
@@ -106,16 +105,6 @@ public abstract class AbstractBlock<T extends CommonTile> extends CommonBlockCon
 	@Override
 	public int getLightValue(IBlockState state) {
 		return state.getValue(STATE) ? 13 : 0;
-	}
-
-	@Override
-	public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
-		if (worldIn.getTileEntity(pos) instanceof AbstractMachine) {
-			AbstractMachine tileentity = (AbstractMachine) worldIn.getTileEntity(pos);
-			InventoryHelper.dropInventoryItems(worldIn, pos, tileentity);
-			worldIn.updateComparatorOutputLevel(pos, this);
-		}
-		super.breakBlock(worldIn, pos, state);
 	}
 
 	@Override

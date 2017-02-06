@@ -17,19 +17,18 @@ public class PulvusWrapper extends BlankRecipeWrapper {
 		this.output = output;
 	}
 
-	@Override
 	public List<ItemStack> getInputs() {
 		return Collections.singletonList(input);
 	}
 
-	@Override
 	public List<ItemStack> getOutputs() {
 		return Collections.singletonList(output);
 	}
 
 	@Override
 	public void getIngredients(IIngredients ingredients) {
-
+		ingredients.setInput(ItemStack.class, input);
+		ingredients.setOutput(ItemStack.class, output);
 	}
 
 }

@@ -15,7 +15,6 @@ import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
@@ -28,8 +27,8 @@ public class MachineGUI extends CommonGuiContainer {
 	GuiButton i, o, f, check;
 	AbstractMachine tile;
 
-	public MachineGUI(Container p_i1072_1_) {
-		super(p_i1072_1_);
+	public MachineGUI(MachineContainer container) {
+		super(container);
 		tile = ((MachineContainer) inventorySlots).getTile();
 		if (tile instanceof TileFurnus)
 			texture = new ResourceLocation(Furnus.MODID + ":" + "textures/gui/furnus.png");
@@ -119,8 +118,8 @@ public class MachineGUI extends CommonGuiContainer {
 		if (mouseX > guiLeft + 45 && mouseX < guiLeft + 45 + 16 && mouseY > guiTop + 102 && mouseY < guiTop + 102 + 16) {
 			List<String> list = Lists.newArrayList();
 			double seconds = tile.getBurnTime() / 20.;
-			if (seconds > 2)
-				list.add((int) (seconds) + " Seconds");
+			if (seconds > 1.5)
+				list.add(String.format("%.0f", seconds) + " Seconds");
 			else
 				list.add(String.format("%.1f", seconds) + " Seconds");
 			GlStateManager.pushMatrix();
@@ -129,7 +128,7 @@ public class MachineGUI extends CommonGuiContainer {
 			GlStateManager.enableLighting();
 			GlStateManager.popMatrix();
 		}
-		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("JEI")) {
+		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("jei")) {
 			List<String> list = Lists.newArrayList();
 			list.add("Show Recipes");
 			GlStateManager.pushMatrix();
@@ -143,7 +142,7 @@ public class MachineGUI extends CommonGuiContainer {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("JEI")) {
+		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("jei")) {
 			PulvusJEIPlugin.showCategory(tile instanceof TileFurnus ? VanillaRecipeCategoryUid.SMELTING : Furnus.MODID + ".pulvus");
 		}
 	}
@@ -163,10 +162,10 @@ public class MachineGUI extends CommonGuiContainer {
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == 0) {
 			tile.sendMessage(NBTHelper.setInt(new NBTTagCompound(), "id", 0));
-			tile.handleMessage(mc.thePlayer, NBTHelper.setInt(new NBTTagCompound(), "id", 0));
+			tile.handleMessage(mc.player, NBTHelper.setInt(new NBTTagCompound(), "id", 0));
 		} else {
 			//			mc.thePlayer.closeScreen();
-			mc.thePlayer.openGui(Furnus.instance, button.id, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
+			mc.player.openGui(Furnus.instance, button.id, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
 		}
 	}
 

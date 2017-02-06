@@ -50,9 +50,7 @@ public class Furnus {
 		ConfigHandler.config = new Configuration(configFile);
 		ConfigHandler.config.load();
 		ConfigHandler.refreshConfig();
-		File questFile = new File(event.getModConfigurationDirectory(), "furnus_recipes.json");
-		if (!questFile.exists())
-			questFile = new File(event.getModConfigurationDirectory(), "pulvus_recipes.json");
+		File questFile = new File(event.getModConfigurationDirectory(), "pulvus_recipes.json");
 		if (!questFile.exists()) {
 			questFile.createNewFile();
 			FileWriter fw = new FileWriter(questFile);
@@ -119,11 +117,11 @@ public class Furnus {
 		for (Recipe r : recipes) {
 			List<ItemStack> inl = Lists.newArrayList();
 			List<ItemStack> outl = Lists.newArrayList();
-			if (string2Stack(r.inputItem) != null)
+			if (!string2Stack(r.inputItem).isEmpty())
 				inl.add(string2Stack(r.inputItem));
 			else
 				inl.addAll(oreName2Stacklist(r.inputItem));
-			if (string2Stack(r.outputItem) != null)
+			if (!string2Stack(r.outputItem).isEmpty())
 				outl.add(string2Stack(r.outputItem));
 			else {
 				if (!oreName2Stacklist(r.outputItem).isEmpty())
@@ -162,7 +160,7 @@ public class Furnus {
 	}
 
 	private ItemStack string2Stack(String s) {
-		ItemStack stack = null;
+		ItemStack stack = ItemStack.EMPTY;
 		if (StringUtils.countMatches(s, ":") == 3) {
 			Item tmp = Item.REGISTRY.getObject(new ResourceLocation(s.split(":")[0], s.split(":")[1]));
 			if (tmp != null) {
@@ -170,20 +168,16 @@ public class Furnus {
 			} else
 				LimeLib.log.warn("Couldn't find item for " + s);
 		}
-		if (stack == null)
-			return null;
-		return stack.copy();
+		return stack;
 	}
 
 	private List<ItemStack> oreName2Stacklist(String s) {
 		List<ItemStack> lis = Lists.newArrayList();
 		if (StringUtils.countMatches(s, ":") == 1) {
-			if (!OreDictionary.getOres(s.split(":")[0]).isEmpty()) {
-				for (ItemStack ore : OreDictionary.getOres(s.split(":")[0])) {
-					ItemStack stack = ore.copy();
-					stack.stackSize = Integer.valueOf(s.split(":")[1]);
-					lis.add(stack);
-				}
+			for (ItemStack ore : OreDictionary.getOres(s.split(":")[0])) {
+				ItemStack stack = ore.copy();
+				stack.setCount(Integer.valueOf(s.split(":")[1]));
+				lis.add(stack);
 			}
 		}
 		return lis;
