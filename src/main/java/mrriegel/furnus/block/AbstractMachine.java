@@ -484,7 +484,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 					continue;
 				IItemHandler ir = InvHelper.getItemHandler(t, getDirection(this, t).getOpposite());
 				int num = getStackInSlot(i).getCount();
-				ItemStack res = ItemHandlerHelper.insertItem(ir, getStackInSlot(i).copy(), false);
+				ItemStack res = ItemHandlerHelper.insertItemStacked(ir, getStackInSlot(i).copy(), false);
 				int rest = res.getCount();
 				if (num == rest)
 					continue;
@@ -506,7 +506,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				if (ir.getStackInSlot(i).isEmpty())
 					continue;
 				int num = ir.getStackInSlot(i).getCount();
-				ItemStack res = ItemHandlerHelper.insertItem(that, ir.getStackInSlot(i).copy(), true);
+				ItemStack res = ItemHandlerHelper.insertItemStacked(that, ir.getStackInSlot(i).copy(), true);
 				int rest = res.getCount();
 				if (num == rest)
 					continue;
@@ -514,7 +514,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				ItemStack exed = ir.extractItem(i, inserted, false);
 				if (exed.isEmpty())
 					continue;
-				ItemHandlerHelper.insertItem(that, exed.copy(), false);
+				ItemHandlerHelper.insertItemStacked(that, exed.copy(), false);
 				break;
 			}
 		}

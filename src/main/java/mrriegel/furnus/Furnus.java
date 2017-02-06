@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-@Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION, dependencies = "required-after:limelib@[1.3.0,)")
+@Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION, dependencies = "required-after:limelib@[1.4.0,)")
 public class Furnus {
 	public static final String MODID = "furnus";
 	public static final String VERSION = "1.91";
