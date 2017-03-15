@@ -23,12 +23,14 @@ import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import vazkii.botania.api.item.IExoflameHeatable;
+import blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler.IExternalHeatable;
 import cofh.api.energy.IEnergyReceiver;
 
 import com.google.common.collect.Lists;
@@ -37,7 +39,8 @@ import com.google.common.primitives.Ints;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-public abstract class AbstractMachine extends CommonTileInventory implements ISidedInventory, ITickable, IExoflameHeatable, IEnergyReceiver {
+//@Optional.Interface(iface = "blusunrize.immersiveengineering.api.tool.ExternalHeaterHandler$IExternalHeatable", modid = "immersiveengineering")
+public abstract class AbstractMachine extends CommonTileInventory implements ISidedInventory, ITickable, IExoflameHeatable, IEnergyReceiver, IExternalHeatable {
 
 	protected boolean burning, eco, inout, split, rf;
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
@@ -141,7 +144,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		compound.setTag("crunchTE", invList);
 		return compound;
 	}
-	
+
 	@Override
 	public abstract boolean openGUI(EntityPlayerMP player);
 
@@ -318,13 +321,13 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 
 			}
 		}
-		worldObj.notifyBlockUpdate(pos, worldObj.getBlockState(pos), worldObj.getBlockState(pos), 8);
+		world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 8);
 
 	}
 
 	@Override
 	public void update() {
-		//		if (worldObj.isRemote) {
+		//		if (world.isRemote) {
 		//			return;
 		//		}
 		output();
@@ -335,13 +338,13 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 			maxFuel = fuel;
 		if (fuel < 0)
 			fuel = 0;
-		if (worldObj.getTotalWorldTime() % 5 == 0) {
+		if (world.getTotalWorldTime() % 5 == 0) {
 			if (fuel > 0 && !burning) {
 				burning = true;
-				((AbstractBlock<?>) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
+				((AbstractBlock<?>) getBlockType()).setState(world, getPos(), world.getBlockState(getPos()), burning);
 			} else if (fuel <= 0 && burning) {
 				burning = false;
-				((AbstractBlock<?>) getBlockType()).setState(worldObj, getPos(), worldObj.getBlockState(getPos()), burning);
+				((AbstractBlock<?>) getBlockType()).setState(world, getPos(), world.getBlockState(getPos()), burning);
 			}
 		}
 
@@ -391,7 +394,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				progress.put(slot, progress.get(slot) + 1);
 				progressed = true;
 				if (progress.get(slot) >= neededTicks()) {
-					if (!worldObj.isRemote)
+					if (!world.isRemote)
 						processItem(slot);
 					markForSync();
 					progress.put(slot, 0);
@@ -438,7 +441,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	protected abstract boolean canProcess(int slot);
 
 	protected void output() {
-		if (!inout || worldObj.getTotalWorldTime() % 50 / (speed + slots + 1) != 0)
+		if (!inout || world.getTotalWorldTime() % 50 / (speed + slots + 1) != 0)
 			return;
 		for (TileEntity t : getIInventories()) {
 			for (int i : getOutputSlots()) {
@@ -457,7 +460,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	}
 
 	protected void input() {
-		if (!inout || worldObj.getTotalWorldTime() % 60 / (speed + slots + 1) != 0)
+		if (!inout || world.getTotalWorldTime() % 60 / (speed + slots + 1) != 0)
 			return;
 		for (TileEntity t : getIInventories()) {
 			if (input.get(getWrongSide(getDirection(this, t))) != Mode.AUTO && fuelput.get(getWrongSide(getDirection(this, t))) != Mode.AUTO)
@@ -502,8 +505,8 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		List<TileEntity> lis = Lists.newArrayList();
 		for (EnumFacing face : EnumFacing.values()) {
 			BlockPos p = getPos().offset(face);
-			if (InvHelper.hasItemHandler(worldObj, p, face.getOpposite()))
-				lis.add(worldObj.getTileEntity(p));
+			if (InvHelper.hasItemHandler(world, p, face.getOpposite()))
+				lis.add(world.getTileEntity(p));
 		}
 		return lis;
 	}
@@ -514,7 +517,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 			return Direction.TOP;
 		if (side == EnumFacing.DOWN)
 			return Direction.BOTTOM;
-		EnumFacing face = worldObj.getBlockState(pos).getValue(BlockHorizontal.FACING);
+		EnumFacing face = world.getBlockState(pos).getValue(BlockHorizontal.FACING);
 		if (face == EnumFacing.NORTH) {
 			switch (side) {
 			case NORTH:
@@ -567,7 +570,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	}
 
 	protected void split() {
-		if (slots == 0 || !split || worldObj.getTotalWorldTime() % 4 != 0)
+		if (slots == 0 || !split || world.getTotalWorldTime() % 4 != 0)
 			return;
 		boolean x = false;
 		for (int i : getInputSlots()) {
@@ -587,7 +590,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	}
 
 	protected void move() {
-		if (slots == 0 || split || worldObj.getTotalWorldTime() % 5 != 0)
+		if (slots == 0 || split || world.getTotalWorldTime() % 5 != 0)
 			return;
 		for (int i : getInputSlots()) {
 			for (int j : getInputSlots())
@@ -647,7 +650,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 
 	@Override
 	public boolean canSmelt() {
-		if (worldObj.isRemote)
+		if (world.isRemote)
 			return false;
 		return canProcessAny();
 	}
@@ -663,10 +666,26 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 			return;
 		fuel += 20000 - fuel;
 		maxFuel = 20000;
+		markForSync();
 	}
 
 	@Override
 	public void boostCookTime() {
+	}
+
+	@Override
+	public int doHeatTick(int energyAvailable, boolean redstone) {
+		final double multiplier = 0.08;
+		if (energyAvailable <= 0 || redstone || !canProcessAny() || remainTicks > 4)
+			return 0;
+		int consume = /*energyAvailable;
+						while (consume > 256)
+						consume--;*/
+		MathHelper.clamp(energyAvailable, 0, 256);
+		fuel += consume / multiplier;
+		maxFuel = fuel;
+		markForSync();
+		return consume;
 	}
 
 	@Override
@@ -679,7 +698,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 			getMap(nbt.getString("kind")).put(Direction.values()[nbt.getInteger("dir")], getMap(nbt.getString("kind")).get(Direction.values()[nbt.getInteger("dir")]).next());
 			break;
 		case 2:
-			player.openGui(Furnus.instance, nbt.getInteger("gui"), worldObj, getX(), getY(), getZ());
+			player.openGui(Furnus.instance, nbt.getInteger("gui"), world, getX(), getY(), getZ());
 		default:
 			break;
 		}
@@ -743,9 +762,9 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 			return fuelput;
 		return null;
 	}
-	
+
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player) {
-		return this.worldObj.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		return this.world.getTileEntity(this.pos) != this || isInvalid() ? false : player.getDistanceSq(getX() + 0.5D, getY() + 0.5D, getZ() + 0.5D) <= 64.0D;
 	}
 }

@@ -42,9 +42,9 @@ public class TilePulvus extends AbstractMachine {
 			} catch (NullPointerException e) {
 				valid = true;
 			}
-			if ((worldObj.rand.nextInt(100) < bonus * 100 * ConfigHandler.bonusMulti)) {
+			if ((world.rand.nextInt(100) < bonus * 100 * ConfigHandler.bonusMulti)) {
 				if (valid) {
-					int ran = worldObj.rand.nextInt(itemstack.stackSize) + 1;
+					int ran = world.rand.nextInt(itemstack.stackSize) + 1;
 					if (getStackInSlot(slot + 6) == null) {
 						setInventorySlotContents(slot + 6, ItemHandlerHelper.copyStackWithSize(itemstack, ran));
 					} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
@@ -88,7 +88,7 @@ public class TilePulvus extends AbstractMachine {
 
 	@Override
 	public boolean openGUI(EntityPlayerMP player) {
-		player.openGui(Furnus.instance, GuiHandler.PULVUS, worldObj, getX(), getY(), getZ());
+		player.openGui(Furnus.instance, GuiHandler.PULVUS, world, getX(), getY(), getZ());
 		return true;
 	}
 

@@ -163,10 +163,10 @@ public class MachineGUI extends CommonGuiContainer {
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == 0) {
 			tile.sendMessage(NBTHelper.setInt(new NBTTagCompound(), "id", 0));
-			tile.handleMessage(mc.thePlayer, NBTHelper.setInt(new NBTTagCompound(), "id", 0));
+			tile.handleMessage(mc.player, NBTHelper.setInt(new NBTTagCompound(), "id", 0));
 		} else {
 			//			mc.thePlayer.closeScreen();
-			mc.thePlayer.openGui(Furnus.instance, button.id, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
+			mc.player.openGui(Furnus.instance, button.id, tile.getWorld(), tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ());
 		}
 	}
 

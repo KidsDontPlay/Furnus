@@ -102,7 +102,7 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 			}
 			Integer guiID = getTile() instanceof TileFurnus ? GuiHandler.FURNUS : getTile() instanceof TilePulvus ? GuiHandler.PULVUS : null;
 			player.openGui(Furnus.instance, guiID, getTile().getWorld(), getTile().getX(), getTile().getY(), getTile().getZ());
-			if (save != null && !player.worldObj.isRemote) {
+			if (save != null && !player.world.isRemote) {
 				player.inventory.setItemStack(save);
 				((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
 			}
@@ -302,8 +302,8 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 		return null;
 	}
 
-//	@Override
-//	public boolean canInteractWith(EntityPlayer playerIn) {
-//		return getTile() != null && getTile().isUseableByPlayer(playerIn);
-//	}
+	//	@Override
+	//	public boolean canInteractWith(EntityPlayer playerIn) {
+	//		return getTile() != null && getTile().isUseableByPlayer(playerIn);
+	//	}
 }
