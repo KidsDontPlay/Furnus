@@ -10,6 +10,7 @@ import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.jei.PulvusJEIPlugin;
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.helper.NBTHelper;
 import net.minecraft.client.gui.GuiButton;
@@ -18,7 +19,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
-import net.minecraftforge.fml.common.Loader;
 
 import com.google.common.collect.Lists;
 
@@ -61,7 +61,7 @@ public class MachineGUI extends CommonGuiContainer {
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		drawMore(guiLeft, guiTop);
 		if (tile.getSlots() > 0)
-			mc.fontRendererObj.drawString(I18n.format("gui.furnus.split"), guiLeft + 22, guiTop + 7, 4210752);
+			mc.fontRenderer.drawString(I18n.format("gui.furnus.split"), guiLeft + 22, guiTop + 7, 4210752);
 
 	}
 
@@ -111,7 +111,7 @@ public class MachineGUI extends CommonGuiContainer {
 			}
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-			this.drawHoveringText(list, mouseX, mouseY, fontRendererObj);
+			this.drawHoveringText(list, mouseX, mouseY, fontRenderer);
 			GlStateManager.enableLighting();
 			GlStateManager.popMatrix();
 		}
@@ -124,16 +124,16 @@ public class MachineGUI extends CommonGuiContainer {
 				list.add(String.format("%.1f", seconds) + " Seconds");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-			this.drawHoveringText(list, mouseX, mouseY, fontRendererObj);
+			this.drawHoveringText(list, mouseX, mouseY, fontRenderer);
 			GlStateManager.enableLighting();
 			GlStateManager.popMatrix();
 		}
-		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("jei")) {
+		if (LimeLib.jeiLoaded && mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95) {
 			List<String> list = Lists.newArrayList();
 			list.add("Show Recipes");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-			this.drawHoveringText(list, mouseX, mouseY, fontRendererObj);
+			this.drawHoveringText(list, mouseX, mouseY, fontRenderer);
 			GlStateManager.enableLighting();
 			GlStateManager.popMatrix();
 		}
@@ -142,7 +142,7 @@ public class MachineGUI extends CommonGuiContainer {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95 && Loader.isModLoaded("jei")) {
+		if (LimeLib.jeiLoaded && mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95) {
 			PulvusJEIPlugin.showCategory(tile instanceof TileFurnus ? VanillaRecipeCategoryUid.SMELTING : Furnus.MODID + ".pulvus");
 		}
 	}

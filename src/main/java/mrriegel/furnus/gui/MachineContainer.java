@@ -19,7 +19,6 @@ import net.minecraft.util.NonNullList;
 import com.google.common.collect.Lists;
 
 public class MachineContainer extends CommonContainerTileInventory<AbstractMachine> {
-	EntityPlayer player;
 	int startSlot;
 	int tileSlots;
 	boolean burn;
@@ -33,7 +32,6 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 	@Override
 	protected void modifyInvs() {
 		super.modifyInvs();
-		player = invPlayer.player;
 	}
 
 	@Override
@@ -43,34 +41,34 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 		switch (getTile().getSlots()) {
 		case 0:
 			this.addSlotToContainer(new InputSlot(getTile(), 0, 20, 48));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 3, 77, 48));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 6, 107, 48));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 3, 77, 48));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 6, 107, 48));
 			break;
 		case 1:
 			this.addSlotToContainer(new InputSlot(getTile(), 0, 20, 48 - 13));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 3, 77, 48 - 13));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 6, 107, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 3, 77, 48 - 13));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 6, 107, 48 - 13));
 			this.addSlotToContainer(new InputSlot(getTile(), 1, 20, 48 + 14));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 4, 77, 48 + 14));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 7, 107, 48 + 14));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 4, 77, 48 + 14));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 7, 107, 48 + 14));
 			break;
 		case 2:
 			this.addSlotToContainer(new InputSlot(getTile(), 0, 20, 48 - 27));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 3, 77, 48 - 27));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 6, 107, 48 - 27));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 3, 77, 48 - 27));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 6, 107, 48 - 27));
 			this.addSlotToContainer(new InputSlot(getTile(), 1, 20, 48));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 4, 77, 48));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 7, 107, 48));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 4, 77, 48));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 7, 107, 48));
 			this.addSlotToContainer(new InputSlot(getTile(), 2, 20, 48 + 27));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 5, 77, 48 + 27));
-			this.addSlotToContainer(new OutputSlot(player, getTile(), 8, 107, 48 + 27));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 5, 77, 48 + 27));
+			this.addSlotToContainer(new OutputSlot(getPlayer(), getTile(), 8, 107, 48 + 27));
 			break;
 		}
 		this.addSlotToContainer(new SlotFilter(getTile(), 9, 20, 21 + 27 * 3, s -> TileEntityFurnace.isItemFuel(s)));
 
 		int index = 10;
 		for (int i = 0; i < 5; i++) {
-			this.addSlotToContainer(new UpgradeSlot(this, player, getTile(), index++, 152, 12 + i * 18));
+			this.addSlotToContainer(new UpgradeSlot(this, getPlayer(), getTile(), index++, 152, 12 + i * 18));
 		}
 		tileSlots = inventorySlots.size();
 		for (int i = 0; i < 3; ++i) {
@@ -90,15 +88,15 @@ public class MachineContainer extends CommonContainerTileInventory<AbstractMachi
 			startSlot = getTile().getSlots();
 			burn = getTile().isBurning();
 			ItemStack save = ItemStack.EMPTY;
-			if (!player.inventory.getItemStack().isEmpty()) {
-				save = player.inventory.getItemStack().copy();
-				player.inventory.setItemStack(ItemStack.EMPTY);
+			if (!invPlayer.getItemStack().isEmpty()) {
+				save = invPlayer.getItemStack().copy();
+				invPlayer.setItemStack(ItemStack.EMPTY);
 			}
-			if (!player.world.isRemote)
-				getTile().openGUI((EntityPlayerMP) player);
-			if (!save.isEmpty() && !player.world.isRemote) {
-				player.inventory.setItemStack(save);
-				((EntityPlayerMP) player).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
+			if (!getPlayer().world.isRemote)
+				getTile().openGUI((EntityPlayerMP) getPlayer());
+			if (!save.isEmpty() && !getPlayer().world.isRemote) {
+				invPlayer.setItemStack(save);
+				((EntityPlayerMP) getPlayer()).connection.sendPacket(new SPacketSetSlot(-1, 0, save));
 			}
 		}
 	}

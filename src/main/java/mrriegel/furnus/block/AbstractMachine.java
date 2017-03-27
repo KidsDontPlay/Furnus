@@ -8,11 +8,15 @@ import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.UpgradeSlot;
 import mrriegel.furnus.handler.ConfigHandler;
 import mrriegel.furnus.item.ModItems;
+import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.util.EnergyStorageExt;
 import mrriegel.limelib.util.Utils;
+import net.darkhax.tesla.api.ITeslaConsumer;
+import net.darkhax.tesla.api.ITeslaHolder;
+import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -26,6 +30,8 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import vazkii.botania.api.item.IExoflameHeatable;
@@ -98,6 +104,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		}.getType());
 		progress = new Gson().fromJson(compound.getString("progress"), new TypeToken<Map<Integer, Integer>>() {
 		}.getType());
+		en.setEnergyStored(compound.getInteger("enerG"));
 		super.readFromNBT(compound);
 	}
 
@@ -119,6 +126,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		compound.setString("output", new Gson().toJson(output));
 		compound.setString("fuelput", new Gson().toJson(fuelput));
 		compound.setString("progress", new Gson().toJson(progress));
+		compound.setInteger("enerG", en.getEnergyStored());
 		super.writeToNBT(compound);
 		return compound;
 	}
@@ -342,7 +350,6 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				((AbstractBlock<?>) getBlockType()).setState(world, getPos(), world.getBlockState(getPos()), burning);
 			}
 		}
-
 		for (int i = 0; i <= speed * ConfigHandler.speedMulti; i++) {
 			burn(0);
 			if (slots >= 2)
@@ -368,7 +375,8 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				setInventorySlotContents(9, getStackInSlot(9).getItem().getContainerItem(getStackInSlot(9)));
 		} else {
 			int fac = ConfigHandler.RF;
-			fuelTime = (int) ((consumeRF(1600 * fac) / (double) fac) * 100);
+			int consume = 1600 * fac;
+			fuelTime = (int) ((consumeRF(consume) / (double) fac) * 100);
 		}
 		fuelTime *= (neededTicks() / 200.) + .01;
 		fuel += fuelTime;
@@ -395,7 +403,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				}
 			}
 		} else {
-			if (!eco)
+			if (!eco && !world.isRemote)
 				progress.put(slot, 0);
 		}
 		if (fuel > 0 && (progressed || (!progressing(slot) && !eco))) {
@@ -445,7 +453,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				valid = true;
 			}
 			if (valid && world.rand.nextInt(100) < bonus * 100 * ConfigHandler.bonusMulti) {
-				int ran = world.rand.nextInt(itemstack.getCount()) + 1;
+				int ran = world.rand.nextInt(Math.max(itemstack.getCount() / 2, 1)) + 1;
 				if (getStackInSlot(slot + 6).isEmpty()) {
 					setInventorySlotContents(slot + 6, ItemHandlerHelper.copyStackWithSize(itemstack, ran));
 				} else if (getStackInSlot(slot + 6).isItemEqual(itemstack)) {
@@ -745,13 +753,16 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		return (isRf() && capability == CapabilityEnergy.ENERGY) || super.hasCapability(capability, facing);
+		return (isRf() && capability == CapabilityEnergy.ENERGY) || (isRf() && LimeLib.teslaLoaded && (capability == TeslaCapabilities.CAPABILITY_CONSUMER || capability == TeslaCapabilities.CAPABILITY_HOLDER)) || super.hasCapability(capability, facing);
 	}
 
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (isRf() && capability == CapabilityEnergy.ENERGY) {
 			return (T) en;
+		}
+		if (isRf() && LimeLib.teslaLoaded && (capability == TeslaCapabilities.CAPABILITY_CONSUMER || capability == TeslaCapabilities.CAPABILITY_HOLDER)) {
+			return (T) new TeslaWrapper(en);
 		}
 		return super.getCapability(capability, facing);
 	}
@@ -764,5 +775,30 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		if (id.equals("F"))
 			return fuelput;
 		return null;
+	}
+
+	@Optional.InterfaceList(value = { @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaHolder", modid = "tesla"), @Optional.Interface(iface = "net.darkhax.tesla.api.ITeslaConsumer", modid = "tesla") })
+	private static class TeslaWrapper implements ITeslaHolder, ITeslaConsumer {
+		private IEnergyStorage storage;
+
+		TeslaWrapper(IEnergyStorage storage) {
+			this.storage = storage;
+		}
+
+		@Override
+		public long givePower(long power, boolean simulated) {
+			return storage.receiveEnergy((int) (power % Integer.MAX_VALUE), simulated);
+		}
+
+		@Override
+		public long getStoredPower() {
+			return storage.getEnergyStored();
+		}
+
+		@Override
+		public long getCapacity() {
+			return storage.getMaxEnergyStored();
+		}
+
 	}
 }

@@ -86,7 +86,7 @@ public class IOFGui extends CommonGuiScreen {
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		String pre = "gui.furnus.";
-		mc.fontRendererObj.drawString(id.equals("F") ? I18n.format(pre + "fuel") : id.equals("I") ? I18n.format(pre + "input") : I18n.format(pre + "output"), guiLeft + 8, guiTop + 6, 4210752);
+		mc.fontRenderer.drawString(id.equals("F") ? I18n.format(pre + "fuel") : id.equals("I") ? I18n.format(pre + "input") : I18n.format(pre + "output"), guiLeft + 8, guiTop + 6, 4210752);
 		if (top.isMouseOver())
 			drawHoveringText(Lists.newArrayList(I18n.format(pre + "top") + " - " + I18n.format(pre + getMode(Direction.TOP).toString())), mouseX, mouseY);
 		if (bottom.isMouseOver())
@@ -109,9 +109,9 @@ public class IOFGui extends CommonGuiScreen {
 	@Override
 	protected void keyTyped(char typedChar, int keyCode) throws IOException {
 		if (keyCode == Keyboard.KEY_ESCAPE) {
-			int id = tile instanceof TileFurnus ? GuiHandler.FURNUS : tile instanceof TilePulvus ? GuiHandler.PULVUS : -1;
+			int gui = tile instanceof TileFurnus ? GuiHandler.FURNUS : tile instanceof TilePulvus ? GuiHandler.PULVUS : -1;
 			NBTTagCompound nbt = new NBTTagCompound();
-			nbt.setInteger("gui", id);
+			nbt.setInteger("gui", gui);
 			nbt.setInteger("id", 2);
 			tile.sendMessage(nbt);
 		} else

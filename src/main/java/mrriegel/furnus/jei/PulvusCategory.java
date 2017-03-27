@@ -38,7 +38,7 @@ public class PulvusCategory extends FurnaceRecipeCategory<PulvusWrapper> {
 	public void drawExtras(Minecraft minecraft) {
 		flame.draw(minecraft, 2, 20);
 		arrow.draw(minecraft, 24, 18);
-		minecraft.fontRendererObj.drawString("grind", 24, 36, 0x404040);
+		minecraft.fontRenderer.drawString("grind", 24, 36, 0x404040);
 	}
 
 	@Override

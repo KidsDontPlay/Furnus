@@ -19,35 +19,35 @@ public class OutputSlot extends Slot {
 	private EntityPlayer thePlayer;
 	private int field_75228_b;
 
-	public OutputSlot(EntityPlayer p_i1813_1_, IInventory p_i1813_2_, int p_i1813_3_, int p_i1813_4_, int p_i1813_5_) {
-		super(p_i1813_2_, p_i1813_3_, p_i1813_4_, p_i1813_5_);
-		this.thePlayer = p_i1813_1_;
+	public OutputSlot(EntityPlayer player, IInventory inv, int index, int xPos, int yPos) {
+		super(inv, index, xPos, yPos);
+		this.thePlayer = player;
 	}
 
 	@Override
-	public boolean isItemValid(ItemStack p_75214_1_) {
+	public boolean isItemValid(ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	public ItemStack decrStackSize(int p_75209_1_) {
+	public ItemStack decrStackSize(int amount) {
 		if (this.getHasStack()) {
-			this.field_75228_b += Math.min(p_75209_1_, this.getStack().getCount());
+			this.field_75228_b += Math.min(amount, this.getStack().getCount());
 		}
 
-		return super.decrStackSize(p_75209_1_);
+		return super.decrStackSize(amount);
 	}
 
 	@Override
-	public ItemStack onTake(EntityPlayer p_82870_1_, ItemStack p_82870_2_) {
-		this.onCrafting(p_82870_2_);
-		return super.onTake(p_82870_1_, p_82870_2_);
+	public ItemStack onTake(EntityPlayer player, ItemStack stack) {
+		this.onCrafting(stack);
+		return super.onTake(player, stack);
 	}
 
 	@Override
-	protected void onCrafting(ItemStack p_75210_1_, int p_75210_2_) {
+	protected void onCrafting(ItemStack stack, int p_75210_2_) {
 		this.field_75228_b += p_75210_2_;
-		this.onCrafting(p_75210_1_);
+		this.onCrafting(stack);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class OutputSlot extends Slot {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null)
+		if (obj == null || obj.getClass() != this.getClass())
 			return false;
 		Slot e = ((Slot) obj);
 		return e.xPos == xPos && e.yPos == yPos;

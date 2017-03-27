@@ -12,7 +12,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 Properties props = new Properties()
 props.load(new BufferedReader(new FileReader(file('../gradle.properties'))))
 
-version = "${props.get('mc_version')}-1.91"
+version = "${props.get('mc_version')}-1.92"
 group = "mrriegel.furnus"
 archivesBaseName = "furnus"
 
@@ -28,7 +28,6 @@ minecraft {
 }
 
 dependencies {
-    //deobfCompile "mezz.jei:jei_1.11.2:4.2.4.229"
     compile project(":LimeLib")
 }
 
@@ -48,20 +47,4 @@ processResources {
 }
 
 repositories {
-    maven {
-        url 'http://maven.epoxide.xyz'
-    }
-    maven {
-        url "http://dvs1.progwml6.com/files/maven"
-    }
-}
-
-task devJar(type: Jar) {
-    from sourceSets.main.allSource
-    from sourceSets.main.output
-    classifier = 'dev'
-}
-
-artifacts {
-    archives devJar
 }

@@ -34,10 +34,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-@Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION, dependencies = "required-after:limelib@[1.4.0,)")
+@Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION, dependencies = "required-after:limelib@[1.5.1,)")
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "1.91";
+	public static final String VERSION = "1.92";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)
@@ -130,7 +130,6 @@ public class Furnus {
 			for (ItemStack in : inl)
 				for (ItemStack out : outl)
 					CrunchHandler.instance().addItemStack(in, out, r.experience);
-
 		}
 		List<String> black = Lists.newArrayList(ConfigHandler.blacklistDusts);
 		for (String ore : OreDictionary.getOreNames()) {

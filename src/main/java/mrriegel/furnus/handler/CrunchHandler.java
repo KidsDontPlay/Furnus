@@ -11,8 +11,8 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class CrunchHandler {
 	private static final CrunchHandler base = new CrunchHandler();
-	public Map<ItemStack, ItemStack> crushingList = new HashMap<ItemStack, ItemStack>();
-	private Map<ItemStack, Float> experienceList = new HashMap<ItemStack, Float>();
+	public Map<ItemStack, ItemStack> crushingList = new HashMap<>();
+	private Map<ItemStack, Float> experienceList = new HashMap<>();
 
 	public static CrunchHandler instance() {
 		return base;
