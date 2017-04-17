@@ -9,10 +9,10 @@ import mrriegel.furnus.block.AbstractMachine;
 import mrriegel.furnus.block.TileFurnus;
 import mrriegel.furnus.block.TilePulvus;
 import mrriegel.furnus.handler.ConfigHandler;
-import mrriegel.furnus.jei.PulvusJEIPlugin;
 import mrriegel.limelib.LimeLib;
 import mrriegel.limelib.gui.CommonGuiContainer;
 import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.jei.JEI;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -118,10 +118,7 @@ public class MachineGUI extends CommonGuiContainer {
 		if (mouseX > guiLeft + 45 && mouseX < guiLeft + 45 + 16 && mouseY > guiTop + 102 && mouseY < guiTop + 102 + 16) {
 			List<String> list = Lists.newArrayList();
 			double seconds = tile.getBurnTime() / 20.;
-			if (seconds > 1.5)
-				list.add(String.format("%.0f", seconds) + " Seconds");
-			else
-				list.add(String.format("%.1f", seconds) + " Seconds");
+			list.add(String.format(seconds > 1.5 ? "%.0f" : "%.1f", seconds) + " Seconds");
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
 			this.drawHoveringText(list, mouseX, mouseY, fontRenderer);
@@ -142,8 +139,8 @@ public class MachineGUI extends CommonGuiContainer {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (LimeLib.jeiLoaded && mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95) {
-			PulvusJEIPlugin.showCategory(tile instanceof TileFurnus ? VanillaRecipeCategoryUid.SMELTING : Furnus.MODID + ".pulvus");
+		if (LimeLib.jeiLoaded && mouseButton == 0 && mouseX > guiLeft + 40 && mouseX < guiLeft + 65 && mouseY > guiTop + 20 && mouseY < guiTop + 95) {
+			JEI.showCategories(tile instanceof TileFurnus ? VanillaRecipeCategoryUid.SMELTING : Furnus.MODID + ".pulvus");
 		}
 	}
 
