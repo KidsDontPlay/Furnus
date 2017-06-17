@@ -1,24 +1,23 @@
-package mrriegel.furnus.handler;
+package mrriegel.furnus.util;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import com.google.common.collect.Maps;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class CrunchHandler {
-	private static final CrunchHandler base = new CrunchHandler();
-	public Map<ItemStack, ItemStack> crushingList = new HashMap<>();
-	private Map<ItemStack, Float> experienceList = new HashMap<>();
+public class CrushHandler {
+	private static final CrushHandler base = new CrushHandler();
+	public Map<ItemStack, ItemStack> crushingList = Maps.newHashMap();
+	private Map<ItemStack, Float> experienceList = Maps.newHashMap();
 
-	public static CrunchHandler instance() {
+	public static CrushHandler instance() {
 		return base;
 	}
 
-	private CrunchHandler() {
+	private CrushHandler() {
 	}
 
 	public ItemStack getResult(ItemStack stack) {
@@ -39,14 +38,6 @@ public class CrunchHandler {
 		return 0f;
 	}
 
-	public void addBlock(Block block, ItemStack stack, float exp) {
-		this.addItem(Item.getItemFromBlock(block), stack, exp);
-	}
-
-	public void addItem(Item item, ItemStack stack, float exp) {
-		this.addItemStack(new ItemStack(item, 1, 32767), stack, exp);
-	}
-
 	public void addItemStack(ItemStack in, ItemStack out, float exp) {
 		if (in.isEmpty() || out.isEmpty())
 			return;
@@ -54,6 +45,6 @@ public class CrunchHandler {
 			if (in.isItemEqual(stack))
 				return;
 		this.crushingList.put(in.copy(), out);
-		this.experienceList.put(out, Float.valueOf(exp));
+		this.experienceList.put(out.copy(), exp);
 	}
 }
