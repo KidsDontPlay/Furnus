@@ -1,9 +1,0 @@
-{
-    "parent" : "furnus:model/orientable", 
-    "textures" : {
-        "top" : "furnus:blocks/pulvus_top", 
-        "side" : "furnus:blocks/pulvus_side", 
-        "front" : "furnus:blocks/pulvus_front_lit", 
-        "bottom" : "furnus:blocks/pulvus_bottom"
-    }
-}

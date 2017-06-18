@@ -1,34 +1,54 @@
 {
-    "variants" : {
-        "facing=north,state=false" : {
-            "model" : "furnus:pulvus"
-        }, 
-        "facing=south,state=false" : {
-            "model" : "furnus:pulvus", 
-            "y" : 180
-        }, 
-        "facing=west,state=false" : {
-            "model" : "furnus:pulvus", 
-            "y" : 270
-        }, 
-        "facing=east,state=false" : {
-            "model" : "furnus:pulvus", 
-            "y" : 90
-        }, 
-        "facing=north,state=true" : {
-            "model" : "furnus:pulvus_lit"
-        }, 
-        "facing=south,state=true" : {
-            "model" : "furnus:pulvus_lit", 
-            "y" : 180
-        }, 
-        "facing=west,state=true" : {
-            "model" : "furnus:pulvus_lit", 
-            "y" : 270
-        }, 
-        "facing=east,state=true" : {
-            "model" : "furnus:pulvus_lit", 
-            "y" : 90
-        }
-    }
+	"forge_marker": 1,
+	"defaults": {
+		"model": "cube",
+		"textures": {
+			"particle": "furnus:blocks/pulvus_front",
+			"up": "furnus:blocks/pulvus_top",
+			"down": "furnus:blocks/pulvus_bottom",
+			"north": "furnus:blocks/pulvus_front",
+			"east": "furnus:blocks/pulvus_side",
+			"south": "furnus:blocks/pulvus_side",
+			"west": "furnus:blocks/pulvus_side"
+		}
+	},
+	"variants": {
+		"normal": [
+			{
+			}
+		],
+		"inventory": [
+			{
+				"transform": "forge:default-block",
+				"y": 90
+			}
+		],
+		"powered": {
+			"true": {
+				"textures": {
+					"north": "furnus:blocks/pulvus_front_lit"
+				}
+			},
+			"false": {
+			}
+		},
+		"facing": {
+			"east": {
+				"y": 90
+			},
+			"west": {
+				"y": 270
+			},
+			"north": {
+				"y": 0
+			},
+			"south": {
+				"y": 180
+			},
+			"down": {
+			},
+			"up": {
+			}
+		}
+	}
 }

@@ -19,8 +19,8 @@ item.furnus:upgrade_5.tip=Increases XP output.
 item.furnus:upgrade_6.tip=Saves heat.
 item.furnus:upgrade_7.tip=Enables RF support.
 
-item.furnus:dust_iron.name=Iron Dust
-item.furnus:dust_gold.name=Gold Dust
+item.furnus:dust_0.name=Iron Dust
+item.furnus:dust_1.name=Gold Dust
 
 gui.furnus.speed=Speed
 gui.furnus.effi=Fuel consumption
