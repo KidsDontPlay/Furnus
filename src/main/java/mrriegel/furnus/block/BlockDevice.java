@@ -5,6 +5,8 @@ import static net.minecraft.block.BlockLever.POWERED;
 
 import java.util.Random;
 
+import mrriegel.furnus.tile.TileDevice;
+import mrriegel.furnus.tile.TileDevice.Upgrade;
 import mrriegel.furnus.util.CreativeTab;
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.limelib.tile.CommonTile;
@@ -17,6 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class BlockDevice<T extends CommonTile> extends CommonBlockContainer<T> {
 
@@ -74,9 +77,8 @@ public class BlockDevice<T extends CommonTile> extends CommonBlockContainer<T> {
 			double d3 = 0.52D;
 			double d4 = rand.nextDouble() * 0.6D - 0.3D;
 			int speed = 0;
-			//				TODO
-			//				AbstractMachine tile = (AbstractMachine) worldIn.getTileEntity(pos);
-			//				speed=tile.getSpeed();
+			TileDevice tile = (TileDevice) worldIn.getTileEntity(pos);
+			speed = tile.getAmount(Upgrade.SPEED);
 			for (int i = 0; i < speed + 1; i++)
 				switch (enumfacing) {
 				case WEST:

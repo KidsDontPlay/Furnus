@@ -14,10 +14,12 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.gui.elements.DrawableBlank;
 import mezz.jei.ingredients.Ingredients;
 import mezz.jei.plugins.vanilla.furnace.SmeltingRecipe;
 import mrriegel.furnus.Furnus;
+import mrriegel.furnus.init.ModBlocks;
 import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.GuiDrawer.Direction;
 import net.minecraft.client.Minecraft;
@@ -29,9 +31,8 @@ public class FurnusJEIPlugin implements IModPlugin {
 
 	@Override
 	public void register(IModRegistry registry) {
-		//		TODO
-		//		registry.addRecipeCatalyst(new ItemStack(ModBlocks.furnus), VanillaRecipeCategoryUid.SMELTING);
-		//		registry.addRecipeCatalyst(new ItemStack(ModBlocks.pulvus), Furnus.MODID+".pulvus");
+		registry.addRecipeCatalyst(new ItemStack(ModBlocks.furnus), VanillaRecipeCategoryUid.SMELTING);
+		registry.addRecipeCatalyst(new ItemStack(ModBlocks.pulvus), Furnus.MODID + ".pulvus");
 		registry.handleRecipes(Wrapper.class, r -> r, Furnus.MODID + ".pulvus");
 		List<Wrapper> lis = Lists.newArrayList();
 		for (Entry<ItemStack, ItemStack> e : CrushHandler.instance().crushingList.entrySet())
