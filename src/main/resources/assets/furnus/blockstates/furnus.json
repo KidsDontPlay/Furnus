@@ -4,8 +4,8 @@
 		"model": "cube",
 		"textures": {
 			"particle": "furnus:blocks/furnus_front",
-			"up": "furnus:blocks/furnus_top",
-			"down": "furnus:blocks/furnus_bottom",
+			"up": "furnus:blocks/furnus_deck",
+			"down": "furnus:blocks/furnus_front",
 			"north": "furnus:blocks/furnus_front",
 			"east": "furnus:blocks/furnus_side",
 			"south": "furnus:blocks/furnus_side",

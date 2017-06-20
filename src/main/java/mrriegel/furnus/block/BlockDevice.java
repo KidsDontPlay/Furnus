@@ -6,8 +6,8 @@ import static net.minecraft.block.BlockLever.POWERED;
 import java.util.Random;
 
 import mrriegel.furnus.tile.TileDevice;
-import mrriegel.furnus.tile.TileDevice.Upgrade;
 import mrriegel.furnus.util.CreativeTab;
+import mrriegel.furnus.util.Enums.Upgrade;
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.limelib.tile.CommonTile;
 import net.minecraft.block.material.Material;
@@ -19,7 +19,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class BlockDevice<T extends CommonTile> extends CommonBlockContainer<T> {
 

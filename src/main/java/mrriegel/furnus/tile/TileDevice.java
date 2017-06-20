@@ -1,23 +1,32 @@
 package mrriegel.furnus.tile;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
 import cofh.api.energy.IEnergyReceiver;
 import mrriegel.furnus.gui.ContainerDevice;
 import mrriegel.furnus.init.ModItems;
+import mrriegel.furnus.util.Enums.Direction;
+import mrriegel.furnus.util.Enums.Mode;
+import mrriegel.furnus.util.Enums.Upgrade;
 import mrriegel.limelib.LimeLib;
+import mrriegel.limelib.block.CommonBlock;
+import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
+import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.tile.CommonTileInventory;
 import mrriegel.limelib.util.EnergyStorageExt;
+import mrriegel.limelib.util.Utils;
 import net.darkhax.tesla.api.ITeslaConsumer;
 import net.darkhax.tesla.api.ITeslaHolder;
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.BlockLever;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,33 +39,19 @@ import net.minecraft.util.ITickable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 public abstract class TileDevice extends CommonTileInventory implements ITickable, ISidedInventory, IEnergyReceiver {
 
 	private EnergyStorageExt energy = new EnergyStorageExt(80000, 2000);
-	private Map<String, Map<Direction, String>> map = Maps.newHashMap();
+	private Map<String, Map<Direction, Mode>> map = Maps.newHashMap();
 	protected Map<Integer, Integer> progress = Maps.newHashMap();
-	private boolean split;
-
-	public enum Upgrade {
-		SPEED(8), EFFICIENCY(8), IO(1), SLOT(2), XP(8), ECO(1), ENERGY(1);
-		public final int maxStacksize;
-
-		private Upgrade(int maxStacksize) {
-			this.maxStacksize = maxStacksize;
-		}
-	}
-
-	public enum Direction {
-		BOTTOM, TOP, FRONT, BACK, RIGHT, LEFT;
-
-		public EnumFacing face;
-
-		private Direction() {
-			face = EnumFacing.VALUES[this.ordinal()];
-		}
-	}
+	private boolean split, burning;
+	private int fuel, maxfuel;
+	public int karl;
 
 	public TileDevice() {
 		super(13);
@@ -67,23 +62,40 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		map.put("fuel", Maps.newHashMap());
 		for (Direction f : Direction.values())
 			for (String k : map.keySet()) {
-				map.get(k).put(f, "X");
+				map.get(k).put(f, Mode.DISABLED);
 			}
-		map.get("in").put(Direction.TOP, "O");
-		map.get("out").put(Direction.BOTTOM, "O");
-		map.get("fuel").put(Direction.FRONT, "O");
-		map.get("fuel").put(Direction.LEFT, "O");
-		map.get("fuel").put(Direction.RIGHT, "O");
-		map.get("fuel").put(Direction.BACK, "O");
+		map.get("in").put(Direction.TOP, Mode.ENABLED);
+		map.get("out").put(Direction.BOTTOM, Mode.ENABLED);
+		map.get("fuel").put(Direction.FRONT, Mode.ENABLED);
+		map.get("fuel").put(Direction.LEFT, Mode.ENABLED);
+		map.get("fuel").put(Direction.RIGHT, Mode.ENABLED);
+		map.get("fuel").put(Direction.BACK, Mode.ENABLED);
+		if (FMLCommonHandler.instance().getEffectiveSide().isServer())
+			karl = 4000;
+		else
+			karl = 2000;
 	}
 
+	private Map<Upgrade, Integer> cache = null;
+
 	public int getAmount(Upgrade upgrade) {
-		for (int i = 8; i < 13; i++) {
-			ItemStack u = getStackInSlot(i);
-			if (u.getItem() == ModItems.upgrade && Upgrade.values()[u.getItemDamage()] == upgrade)
-				return u.getCount();
+		if (cache == null) {
+			cache = Maps.newEnumMap(Upgrade.class);
+			for (Upgrade u : Upgrade.values())
+				cache.put(u, 0);
+			for (int i = 8; i < 13; i++) {
+				ItemStack u = getStackInSlot(i);
+				if (u.getItem() == ModItems.upgrade)
+					cache.put(Upgrade.values()[u.getItemDamage()], u.getCount());
+			}
 		}
-		return 0;
+		return cache.get(upgrade);
+	}
+
+	@Override
+	public void markDirty() {
+		super.markDirty();
+		cache = null;
 	}
 
 	public int[] getInputSlots() {
@@ -116,6 +128,13 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	public void readFromNBT(NBTTagCompound compound) {
 		energy.setEnergyStored(compound.getInteger("energy"));
 		progress = NBTHelper.getMap(compound, "progress", Integer.class, Integer.class);
+		split = compound.getBoolean("split");
+		burning = compound.getBoolean("burning");
+		fuel = compound.getInteger("fuel");
+		maxfuel = compound.getInteger("maxfuel");
+		map.put("in", NBTHelper.getMap(compound, "inmap", Direction.class, Mode.class));
+		map.put("out", NBTHelper.getMap(compound, "outmap", Direction.class, Mode.class));
+		map.put("fuel", NBTHelper.getMap(compound, "fuelmap", Direction.class, Mode.class));
 		super.readFromNBT(compound);
 	}
 
@@ -123,6 +142,13 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound.setInteger("energy", energy.getEnergyStored());
 		NBTHelper.setMap(compound, "progress", progress);
+		compound.setBoolean("split", split);
+		compound.setBoolean("burning", burning);
+		compound.setInteger("fuel", fuel);
+		compound.setInteger("maxfuel", maxfuel);
+		NBTHelper.setMap(compound, "inmap", map.get("in"));
+		NBTHelper.setMap(compound, "outmap", map.get("out"));
+		NBTHelper.setMap(compound, "fuelmap", map.get("fuel"));
 		return super.writeToNBT(compound);
 	}
 
@@ -133,12 +159,12 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		return split;
 	}
 
-	public void setSplit(boolean split) {
-		this.split = split;
-	}
-
 	public Map<Integer, Integer> getProgress() {
 		return progress;
+	}
+
+	public Map<String, Map<Direction, Mode>> getMap() {
+		return map;
 	}
 
 	@Override
@@ -165,19 +191,14 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		if (side.getAxis().isVertical())
 			return Direction.values()[side.ordinal()];
 		EnumFacing face = getBlockState().getValue(BlockDirectional.FACING);
-//		System.out.println(getBlockState().getPropertyKeys());
-//		System.out.println(BlockHorizontal.FACING.getClass());
-//		getBlockState().getPropertyKeys().stream().map(p->p.getClass()).forEach(p->System.out.println(p));
-//		System.out.println(getBlockState().getPropertyKeys().stream().map(p->p.getClass()==BlockHorizontal.FACING.getClass()).collect(Collectors.toList()));
-//		if("".isEmpty())return Direction.TOP;
 		if (face == EnumFacing.NORTH)
 			return Direction.values()[side.ordinal()];
 		if (face == EnumFacing.SOUTH)
 			return Direction.values()[side.getOpposite().ordinal()];
 		if (face == EnumFacing.EAST)
-			return Direction.values()[side.rotateY().ordinal()];
-		if (face == EnumFacing.WEST)
 			return Direction.values()[side.rotateYCCW().ordinal()];
+		if (face == EnumFacing.WEST)
+			return Direction.values()[side.rotateY().ordinal()];
 		return null;
 	}
 
@@ -210,7 +231,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing side) {
 		Direction dir = getDirectionFromSide(side);
-		if ((!map.get("in").get(dir).equals("x") && Ints.contains(getInputSlots(), index)) || (!map.get("fuel").get(dir).equals("x") && Ints.contains(getFuelSlots(), index)))
+		if ((map.get("in").get(dir) != Mode.DISABLED && Ints.contains(getInputSlots(), index)) || (map.get("fuel").get(dir) != Mode.DISABLED && Ints.contains(getFuelSlots(), index)))
 			return isItemValidForSlot(index, itemStackIn);
 		return false;
 	}
@@ -218,7 +239,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing side) {
 		Direction dir = getDirectionFromSide(side);
-		if ((!map.get("out").get(dir).equals("x") && Ints.contains(getInputSlots(), index)) || (!map.get("fuel").get(dir).equals("x") && Ints.contains(getFuelSlots(), index) && !TileEntityFurnace.isItemFuel(stack)))
+		if ((map.get("out").get(dir) != Mode.DISABLED && Ints.contains(getInputSlots(), index)) || (map.get("fuel").get(dir) != Mode.DISABLED && Ints.contains(getFuelSlots(), index) && !TileEntityFurnace.isItemFuel(stack)))
 			return true;
 		return false;
 	}
@@ -231,15 +252,150 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 			return !getResult(stack).isEmpty();
 		if (Ints.contains(getFuelSlots(), index))
 			return TileEntityFurnace.isItemFuel(stack);
-		return stack.getItem() == ModItems.upgrade && ContainerDevice.slotForUpgrade(Upgrade.values()[stack.getItemDamage()], this) != -1;
+		return stack.getItem() == ModItems.upgrade && ContainerDevice.slotForUpgrade(index, Upgrade.values()[stack.getItemDamage()], this);
 	}
 
 	public abstract ItemStack getResult(ItemStack input);
 
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
+		output();
+		input();
+		organizeItems();
+		if (fuel > maxfuel)
+			maxfuel = fuel;
+		if (fuel < 0)
+			fuel = 0;
+		if (world.getTotalWorldTime() % 6 == 0) {
+			if (fuel > 0 && !burning) {
+				burning = true;
+				((CommonBlock) getBlockType()).changeProperty(world, pos, BlockLever.POWERED, burning);
+			} else if (fuel == 0 && burning) {
+				burning = false;
+				((CommonBlock) getBlockType()).changeProperty(world, pos, BlockLever.POWERED, burning);
+			}
+		}
+	}
 
+	private void fuelUp(int slot) {
+	}
+
+	protected boolean canProcess(int slot) {
+		if (getStackInSlot(slot).isEmpty()) {
+			return false;
+		} else {
+			ItemStack itemstack = getResult(getStackInSlot(slot));
+			if (itemstack.isEmpty())
+				return false;
+			if (getStackInSlot(slot + 3).isEmpty())
+				return true;
+			if (!ItemHandlerHelper.canItemStacksStack(itemstack, getStackInSlot(slot + 3)))
+				return false;
+			int result = getStackInSlot(slot + 3).getCount() + itemstack.getCount();
+			return result <= getInventoryStackLimit() && result <= getStackInSlot(slot + 3).getMaxStackSize();
+		}
+	}
+
+	protected boolean canProcessAny() {
+		return Arrays.stream(getInputSlots()).anyMatch(i -> canProcess(i));
+	}
+
+	private void output() {
+		if (getAmount(Upgrade.IO) > 0 && world.getTotalWorldTime() % 10 == 0) {
+			for (String s : new String[] { "out", "fuel" }) {
+				Map<Direction, Mode> m = map.get(s);
+				for (EnumFacing face : EnumFacing.VALUES) {
+					Direction dir = getDirectionFromSide(face);
+					if (m.get(dir) != Mode.AUTO)
+						continue;
+					IItemHandler handler = InvHelper.getItemHandler(world, pos.offset(face), face.getOpposite());
+					if (handler == null)
+						continue;
+					IItemHandler that = InvHelper.getItemHandler(world, pos, face);
+					Predicate<ItemStack> pred = Predicates.alwaysTrue();
+					if (s.equals("fuel"))
+						pred = st -> isItemValidForSlot(6, st);
+					else
+						pred = st -> isItemValidForSlot(3, st);
+					if (InvHelper.transfer(that, handler, 2, pred))
+						break;
+
+				}
+			}
+		}
+	}
+
+	private void input() {
+		if (getAmount(Upgrade.IO) > 0 && world.getTotalWorldTime() % 10 == 0) {
+			for (String s : new String[] { "in", "fuel" }) {
+				Map<Direction, Mode> m = map.get(s);
+				for (EnumFacing face : EnumFacing.VALUES) {
+					Direction dir = getDirectionFromSide(face);
+					if (m.get(dir) != Mode.AUTO)
+						continue;
+					IItemHandler handler = InvHelper.getItemHandler(world, pos.offset(face), face.getOpposite());
+					if (handler == null)
+						continue;
+					IItemHandler that = InvHelper.getItemHandler(world, pos, face);
+					Predicate<ItemStack> pred = Predicates.alwaysTrue();
+					if (s.equals("fuel"))
+						pred = st -> isItemValidForSlot(6, st);
+					else
+						pred = st -> isItemValidForSlot(0, st);
+					if (InvHelper.transfer(handler, that, 2, pred))
+						break;
+
+				}
+			}
+		}
+	}
+
+	private void organizeItems() {
+		int slots = getAmount(Upgrade.SLOT);
+		if (slots == 0 || world.getTotalWorldTime() % 5 != 0)
+			return;
+		if (split) {
+			for (int i : getInputSlots()) {
+				for (int j : getInputSlots())
+					if (i > j) {
+						ItemStack stack1 = getStackInSlot(i), stack2 = getStackInSlot(j);
+						if (!stack1.isEmpty() || !stack2.isEmpty()) {
+							if (stack1.isEmpty()) {
+								if (stack2.getCount() <= 1 || !fit(stack2, i))
+									continue;
+								List<ItemStack> splitted = StackHelper.split(stack2);
+								setInventorySlotContents(i, splitted.get(0));
+								setInventorySlotContents(j, splitted.get(1));
+							} else if (stack2.isEmpty()) {
+								if (stack1.getCount() <= 1 || !fit(stack1, j))
+									continue;
+								List<ItemStack> splitted = StackHelper.split(stack1);
+								setInventorySlotContents(i, splitted.get(0));
+								setInventorySlotContents(j, splitted.get(1));
+							} else {
+								if (ItemHandlerHelper.canItemStacksStack(stack1, stack2)) {
+									int s = stack1.getCount() + stack2.getCount();
+									setInventorySlotContents(i, ItemHandlerHelper.copyStackWithSize(stack1, Utils.split(s, 2).get(0)));
+									setInventorySlotContents(j, ItemHandlerHelper.copyStackWithSize(stack1, Utils.split(s, 2).get(1)));
+								}
+							}
+						}
+					}
+			}
+		} else {
+			for (int i : getInputSlots()) {
+				for (int j : getInputSlots())
+					if (getStackInSlot(j).isEmpty() && !getStackInSlot(i).isEmpty() && !canProcess(i) && fit(getStackInSlot(i), j)) {
+						setInventorySlotContents(j, getStackInSlot(i).copy());
+						setInventorySlotContents(i, ItemStack.EMPTY);
+					}
+			}
+		}
+	}
+
+	protected boolean fit(ItemStack stack, int slot) {
+		ItemStack result = getResult(stack);
+		return getStackInSlot(slot + 3).isEmpty() || (ItemHandlerHelper.canItemStacksStack(result, getStackInSlot(slot + 3)) && getStackInSlot(slot + 3).getCount() + result.getCount() <= getStackInSlot(slot + 3).getMaxStackSize());
 	}
 
 	@Override
@@ -247,7 +403,17 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		int id = nbt.getInteger("id");
 		if (id == 0)
 			split ^= true;
+		else {
+			map.get(nbt.getString("win")).put(Direction.values()[nbt.getInteger("id") - 10], map.get(nbt.getString("win")).get(Direction.values()[nbt.getInteger("id") - 10]).next());
+		}
 	}
+
+	//	@Override
+	//	public void onLoad() {
+	//		super.onLoad();
+	//		if (!world.isRemote)
+	//			markForSync();
+	//	}
 
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {

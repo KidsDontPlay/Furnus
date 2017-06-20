@@ -1,7 +1,6 @@
 package mrriegel.furnus.util;
 
 import mrriegel.furnus.tile.TileDevice;
-import net.minecraftforge.items.IItemHandler;
 
 public class UpgradeSet {
 
@@ -10,5 +9,5 @@ public class UpgradeSet {
 	public UpgradeSet(TileDevice val) {
 		this.val = val;
 	}
-	
+
 }

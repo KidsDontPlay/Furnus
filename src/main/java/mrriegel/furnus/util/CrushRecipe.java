@@ -35,11 +35,6 @@ public class CrushRecipe {
 				CrushHandler.instance().addItemStack(in, out, experience);
 	}
 
-	private static ItemStack string2Stack(String s) {
-		ItemStack stack = string2Stacks(s).stream().findFirst().orElse(ItemStack.EMPTY);
-		return stack;
-	}
-
 	private static List<ItemStack> string2Stacks(String s) {
 		int size = parse(s, '#', 1), meta = parse(s, '/', 0);
 		int first = s.length();

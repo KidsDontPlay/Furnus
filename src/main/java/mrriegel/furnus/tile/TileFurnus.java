@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
-public class TileFurnus extends TileDevice{
+public class TileFurnus extends TileDevice {
 
 	@Override
 	public boolean openGUI(EntityPlayerMP player) {

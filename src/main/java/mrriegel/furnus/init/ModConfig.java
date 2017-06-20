@@ -31,7 +31,7 @@ public class ModConfig {
 				Configuration.NEW_LINE + "metadata: /number");
 		recipes = Arrays.stream(prop.getStringList()).map(s -> (CrushRecipe) gson.fromJson(s, new TypeToken<CrushRecipe>() {
 		}.getType())).collect(Collectors.toList());
-		blacklistDusts=config.getStringList("blacklistDusts", Configuration.CATEGORY_GENERAL, new String[]{"dustCoal"}, "Blacklist for dusts which should not be craftable in pulvus.");
+		blacklistDusts = config.getStringList("blacklistDusts", Configuration.CATEGORY_GENERAL, new String[] { "dustCoal" }, "Blacklist for dusts which should not be craftable in pulvus.");
 
 		if (config.hasChanged()) {
 			config.save();

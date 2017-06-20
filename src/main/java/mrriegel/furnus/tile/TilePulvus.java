@@ -4,7 +4,7 @@ import mrriegel.furnus.util.CrushHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 
-public class TilePulvus extends TileDevice{
+public class TilePulvus extends TileDevice {
 
 	@Override
 	public boolean openGUI(EntityPlayerMP player) {
