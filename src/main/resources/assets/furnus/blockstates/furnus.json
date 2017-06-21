@@ -5,7 +5,7 @@
 		"textures": {
 			"particle": "furnus:blocks/furnus_front",
 			"up": "furnus:blocks/furnus_deck",
-			"down": "furnus:blocks/furnus_front",
+			"down": "furnus:blocks/furnus_deck",
 			"north": "furnus:blocks/furnus_front",
 			"east": "furnus:blocks/furnus_side",
 			"south": "furnus:blocks/furnus_side",

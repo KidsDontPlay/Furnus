@@ -50,8 +50,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	private Map<String, Map<Direction, Mode>> map = Maps.newHashMap();
 	protected Map<Integer, Integer> progress = Maps.newHashMap();
 	private boolean split, burning;
-	private int fuel, maxfuel;
-	public int karl;
+	private int fuel, maxfuel, lastTickFuelUsed;
 
 	public TileDevice() {
 		super(13);
@@ -70,10 +69,6 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		map.get("fuel").put(Direction.LEFT, Mode.ENABLED);
 		map.get("fuel").put(Direction.RIGHT, Mode.ENABLED);
 		map.get("fuel").put(Direction.BACK, Mode.ENABLED);
-		if (FMLCommonHandler.instance().getEffectiveSide().isServer())
-			karl = 4000;
-		else
-			karl = 2000;
 	}
 
 	private Map<Upgrade, Integer> cache = null;
@@ -132,6 +127,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		burning = compound.getBoolean("burning");
 		fuel = compound.getInteger("fuel");
 		maxfuel = compound.getInteger("maxfuel");
+		lastTickFuelUsed = compound.getInteger("lastTickFuelUsed");
 		map.put("in", NBTHelper.getMap(compound, "inmap", Direction.class, Mode.class));
 		map.put("out", NBTHelper.getMap(compound, "outmap", Direction.class, Mode.class));
 		map.put("fuel", NBTHelper.getMap(compound, "fuelmap", Direction.class, Mode.class));
@@ -146,6 +142,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		compound.setBoolean("burning", burning);
 		compound.setInteger("fuel", fuel);
 		compound.setInteger("maxfuel", maxfuel);
+		compound.setInteger("lastTickFuelUsed", lastTickFuelUsed);
 		NBTHelper.setMap(compound, "inmap", map.get("in"));
 		NBTHelper.setMap(compound, "outmap", map.get("out"));
 		NBTHelper.setMap(compound, "fuelmap", map.get("fuel"));
@@ -275,9 +272,39 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 				((CommonBlock) getBlockType()).changeProperty(world, pos, BlockLever.POWERED, burning);
 			}
 		}
+		fuelUp();
+		int tmp = fuel;
+		for (int i = 0; i <= getAmount(Upgrade.SPEED); i++) {
+			burn(0);
+			if (getAmount(Upgrade.SLOT) >= 2)
+				burn(2);
+			if (getAmount(Upgrade.SLOT) >= 1)
+				burn(1);
+		}
+		lastTickFuelUsed = tmp - fuel;
 	}
 
-	private void fuelUp(int slot) {
+	private void burn(int i) {
+		// TODO Auto-generated method stub
+
+	}
+
+	private void fuelUp() {
+		if (getStackInSlot(getFuelSlots()[0]).isEmpty() && TileEntityFurnace.isItemFuel(getStackInSlot(getFuelSlots()[1])))
+			setInventorySlotContents(getFuelSlots()[0], removeStackFromSlot(getFuelSlots()[1]));
+		if (!canProcessAny() || fuel > lastTickFuelUsed)
+			return;
+		int burntime = TileEntityFurnace.getItemBurnTime(getStackInSlot(getFuelSlots()[0]));
+		if (burntime > 0) {
+			if (getStackInSlot(getFuelSlots()[0]).getItem().getContainerItem(getStackInSlot(getFuelSlots()[0])).isEmpty())
+				decrStackSize(getFuelSlots()[0], 1);
+			else
+				setInventorySlotContents(getFuelSlots()[0], getStackInSlot(getFuelSlots()[0]).getItem().getContainerItem(getStackInSlot(getFuelSlots()[0])));
+		} else {
+
+		}
+		fuel += burntime;
+		maxfuel = fuel;
 	}
 
 	protected boolean canProcess(int slot) {
