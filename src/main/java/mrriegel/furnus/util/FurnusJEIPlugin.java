@@ -105,7 +105,6 @@ public class FurnusJEIPlugin implements IModPlugin {
 
 		@Override
 		public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-			//			super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
 		}
 
 	}

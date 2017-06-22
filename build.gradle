@@ -28,7 +28,7 @@ minecraft {
 }
 
 dependencies {
-    //compile project(":LimeLib")
+    compile project(":LimeLib")
 }
 
 processResources {

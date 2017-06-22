@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import com.google.common.base.Predicates;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
@@ -28,6 +27,9 @@ import mrriegel.limelib.util.Utils;
 import net.darkhax.tesla.api.ITeslaConsumer;
 import net.darkhax.tesla.api.ITeslaHolder;
 import net.darkhax.tesla.capability.TeslaCapabilities;
+//import net.darkhax.tesla.api.ITeslaConsumer;
+//import net.darkhax.tesla.api.ITeslaHolder;
+//import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockLever;
 import net.minecraft.entity.player.EntityPlayer;
