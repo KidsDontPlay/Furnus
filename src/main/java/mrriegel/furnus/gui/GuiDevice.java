@@ -4,10 +4,13 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import com.google.common.collect.Lists;
+
 import mrriegel.furnus.tile.TileDevice;
 import mrriegel.furnus.util.Enums.Mode;
 import mrriegel.furnus.util.Enums.Upgrade;
 import mrriegel.limelib.gui.CommonGuiContainer;
+import mrriegel.limelib.gui.GuiDrawer;
 import mrriegel.limelib.gui.GuiDrawer.Direction;
 import mrriegel.limelib.gui.button.CommonGuiButton;
 import mrriegel.limelib.gui.button.CommonGuiButton.Design;
@@ -28,7 +31,7 @@ public class GuiDevice extends CommonGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(new CommonGuiButton(0, guiLeft + 21, guiTop + 100, 12, 12, "").setTooltip("Split items even").setDesign(Design.SIMPLE));
+		buttonList.add(new CommonGuiButton(0, guiLeft + 21, guiTop + 107, 12, 12, "").setTooltip("Split items even").setDesign(Design.SIMPLE));
 		buttonList.add(new CommonGuiButton(1, guiLeft + 115, guiTop + 106, 12, 12, "I").setTooltip("Input"));
 		buttonList.add(new CommonGuiButton(2, guiLeft + 135, guiTop + 106, 12, 12, "O").setTooltip("Output"));
 		buttonList.add(new CommonGuiButton(3, guiLeft + 155, guiTop + 106, 12, 12, "F").setTooltip("Fuel"));
@@ -39,16 +42,19 @@ public class GuiDevice extends CommonGuiContainer {
 		buttonList.add(new CommonGuiButton(14, guiLeft - 27, guiTop + 29, 14, 14, "4"));
 		buttonList.add(new CommonGuiButton(15, guiLeft - 57, guiTop + 29, 14, 14, "5"));
 		buttonList.add(new CommonGuiButton(100, guiLeft - 18, guiTop + 5, 10, 9, "x").setDesign(Design.SIMPLE));
-		for(GuiButton b:buttonList)
-			b.visible=false;
+		for (GuiButton b : buttonList)
+			b.visible = false;
 	}
-	
-	
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 		renderHoveredToolTip(mouseX, mouseY);
+		if (isPointInRegion(40, 106, 15, 15, mouseX, mouseY)) {
+			double seconds = tile.getLastTickFuelUsed() <= 0. ? 0. : (tile.getFuel() / tile.getLastTickFuelUsed()) / 20.;
+			String ss = String.format(seconds > 1.5 ? "%.0f" : "%.1f", seconds) + " Seconds";
+			GuiDrawer.renderToolTip(Lists.newArrayList(ss), mouseX, mouseY);
+		}
 	}
 
 	@Override
@@ -57,15 +63,17 @@ public class GuiDevice extends CommonGuiContainer {
 		drawer.drawBackgroundTexture();
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 		drawer.drawPlayerSlots(7, 127);
-		drawProgressUnit(18);
+		drawProgressUnit(18, 0);
 		if (tile.getAmount(Upgrade.SLOT) >= 1)
-			drawProgressUnit(43);
+			drawProgressUnit(43, 1);
 		if (tile.getAmount(Upgrade.SLOT) >= 2)
-			drawProgressUnit(68);
+			drawProgressUnit(68, 2);
 		drawer.drawSlots(56, 103, 2, 1);
-		drawer.drawFlame(40, 106, .8f);
+		drawer.drawFlame(40, 106, (float) tile.getFuel() / (float) tile.getMaxfuel());
 		drawer.drawSlots(151, 7, 1, 5);
 		drawWindow();
+		drawer.drawColoredRectangle(57, 104, 16, 16, 0x66000000);
+		drawer.drawColoredRectangle(75, 104, 16, 16, 0x66000000);
 	}
 
 	private void drawWindow() {
@@ -75,10 +83,10 @@ public class GuiDevice extends CommonGuiContainer {
 
 	}
 
-	private void drawProgressUnit(int y) {
+	private void drawProgressUnit(int y, int index) {
 		drawer.drawSlot(20, y);
-		drawer.drawProgressArrow(52, y + 2, 0.2f, Direction.RIGHT);
-		drawer.drawSlot(92, y);
+		drawer.drawProgressArrow(52, y + 2, tile.getProgress().get(index) / (float) tile.neededTicks(), Direction.RIGHT);
+		drawer.drawSizedSlot(90, y - 2, 22);
 	}
 
 	@Override

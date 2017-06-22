@@ -7,6 +7,7 @@ public class Enums {
 	public enum Upgrade {
 		SPEED(8), EFFICIENCY(8), IO(1), SLOT(2), XP(8), ECO(1), ENERGY(1);
 		public final int maxStacksize;
+//		public final double effi;
 
 		private Upgrade(int maxStacksize) {
 			this.maxStacksize = maxStacksize;

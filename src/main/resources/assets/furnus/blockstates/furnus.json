@@ -3,13 +3,13 @@
 	"defaults": {
 		"model": "cube",
 		"textures": {
-			"particle": "furnus:blocks/furnus_front",
-			"up": "furnus:blocks/furnus_deck",
-			"down": "furnus:blocks/furnus_deck",
-			"north": "furnus:blocks/furnus_front",
-			"east": "furnus:blocks/furnus_side",
-			"south": "furnus:blocks/furnus_side",
-			"west": "furnus:blocks/furnus_side"
+			"particle": "furnus:blocks/deck",
+			"up": "furnus:blocks/deck",
+			"down": "furnus:blocks/deck",
+			"north": "furnus:blocks/deck",
+			"east": "furnus:blocks/deck",
+			"south": "furnus:blocks/deck",
+			"west": "furnus:blocks/deck"
 		}
 	},
 	"variants": {
@@ -26,7 +26,7 @@
 		"powered": {
 			"true": {
 				"textures": {
-					"north": "furnus:blocks/furnus_front_lit"
+					"north": "furnus:blocks/deck"
 				}
 			},
 			"false": {

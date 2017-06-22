@@ -42,7 +42,7 @@ public class Furnus {
 	
 	@SubscribeEvent
 	public void ee(TextureStitchEvent.Pre event){
-		LimeLib.log.warn("zap");
+		LimeLib.log.info("zap");
 	}
 
 }

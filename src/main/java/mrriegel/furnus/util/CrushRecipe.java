@@ -9,8 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Lists;
 
 import mrriegel.furnus.init.ModConfig;
+import mrriegel.limelib.gui.ContainerNull;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -82,16 +85,7 @@ public class CrushRecipe {
 		lis.add(new CrushRecipe("minecraft:blaze_rod", "minecraft:blaze_powder#4", .4f));
 		lis.add(new CrushRecipe("minecraft:bone", "minecraft:dye/15#6", .1f));
 		lis.add(new CrushRecipe("minecraft:wool/-1", "minecraft:string/0#4", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower", "minecraft:dye/1#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/1", "minecraft:dye/12#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/2", "minecraft:dye/13#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/3", "minecraft:dye/7#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/4", "minecraft:dye/1#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/5", "minecraft:dye/14#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/6", "minecraft:dye/7#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/7", "minecraft:dye/9#3", .1f));
-		lis.add(new CrushRecipe("minecraft:red_flower/8", "minecraft:dye/7#3", .1f));
-		lis.add(new CrushRecipe("minecraft:yellow_flower", "minecraft:dye/11#3", .1f));
+		lis.add(new CrushRecipe("sugarcane", "minecraft:sugar#3", .2f));
 		return lis;
 	}
 
@@ -100,6 +94,25 @@ public class CrushRecipe {
 			add(ore, "ore", "dust", 2, .5f);
 			add(ore, "ore", "gem", 3, .5f);
 			add(ore, "ingot", "dust", 1, .1f);
+		}
+		for (Item item : ForgeRegistries.ITEMS) {
+			if (item.getRegistryName().getResourcePath().contains("flower")) {
+				for (int i = 0; i < 16; i++) {
+					ItemStack s = new ItemStack(item, 1, i);
+					InventoryCrafting ic = new InventoryCrafting(new ContainerNull(), 3, 3);
+					ic.setInventorySlotContents(0, s);
+					ItemStack result = ItemStack.EMPTY;
+					try {
+						result = CraftingManager.findMatchingResult(ic, null).copy();
+					} catch (Exception e) {
+					}
+					if (!result.isEmpty() && result.getCount() == 1) {
+						CrushHandler.instance().addItemStack(s, ItemHandlerHelper.copyStackWithSize(result, 3), .1f);
+					}
+					if (!item.getHasSubtypes())
+						break;
+				}
+			}
 		}
 	}
 

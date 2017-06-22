@@ -3,13 +3,13 @@
 	"defaults": {
 		"model": "cube",
 		"textures": {
-			"particle": "furnus:blocks/pulvus_front",
-			"up": "furnus:blocks/pulvus_top",
-			"down": "furnus:blocks/pulvus_bottom",
-			"north": "furnus:blocks/pulvus_front",
-			"east": "furnus:blocks/pulvus_side",
-			"south": "furnus:blocks/pulvus_side",
-			"west": "furnus:blocks/pulvus_side"
+			"particle": "furnus:blocks/deck",
+			"up": "furnus:blocks/deck",
+			"down": "furnus:blocks/deck",
+			"north": "furnus:blocks/deck",
+			"east": "furnus:blocks/deck",
+			"south": "furnus:blocks/deck",
+			"west": "furnus:blocks/deck"
 		}
 	},
 	"variants": {
@@ -26,7 +26,7 @@
 		"powered": {
 			"true": {
 				"textures": {
-					"north": "furnus:blocks/pulvus_front_lit"
+					"north": "furnus:blocks/deck"
 				}
 			},
 			"false": {

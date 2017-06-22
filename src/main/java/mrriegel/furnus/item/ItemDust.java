@@ -14,6 +14,8 @@ public class ItemDust extends CommonSubtypeItem {
 
 	@Override
 	public void registerItem() {
+//		if (OreDictionary.doesOreNameExist("dustIron") && OreDictionary.doesOreNameExist("dustGold"))
+//			return;
 		super.registerItem();
 		OreDictionary.registerOre("dustIron", new ItemStack(this, 1, 0));
 		OreDictionary.registerOre("dustGold", new ItemStack(this, 1, 1));
