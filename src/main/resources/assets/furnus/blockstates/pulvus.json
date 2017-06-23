@@ -1,54 +1,54 @@
 {
-	"forge_marker": 1,
-	"defaults": {
-		"model": "cube",
-		"textures": {
-			"particle": "furnus:blocks/deck",
-			"up": "furnus:blocks/deck",
-			"down": "furnus:blocks/deck",
-			"north": "furnus:blocks/deck",
-			"east": "furnus:blocks/deck",
-			"south": "furnus:blocks/deck",
-			"west": "furnus:blocks/deck"
-		}
-	},
-	"variants": {
-		"normal": [
-			{
-			}
-		],
-		"inventory": [
-			{
-				"transform": "forge:default-block",
-				"y": 90
-			}
-		],
-		"powered": {
-			"true": {
-				"textures": {
-					"north": "furnus:blocks/deck"
-				}
-			},
-			"false": {
-			}
-		},
-		"facing": {
-			"east": {
-				"y": 90
-			},
-			"west": {
-				"y": 270
-			},
-			"north": {
-				"y": 0
-			},
-			"south": {
-				"y": 180
-			},
-			"down": {
-			},
-			"up": {
-			}
-		}
-	}
+    "forge_marker": 1,
+    "defaults": {
+        "model": "cube",
+        "textures": {
+            "particle": "furnus:blocks/pulvus_front",
+            "up": "furnus:blocks/pulvus_deck",
+            "down": "furnus:blocks/pulvus_deck",
+            "north": "furnus:blocks/pulvus_front",
+            "east": "furnus:blocks/pulvus_side",
+            "south": "furnus:blocks/pulvus_side",
+            "west": "furnus:blocks/pulvus_side"
+        }
+    },
+    "variants": {
+        "normal": [
+            {
+            }
+        ],
+        "inventory": [
+            {
+                "transform": "forge:default-block",
+                "y": 90
+            }
+        ],
+        "powered": {
+            "true": {
+                "textures": {
+                    "north": "furnus:blocks/pulvus_front_lit"
+                }
+            },
+            "false": {
+            }
+        },
+        "facing": {
+            "east": {
+                "y": 90
+            },
+            "west": {
+                "y": 270
+            },
+            "north": {
+                "y": 0
+            },
+            "south": {
+                "y": 180
+            },
+            "down": {
+            },
+            "up": {
+            }
+        }
+    }
 }

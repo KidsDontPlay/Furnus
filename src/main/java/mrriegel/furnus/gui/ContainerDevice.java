@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.init.ModItems;
 import mrriegel.furnus.tile.TileDevice;
+import mrriegel.furnus.tile.TileFurnus;
 import mrriegel.furnus.util.Enums.Upgrade;
 import mrriegel.limelib.gui.CommonContainerTileInventory;
 import mrriegel.limelib.gui.slot.SlotFilter;
@@ -51,7 +52,6 @@ public class ContainerDevice extends CommonContainerTileInventory<TileDevice> {
 		addSlotToContainer(new SlotFilter(getTile(), 10, 152, 8 + 36, s -> getTile().isItemValidForSlot(10, s)));
 		addSlotToContainer(new SlotFilter(getTile(), 11, 152, 8 + 54, s -> getTile().isItemValidForSlot(11, s)));
 		addSlotToContainer(new SlotFilter(getTile(), 12, 152, 8 + 72, s -> getTile().isItemValidForSlot(12, s)));
-		//		initSlots(getTile(), 152, 8, 1, 5, 8, SlotFilter.class, (Predicate<ItemStack>) s -> getTile().isItemValidForSlot(8, s));
 	}
 
 	@Override
@@ -66,12 +66,11 @@ public class ContainerDevice extends CommonContainerTileInventory<TileDevice> {
 					s = invPlayer.getItemStack().copy();
 					invPlayer.setItemStack(ItemStack.EMPTY);
 				}
-				getPlayer().openGui(Furnus.instance, 0, getPlayer().world, tile.getX(), tile.getY(), tile.getZ());
+				getPlayer().openGui(Furnus.instance, tile instanceof TileFurnus ? 0 : 1, getPlayer().world, tile.getX(), tile.getY(), tile.getZ());
 				if (!s.isEmpty()) {
 					invPlayer.setItemStack(s);
 					((EntityPlayerMP) getPlayer()).connection.sendPacket(new SPacketSetSlot(-1, 0, s));
 				}
-				//				IItemHandler handler = new PlayerMainInvWrapper(invPlayer);
 				if (nowSlots < 2) {
 					//					getPlayer().dropItem(tile.removeStackFromSlot(2), false);
 					//					getPlayer().dropItem(tile.removeStackFromSlot(5), false);

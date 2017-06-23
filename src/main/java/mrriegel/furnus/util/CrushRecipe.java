@@ -33,9 +33,12 @@ public class CrushRecipe {
 	public void register() {
 		List<ItemStack> inl = string2Stacks(inputItem);
 		List<ItemStack> outl = string2Stacks(outputItem);
+		if (outl.isEmpty())
+			return;
+		outl.forEach(s -> s.setItemDamage(s.getItemDamage() == OreDictionary.WILDCARD_VALUE ? 0 : s.getItemDamage()));
 		for (ItemStack in : inl)
-			for (ItemStack out : outl)
-				CrushHandler.instance().addItemStack(in, out, experience);
+			//			for (ItemStack out : outl)
+			CrushHandler.instance().addItemStack(in, outl.get(0), experience);
 	}
 
 	private static List<ItemStack> string2Stacks(String s) {
@@ -75,10 +78,11 @@ public class CrushRecipe {
 		lis.add(new CrushRecipe("cobblestone", "gravel", .1f));
 		lis.add(new CrushRecipe("gravel", "sand", .1f));
 		lis.add(new CrushRecipe("stone", "cobblestone", .1f));
+		lis.add(new CrushRecipe("minecraft:sandstone/-1", "minecraft:sand#4", .1f));
 		lis.add(new CrushRecipe("minecraft:stonebrick/-1", "cobblestone", .1f));
 		lis.add(new CrushRecipe("oreQuartz", "gemQuartz#3", .3f));
 		lis.add(new CrushRecipe("oreCoal", "minecraft:coal#3", .3f));
-		lis.add(new CrushRecipe("oreLapis", "gemLapis#3", .3f));
+		lis.add(new CrushRecipe("oreLapis", "gemLapis#8", .3f));
 		lis.add(new CrushRecipe("oreRedstone", "dustRedstone#8", .3f));
 		lis.add(new CrushRecipe("minecraft:quartz_block/-1", "gemQuartz#4", .1f));
 		lis.add(new CrushRecipe("glowstone", "dustGlowstone#4", .1f));

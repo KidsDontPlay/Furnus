@@ -12,6 +12,7 @@ import com.google.common.primitives.Ints;
 import cofh.api.energy.IEnergyReceiver;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.ContainerDevice;
+import mrriegel.furnus.init.ModConfig;
 import mrriegel.furnus.init.ModItems;
 import mrriegel.furnus.util.Enums.Direction;
 import mrriegel.furnus.util.Enums.Mode;
@@ -83,7 +84,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 				cache.put(u, 0);
 			for (int i = 8; i < 13; i++) {
 				ItemStack u = getStackInSlot(i);
-				if (u.getItem() == ModItems.upgrade)
+				if (u.getItem() == ModItems.upgrade && ModConfig.upgrades.get(Upgrade.values()[u.getItemDamage()]))
 					cache.put(Upgrade.values()[u.getItemDamage()], u.getCount());
 			}
 		}
@@ -152,7 +153,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 
 	@Override
 	public boolean openGUI(EntityPlayerMP player) {
-		player.openGui(Furnus.instance, 0, world, getX(), getY(), getZ());
+		int i = this instanceof TileFurnus ? 0 : 1;
+		player.openGui(Furnus.instance, i, world, getX(), getY(), getZ());
 		return true;
 	}
 
@@ -244,10 +246,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing side) {
 		Direction dir = getDirectionFromSide(side);
-//		System.out.println(dir);
 		if ((map.get("in").get(dir) != Mode.DISABLED && Ints.contains(getInputSlots(), index)) || (map.get("fuel").get(dir) != Mode.DISABLED && Ints.contains(getFuelSlots(), index)))
 			return isItemValidForSlot(index, itemStackIn);
-		System.out.println("sa");
 		return false;
 	}
 
@@ -284,23 +284,21 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		if (world.getTotalWorldTime() % 6 == 0) {
 			if (fuel > 0) {
 				((CommonBlock) getBlockType()).changeProperty(world, pos, BlockLever.POWERED, true);
-			} else if (fuel <= 0) {
+			} else {
 				((CommonBlock) getBlockType()).changeProperty(world, pos, BlockLever.POWERED, false);
 			}
 		}
 		fuelUp();
 		double tmp = fuel;
-		//		for (int i = 0; i <= getAmount(Upgrade.SPEED); i++) {
 		for (int j : getInputSlots())
 			burn(j);
-		//		}
 		lastTickFuelUsed = tmp - fuel;
 	}
 
 	public int neededTicks() {
-		int val = 180;
+		int val = this instanceof TileFurnus ? 140 : 180;
 		val /= (1. + getAmount(Upgrade.SPEED) * .5);
-		return this instanceof TilePulvus ? val / 2 : val;
+		return val;
 	}
 
 	public double fuelMultiplier() {
@@ -309,9 +307,9 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	private void burn(int i) {
-		//		if("".isEmpty())return;
-		double neededFuel = 1;
+		double neededFuel = 1.;
 		neededFuel *= fuelMultiplier();
+		neededFuel /= neededTicks() / 200.;
 		boolean processed = false;
 		if (!canProcess(i)) {
 			progress.put(i, 0);
@@ -334,6 +332,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	protected void processItem(int slot) {
+		if (world.isRemote)
+			return;
 		ItemStack itemstack = getResult(getStackInSlot(slot));
 		if (itemstack.isEmpty())
 			return;
@@ -346,6 +346,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	private void fuelUp() {
+		if (world.isRemote)
+			return;
 		if (getStackInSlot(getFuelSlots()[0]).isEmpty() && TileEntityFurnace.isItemFuel(getStackInSlot(getFuelSlots()[1])))
 			setInventorySlotContents(getFuelSlots()[0], removeStackFromSlot(getFuelSlots()[1]));
 		if (!canProcessAny() || fuel > lastTickFuelUsed + 2)
@@ -361,13 +363,12 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 			int consume = 1600 * fac;
 			burntime = (int) (energy.extractEnergy(consume, false) / (double) fac);
 		}
-
 		if (burntime > 0) {
-			burntime *= (neededTicks() / 200.) + .001;
+			//			burntime *= (neededTicks() / 200.) + .001;
 			fuel += burntime;
 			maxfuel = fuel;
-			if (!activePlayers.isEmpty())
-				markForSync();
+			//			if (!activePlayers.isEmpty())
+			markForSync();
 		}
 	}
 
@@ -404,7 +405,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 						continue;
 					IItemHandler that = InvHelper.getItemHandler(world, pos, face);
 					Predicate<ItemStack> pred = Predicates.alwaysTrue();
-					if (InvHelper.transfer(that, handler, 2, pred))
+					if (InvHelper.transfer(that, handler, 2 + getAmount(Upgrade.SLOT) * 2, pred))
 						break;
 
 				}
@@ -429,7 +430,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 						pred = st -> isItemValidForSlot(6, st);
 					else
 						pred = st -> isItemValidForSlot(0, st);
-					if (InvHelper.transfer(handler, that, 2, pred))
+					if (InvHelper.transfer(handler, that, s.equals("fuel") ? 1 : 2 + getAmount(Upgrade.SLOT) * 2, pred))
 						break;
 
 				}
@@ -438,7 +439,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	private void organizeItems() {
-		if (getAmount(Upgrade.SLOT) == 0 || world.getTotalWorldTime() % 5 != 0)
+		if (getAmount(Upgrade.SLOT) == 0 || world.getTotalWorldTime() % 8 != 0)
 			return;
 		if (split) {
 			for (int i : getInputSlots()) {
@@ -490,7 +491,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		if (id == 0)
 			split ^= true;
 		else {
-			map.get(nbt.getString("win")).put(Direction.values()[nbt.getInteger("id") - 10], map.get(nbt.getString("win")).get(Direction.values()[nbt.getInteger("id") - 10]).next());
+			int ID = nbt.getInteger("id") - 10;
+			map.get(nbt.getString("win")).put(Direction.values()[ID], map.get(nbt.getString("win")).get(Direction.values()[ID]).next());
 		}
 	}
 
@@ -533,7 +535,5 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		public long getCapacity() {
 			return storage.getMaxEnergyStored();
 		}
-
 	}
-
 }
