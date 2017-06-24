@@ -107,7 +107,7 @@ public class CrushRecipe {
 					ic.setInventorySlotContents(0, s);
 					ItemStack result = ItemStack.EMPTY;
 					try {
-						result = CraftingManager.findMatchingResult(ic, null).copy();
+						result = CraftingManager.findMatchingResult(ic, null);
 					} catch (Exception e) {
 					}
 					if (!result.isEmpty() && result.getCount() == 1) {

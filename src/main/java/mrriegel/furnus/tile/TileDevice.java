@@ -38,6 +38,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
@@ -225,10 +227,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 				return getOutputSlots();
 			case UP:
 				return getInputSlots();
-			case EAST:
-			case NORTH:
-			case SOUTH:
-			case WEST:
+			default:
 				return getFuelSlots();
 			}
 		}
@@ -281,7 +280,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 			maxfuel = fuel;
 		if (fuel < 0)
 			fuel = 0;
-		if (world.getTotalWorldTime() % 6 == 0) {
+		if (world.getTotalWorldTime() % 6 == 0 && !world.isRemote) {
 			if (fuel > 0) {
 				((CommonBlock) getBlockType()).changeProperty(world, pos, BlockLever.POWERED, true);
 			} else {
@@ -297,12 +296,12 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 
 	public int neededTicks() {
 		int val = this instanceof TileFurnus ? 140 : 180;
-		val /= (1. + getAmount(Upgrade.SPEED) * .5);
-		return val;
+		val /= (1. + getAmount(Upgrade.SPEED) * ModConfig.speedMultiplier);
+		return Math.max(val, 5);
 	}
 
 	public double fuelMultiplier() {
-		double x = (1. + getAmount(Upgrade.SPEED) * 0.4) * (1. / (1. + getAmount(Upgrade.EFFICIENCY) * 0.3));
+		double x = (1. + getAmount(Upgrade.SPEED) * ModConfig.speedFuelMultiplier) * (1. / (1. + getAmount(Upgrade.EFFICIENCY) * ModConfig.effiFuelMultiplier));
 		return x;
 	}
 
@@ -324,8 +323,9 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 					if (!activePlayers.isEmpty())
 						markForSync();
 				}
-			} else if (getAmount(Upgrade.ECO) == 0)
+			} else if (getAmount(Upgrade.ECO) == 0) {
 				progress.put(i, 0);
+			}
 		}
 		if (processed || getAmount(Upgrade.ECO) == 0)
 			fuel -= Math.min(neededFuel, fuel);
@@ -346,8 +346,9 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	private void fuelUp() {
-		if (world.isRemote)
-			return;
+		//		if (world.isRemote) {
+		//			return;
+		//		}
 		if (getStackInSlot(getFuelSlots()[0]).isEmpty() && TileEntityFurnace.isItemFuel(getStackInSlot(getFuelSlots()[1])))
 			setInventorySlotContents(getFuelSlots()[0], removeStackFromSlot(getFuelSlots()[1]));
 		if (!canProcessAny() || fuel > lastTickFuelUsed + 2)
@@ -367,8 +368,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 			//			burntime *= (neededTicks() / 200.) + .001;
 			fuel += burntime;
 			maxfuel = fuel;
-			//			if (!activePlayers.isEmpty())
-			markForSync();
+			if (!activePlayers.isEmpty())
+				markForSync();
 		}
 	}
 

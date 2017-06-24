@@ -24,7 +24,7 @@ public class ItemUpgrade extends CommonSubtypeItem {
 
 	@Override
 	public int getItemStackLimit(ItemStack stack) {
-		return Upgrade.values()[stack.getItemDamage()].maxStacksize;
+		return ModConfig.maxStacksize.get(Upgrade.values()[stack.getItemDamage()]);
 	}
 
 	@Override

@@ -23,6 +23,8 @@ public class ModConfig {
 	public static String[] blacklistDusts;
 	public static boolean dusts;
 	public static Map<Upgrade, Boolean> upgrades = Maps.newHashMap();
+	public static Map<Upgrade, Integer> maxStacksize = Maps.newHashMap();
+	public static double speedMultiplier, speedFuelMultiplier, effiFuelMultiplier;
 
 	@SuppressWarnings("serial")
 	public static void refreshConfig(File file) {
@@ -39,9 +41,13 @@ public class ModConfig {
 		}.getType())).collect(Collectors.toList());
 		blacklistDusts = config.getStringList("blacklistDusts", Configuration.CATEGORY_GENERAL, new String[] { "dustCoal" }, "Blacklist for dusts which should not be craftable in pulvus.");
 		dusts = config.getBoolean("dusts", "recipe", true, "Enable built in dusts");
-		for (Upgrade u : Upgrade.values())
+		for (Upgrade u : Upgrade.values()) {
 			upgrades.put(u, config.getBoolean(u.name().toLowerCase(), "upgrades", true, "Enable " + u.name() + " upgrade"));
-
+			maxStacksize.put(u, u.maxStacksize <= 2 ? u.maxStacksize : config.getInt(u.name().toLowerCase() + "_stacksize", "upgrade_stacksize", u.maxStacksize, 1, 32, "Max stacksize for " + u.name()));
+		}
+		speedMultiplier = config.getFloat("speedMultiplier", "multiplier", .5f, .05f, 5f, "Multiplier of Speed Upgrade");
+		speedFuelMultiplier = config.getFloat("speedFuelMultiplier", "multiplier", .4f, .05f, 5f, "Multiplier of Fuel Consumption of Speed Upgrade");
+		effiFuelMultiplier = config.getFloat("effiFuelMultiplier", "multiplier", .3f, .05f, 5f, "Multiplier of Fuel Consumption of Efficiency Upgrade");
 		if (config.hasChanged()) {
 			config.save();
 		}

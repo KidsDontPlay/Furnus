@@ -7,6 +7,7 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import com.google.common.collect.Lists;
 
+import mrriegel.furnus.init.ModConfig;
 import mrriegel.furnus.tile.TileDevice;
 import mrriegel.furnus.util.Enums;
 import mrriegel.furnus.util.Enums.Mode;
@@ -67,7 +68,7 @@ public class GuiDevice extends CommonGuiContainer {
 		}
 		if (isPointInRegion(130, 7, 16, 16, mouseX, mouseY)) {
 			List<String> strings = Lists.newArrayList();
-			strings.add("Speed: " + String.format("%.2f", 1. + tile.getAmount(Upgrade.SPEED) * .5) + "x");
+			strings.add("Speed: " + String.format("%.2f", 1. + tile.getAmount(Upgrade.SPEED) * ModConfig.speedMultiplier) + "x");
 			strings.add("Fuel consumption: " + String.format("%.2f", tile.fuelMultiplier()) + "x");
 			strings.add("XP: " + String.format("%.2f", 1 + tile.getAmount(Upgrade.XP) * 1.5) + "x");
 			if (tile.getAmount(Upgrade.ENERGY) > 0)
