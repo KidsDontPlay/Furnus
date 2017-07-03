@@ -3,8 +3,6 @@ package mrriegel.furnus.item;
 import mrriegel.furnus.init.ModConfig;
 import mrriegel.furnus.util.CreativeTab;
 import mrriegel.limelib.item.CommonSubtypeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
 public class ItemDust extends CommonSubtypeItem {
 
@@ -18,8 +16,6 @@ public class ItemDust extends CommonSubtypeItem {
 		if (!ModConfig.dusts)
 			return;
 		super.registerItem();
-		OreDictionary.registerOre("dustIron", new ItemStack(this, 1, 0));
-		OreDictionary.registerOre("dustGold", new ItemStack(this, 1, 1));
 	}
 
 }
