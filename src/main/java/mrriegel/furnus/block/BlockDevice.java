@@ -20,11 +20,11 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockDevice<T extends CommonTile> extends CommonBlockContainer<T> {
+public class BlockDevice extends CommonBlockContainer<CommonTile> {
 
-	private final Class<? extends T> clazz;
+	private final Class<? extends CommonTile> clazz;
 
-	public BlockDevice(String name, Class<? extends T> clazz) {
+	public BlockDevice(String name, Class<? extends CommonTile> clazz) {
 		super(Material.ROCK, name);
 		setHardness(3f);
 		setDefaultState(getDefaultState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, false));
@@ -33,7 +33,7 @@ public class BlockDevice<T extends CommonTile> extends CommonBlockContainer<T> {
 	}
 
 	@Override
-	protected Class<? extends T> getTile() {
+	protected Class<? extends CommonTile> getTile() {
 		return clazz;
 	}
 

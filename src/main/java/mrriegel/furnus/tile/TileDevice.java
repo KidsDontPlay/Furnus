@@ -45,6 +45,7 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
+@Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyReceiver", modid = "redstoneflux")
 public abstract class TileDevice extends CommonTileInventory implements ITickable, ISidedInventory, IEnergyReceiver {
 
 	protected EnergyStorageExt energy = new EnergyStorageExt(80000, 2000);
