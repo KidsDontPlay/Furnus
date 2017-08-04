@@ -287,7 +287,10 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		double tmp = fuel;
 		for (int j : getInputSlots())
 			burn(j);
+		double foo = lastTickFuelUsed;
 		lastTickFuelUsed = tmp - fuel;
+		if (lastTickFuelUsed == 0. && getAmount(Upgrade.ECO) > 0)
+			lastTickFuelUsed = foo;
 	}
 
 	public int neededTicks() {
@@ -345,16 +348,18 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		//		if (world.isRemote) {
 		//			return;
 		//		}
-		if (getStackInSlot(getFuelSlots()[0]).isEmpty() && TileEntityFurnace.isItemFuel(getStackInSlot(getFuelSlots()[1])))
-			setInventorySlotContents(getFuelSlots()[0], removeStackFromSlot(getFuelSlots()[1]));
+		int slot0 = getFuelSlots()[0], slot1 = getFuelSlots()[1];
+		if (getStackInSlot(slot0).isEmpty() && TileEntityFurnace.isItemFuel(getStackInSlot(slot1)))
+			setInventorySlotContents(slot0, removeStackFromSlot(slot1));
 		if (!canProcessAny() || fuel > lastTickFuelUsed + 2)
 			return;
-		int burntime = TileEntityFurnace.getItemBurnTime(getStackInSlot(getFuelSlots()[0]));
+		ItemStack stack0 = getStackInSlot(slot0);
+		int burntime = TileEntityFurnace.getItemBurnTime(stack0);
 		if (burntime > 0) {
-			if (getStackInSlot(getFuelSlots()[0]).getItem().getContainerItem(getStackInSlot(getFuelSlots()[0])).isEmpty())
-				decrStackSize(getFuelSlots()[0], 1);
+			if (stack0.getItem().getContainerItem(stack0).isEmpty())
+				decrStackSize(slot0, 1);
 			else
-				setInventorySlotContents(getFuelSlots()[0], getStackInSlot(getFuelSlots()[0]).getItem().getContainerItem(getStackInSlot(getFuelSlots()[0])));
+				setInventorySlotContents(slot0, stack0.getItem().getContainerItem(stack0));
 		} else {
 			int fac = 25;
 			int consume = 1600 * fac;

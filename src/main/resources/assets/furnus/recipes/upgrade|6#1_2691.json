@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "furnus:upgrade",
+    "data": 6
+  },
+  "pattern": [
+    " g ",
+    "sis",
+    " G "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "s": {
+      "item": "#BLOCKREDSTONE"
+    },
+    "g": {
+      "item": "#DUSTGLOWSTONE"
+    },
+    "G": {
+      "item": "#INGOTGOLD"
+    },
+    "i": {
+      "item": "#INGOTIRON"
+    }
+  }
+}

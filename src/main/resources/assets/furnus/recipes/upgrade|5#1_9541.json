@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "furnus:upgrade",
+    "data": 5
+  },
+  "pattern": [
+    " g ",
+    "sis",
+    " G "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "s": {
+      "item": "minecraft:blaze_rod"
+    },
+    "g": {
+      "item": "minecraft:coal",
+      "data": 0
+    },
+    "G": {
+      "item": "minecraft:coal_block"
+    },
+    "i": {
+      "item": "#INGOTIRON"
+    }
+  }
+}

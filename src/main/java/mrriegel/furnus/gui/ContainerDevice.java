@@ -72,20 +72,12 @@ public class ContainerDevice extends CommonContainerTileInventory<TileDevice> {
 					((EntityPlayerMP) getPlayer()).connection.sendPacket(new SPacketSetSlot(-1, 0, s));
 				}
 				if (nowSlots < 2) {
-					//					getPlayer().dropItem(tile.removeStackFromSlot(2), false);
-					//					getPlayer().dropItem(tile.removeStackFromSlot(5), false);
 					InventoryHelper.spawnItemStack(getPlayer().world, getPlayer().posX, getPlayer().posY, getPlayer().posZ, tile.removeStackFromSlot(2));
 					InventoryHelper.spawnItemStack(getPlayer().world, getPlayer().posX, getPlayer().posY, getPlayer().posZ, tile.removeStackFromSlot(5));
-					//					ItemHandlerHelper.giveItemToPlayer(getPlayer(), tile.removeStackFromSlot(2));
-					//					ItemHandlerHelper.giveItemToPlayer(getPlayer(), tile.removeStackFromSlot(5));
 				}
 				if (nowSlots < 1) {
-					//					getPlayer().dropItem(tile.removeStackFromSlot(1), false);
-					//					getPlayer().dropItem(tile.removeStackFromSlot(4), false);
 					InventoryHelper.spawnItemStack(getPlayer().world, getPlayer().posX, getPlayer().posY, getPlayer().posZ, tile.removeStackFromSlot(1));
 					InventoryHelper.spawnItemStack(getPlayer().world, getPlayer().posX, getPlayer().posY, getPlayer().posZ, tile.removeStackFromSlot(4));
-					//					ItemHandlerHelper.giveItemToPlayer(getPlayer(), tile.removeStackFromSlot(1));
-					//					ItemHandlerHelper.giveItemToPlayer(getPlayer(), tile.removeStackFromSlot(4));
 				}
 				getPlayer().openContainer.detectAndSendChanges();
 			}

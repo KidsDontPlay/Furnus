@@ -1,0 +1,24 @@
+{
+  "result": {
+    "item": "furnus:upgrade",
+    "data": 2,
+    "count": 2
+  },
+  "pattern": [
+    " p ",
+    " i ",
+    " h "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "p": {
+      "item": "minecraft:piston"
+    },
+    "h": {
+      "item": "minecraft:hopper"
+    },
+    "i": {
+      "item": "#INGOTIRON"
+    }
+  }
+}
