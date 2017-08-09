@@ -229,11 +229,11 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		}
 		Direction dir = getDirectionFromSide(side);
 		int ret[] = new int[] {};
-		if (!map.get("in").get(dir).equals("X"))
+		if (map.get("in").get(dir) != Mode.DISABLED)
 			ret = Ints.concat(ret, getInputSlots());
-		if (!map.get("out").get(dir).equals("X"))
+		if (map.get("out").get(dir) != Mode.DISABLED)
 			ret = Ints.concat(ret, getOutputSlots());
-		if (!map.get("fuel").get(dir).equals("X"))
+		if (map.get("fuel").get(dir) != Mode.DISABLED)
 			ret = Ints.concat(ret, getFuelSlots());
 		return ret;
 	}
