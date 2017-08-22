@@ -395,7 +395,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	private void output() {
-		if (getAmount(Upgrade.IO) > 0 && world.getTotalWorldTime() % 10 == 0) {
+		if (!world.isRemote && getAmount(Upgrade.IO) > 0 && world.getTotalWorldTime() % 10 == 0) {
 			for (String s : new String[] { "out", "fuel" }) {
 				Map<Direction, Mode> m = map.get(s);
 				for (EnumFacing face : EnumFacing.VALUES) {
@@ -406,8 +406,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 					if (handler == null)
 						continue;
 					IItemHandler that = InvHelper.getItemHandler(world, pos, face);
-					Predicate<ItemStack> pred = Predicates.alwaysTrue();
-					if (InvHelper.transfer(that, handler, 2 + getAmount(Upgrade.SLOT) * 2, pred))
+					if (InvHelper.transfer(that, handler, 2 + getAmount(Upgrade.SLOT) * 2, Predicates.alwaysTrue()))
 						break;
 
 				}
@@ -416,7 +415,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	private void input() {
-		if (getAmount(Upgrade.IO) > 0 && world.getTotalWorldTime() % 10 == 0) {
+		if (!world.isRemote && getAmount(Upgrade.IO) > 0 && world.getTotalWorldTime() % 10 == 0) {
 			for (String s : new String[] { "in", "fuel" }) {
 				Map<Direction, Mode> m = map.get(s);
 				for (EnumFacing face : EnumFacing.VALUES) {
@@ -441,7 +440,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	}
 
 	private void organizeItems() {
-		if (getAmount(Upgrade.SLOT) == 0 || world.getTotalWorldTime() % 8 != 0)
+		if (world.isRemote || getAmount(Upgrade.SLOT) == 0 || world.getTotalWorldTime() % 8 != 0)
 			return;
 		if (split) {
 			for (int i : getInputSlots()) {
@@ -503,7 +502,6 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 		return super.hasCapability(capability, facing) || (getAmount(Upgrade.ENERGY) > 0 && (capability == CapabilityEnergy.ENERGY || (LimeLib.teslaLoaded && (capability == TeslaCapabilities.CAPABILITY_CONSUMER || capability == TeslaCapabilities.CAPABILITY_HOLDER))));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if (getAmount(Upgrade.ENERGY) > 0) {
