@@ -60,7 +60,6 @@ public class GuiDevice extends CommonGuiContainer {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		super.drawScreen(mouseX, mouseY, partialTicks);
-		renderHoveredToolTip(mouseX, mouseY);
 		if (isPointInRegion(40, 106, 15, 15, mouseX, mouseY)) {
 			double seconds = tile.getLastTickFuelUsed() <= 0. ? 0. : (tile.getFuel() / tile.getLastTickFuelUsed()) / 20.;
 			String ss = String.format(seconds > 1.5 ? "%.0f" : "%.1f", seconds) + " Seconds";
