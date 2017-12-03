@@ -217,6 +217,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 
 	@Override
 	public int[] getSlotsForFace(EnumFacing side) {
+		if (side == null)
+			return Ints.concat(getOutputSlots(), getInputSlots(), getFuelSlots());
 		if (getAmount(Upgrade.IO) == 0) {
 			switch (side) {
 			case DOWN:
@@ -240,6 +242,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 
 	@Override
 	public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing side) {
+		if (side == null)
+			return false;
 		Direction dir = getDirectionFromSide(side);
 		if ((map.get("in").get(dir) != Mode.DISABLED && Ints.contains(getInputSlots(), index)) || (map.get("fuel").get(dir) != Mode.DISABLED && Ints.contains(getFuelSlots(), index)))
 			return isItemValidForSlot(index, itemStackIn);
@@ -248,6 +252,8 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 
 	@Override
 	public boolean canExtractItem(int index, ItemStack stack, EnumFacing side) {
+		if (side == null)
+			return false;
 		Direction dir = getDirectionFromSide(side);
 		if ((map.get("out").get(dir) != Mode.DISABLED && Ints.contains(getOutputSlots(), index)) || (map.get("fuel").get(dir) != Mode.DISABLED && Ints.contains(getFuelSlots(), index) && !TileEntityFurnace.isItemFuel(stack)))
 			return true;

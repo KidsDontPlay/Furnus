@@ -62,6 +62,7 @@ public class ContainerDevice extends CommonContainerTileInventory<TileDevice> {
 			int nowSlots = tile.getAmount(Upgrade.SLOT);
 			if (startSlots != nowSlots) {
 				ItemStack s = ItemStack.EMPTY;
+				startSlots = nowSlots; //should prevent recursion
 				if (!invPlayer.getItemStack().isEmpty()) {
 					s = invPlayer.getItemStack().copy();
 					invPlayer.setItemStack(ItemStack.EMPTY);
