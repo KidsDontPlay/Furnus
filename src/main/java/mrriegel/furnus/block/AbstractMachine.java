@@ -49,6 +49,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	protected int speed, effi, slots, bonus, xp, fuel, maxFuel, remainTicks;
 	protected Map<Direction, Mode> input = Maps.newHashMap(), output = Maps.newHashMap(), fuelput = Maps.newHashMap();
 	protected Map<Integer, Integer> progress = Maps.newHashMap();
+	protected ItemStack cachedResult;
 
 	public EnergyStorageExt en = new EnergyStorageExt(64000, Integer.MAX_VALUE - 10, 0);
 
@@ -266,6 +267,26 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 		return false;
 	}
 
+
+	@Override
+	public ItemStack removeStackFromSlot(int index)
+	{
+		this.cachedResult = null;
+		return super.removeStackFromSlot(index);
+	}
+
+	@Override
+	public void setInventorySlotContents(int index, ItemStack stack)
+	{
+		this.cachedResult = null;
+		super.setInventorySlotContents(index, stack);
+	}
+
+	protected boolean hasCachedResult()
+	{
+		return this.cachedResult != null;
+	}
+
 	public abstract ItemStack getResult(ItemStack input);
 
 	public abstract ItemStack getAntiResult(ItemStack input);
@@ -447,9 +468,12 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 				getStackInSlot(slot + 3).grow(itemstack.getCount());
 			}
 			boolean valid;
-			try {
+			try
+			{
 				valid = !getStackInSlot(slot).isItemEqual(getAntiResult(getStackInSlot(slot + 3))) && !StackHelper.equalOreDict(getStackInSlot(slot), getAntiResult(getStackInSlot(slot + 3)));
-			} catch (NullPointerException e) {
+			}
+			catch (NullPointerException e)
+			{
 				valid = true;
 			}
 			if (valid && world.rand.nextInt(100) < bonus * 100 * ConfigHandler.bonusMulti) {

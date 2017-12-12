@@ -16,8 +16,13 @@ public class TilePulvus extends AbstractMachine {
 	}
 
 	@Override
-	public ItemStack getResult(ItemStack input) {
-		return CrunchHandler.instance().getResult(input);
+	public ItemStack getResult(ItemStack input)
+	{
+		if( !this.hasCachedResult() )
+		{
+			this.cachedResult = CrunchHandler.instance().getResult(input);
+		}
+		return this.cachedResult;
 	}
 
 	@Override
