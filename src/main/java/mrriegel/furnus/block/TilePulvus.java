@@ -26,8 +26,13 @@ public class TilePulvus extends AbstractMachine {
 	}
 
 	@Override
-	public ItemStack getAntiResult(ItemStack input) {
-		return FurnaceRecipes.instance().getSmeltingResult(input);
+	public ItemStack getAntiResult(ItemStack input)
+	{
+		if( !this.hasCachedAntiResult() )
+		{
+			this.cachedAntiResult = FurnaceRecipes.instance().getSmeltingResult(input);
+		}
+		return this.cachedAntiResult;
 	}
 
 }

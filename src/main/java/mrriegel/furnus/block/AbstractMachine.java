@@ -50,6 +50,7 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	protected Map<Direction, Mode> input = Maps.newHashMap(), output = Maps.newHashMap(), fuelput = Maps.newHashMap();
 	protected Map<Integer, Integer> progress = Maps.newHashMap();
 	protected ItemStack cachedResult;
+	protected ItemStack cachedAntiResult;
 
 	public EnergyStorageExt en = new EnergyStorageExt(64000, Integer.MAX_VALUE - 10, 0);
 
@@ -272,6 +273,8 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	public ItemStack removeStackFromSlot(int index)
 	{
 		this.cachedResult = null;
+		this.cachedAntiResult = null;
+
 		return super.removeStackFromSlot(index);
 	}
 
@@ -279,12 +282,19 @@ public abstract class AbstractMachine extends CommonTileInventory implements ISi
 	public void setInventorySlotContents(int index, ItemStack stack)
 	{
 		this.cachedResult = null;
+		this.cachedAntiResult = null;
+
 		super.setInventorySlotContents(index, stack);
 	}
 
 	protected boolean hasCachedResult()
 	{
 		return this.cachedResult != null;
+	}
+
+	protected boolean hasCachedAntiResult()
+	{
+		return this.cachedAntiResult != null;
 	}
 
 	public abstract ItemStack getResult(ItemStack input);
