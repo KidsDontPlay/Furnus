@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
 import cofh.redstoneflux.api.IEnergyReceiver;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.ContainerDevice;
 import mrriegel.furnus.init.ModConfig;
@@ -53,6 +54,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	protected Map<Integer, Integer> progress = Maps.newHashMap();
 	protected boolean split;
 	protected double fuel, maxfuel, lastTickFuelUsed;
+	protected Map<ItemStack, ItemStack> results = new Object2ObjectOpenHashMap<>();
 
 	public TileDevice() {
 		super(13);
@@ -273,8 +275,15 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 
 	public abstract ItemStack getResult(ItemStack input);
 
+	protected int inputHash = Arrays.hashCode(Arrays.stream(getInputSlots()).mapToObj(this::getStackInSlot).toArray(ItemStack[]::new));
+
 	@Override
 	public void update() {
+		int newHashsum = Arrays.hashCode(Arrays.stream(getInputSlots()).mapToObj(this::getStackInSlot).toArray(ItemStack[]::new));
+		if (inputHash != newHashsum) {
+			inputHash = newHashsum;
+			results.clear();
+		}
 		output();
 		input();
 		organizeItems();

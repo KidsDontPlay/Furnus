@@ -117,6 +117,7 @@ public class ContainerDevice extends CommonContainerTileInventory<TileDevice> {
 	@Override
 	public void onContainerClosed(EntityPlayer playerIn) {
 		super.onContainerClosed(playerIn);
+		save.markDirty();
 		playerIn.world.notifyNeighborsOfStateChange(getTile().getPos(), getTile().getBlockType(), false);
 	}
 

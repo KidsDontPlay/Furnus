@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid = Furnus.MODID, name = Furnus.MODNAME, version = Furnus.VERSION, acceptedMinecraftVersions = "[1.12,1.13)", dependencies = "required-after:limelib@[1.7.8,)")
 public class Furnus {
 	public static final String MODID = "furnus";
-	public static final String VERSION = "2.1.4";
+	public static final String VERSION = "2.1.5";
 	public static final String MODNAME = "Furnus";
 
 	@Instance(Furnus.MODID)

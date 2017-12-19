@@ -7,7 +7,9 @@ public class TilePulvus extends TileDevice {
 
 	@Override
 	public ItemStack getResult(ItemStack input) {
-		return CrushHandler.instance().getResult(input);
+		if (!results.containsKey(input))
+			results.put(input, CrushHandler.instance().getResult(input));
+		return results.get(input);
 	}
 
 }
