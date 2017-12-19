@@ -23,16 +23,16 @@ public class CrunchHandler {
 
 	public ItemStack getResult(ItemStack stack) {
 		for (Entry<ItemStack, ItemStack> entry : crushingList.entrySet()) {
-			ItemStack in = entry.getKey().copy();
+			ItemStack in = entry.getKey();
 			if (in.isItemEqual(stack) || (in.getItem() == stack.getItem() && in.getItemDamage() == OreDictionary.WILDCARD_VALUE))
-				return entry.getValue().copy();
+				return entry.getValue();
 		}
 		return ItemStack.EMPTY;
 	}
 
 	public float getExperience(ItemStack stack) {
 		for (Entry<ItemStack, Float> entry : experienceList.entrySet()) {
-			ItemStack in = entry.getKey().copy();
+			ItemStack in = entry.getKey();
 			if (in.isItemEqual(stack) || (in.getItem() == stack.getItem() && in.getItemDamage() == OreDictionary.WILDCARD_VALUE))
 				return entry.getValue();
 		}

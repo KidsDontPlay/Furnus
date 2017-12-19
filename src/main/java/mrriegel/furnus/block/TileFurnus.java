@@ -16,13 +16,23 @@ public class TileFurnus extends AbstractMachine {
 	}
 
 	@Override
-	public ItemStack getResult(ItemStack input) {
-		return FurnaceRecipes.instance().getSmeltingResult(input);
+	public ItemStack getResult(ItemStack input)
+	{
+		if( !this.hasCachedResult() )
+		{
+			this.cachedResult = FurnaceRecipes.instance().getSmeltingResult(input);
+		}
+		return this.cachedResult;
 	}
 
 	@Override
-	public ItemStack getAntiResult(ItemStack input) {
-		return CrunchHandler.instance().getResult(input);
+	public ItemStack getAntiResult(ItemStack input)
+	{
+		if( !this.hasCachedAntiResult() )
+		{
+			this.cachedAntiResult = CrunchHandler.instance().getResult(input);
+		}
+		return this.cachedAntiResult;
 	}
 
 }
