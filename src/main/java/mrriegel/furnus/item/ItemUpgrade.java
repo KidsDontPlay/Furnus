@@ -12,8 +12,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 public class ItemUpgrade extends CommonSubtypeItem {
 
@@ -38,7 +40,15 @@ public class ItemUpgrade extends CommonSubtypeItem {
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
 		super.getSubItems(tab, subItems);
-		Iterables.removeIf(subItems, s -> s.getItem() == this && !ModConfig.upgrades.get(Upgrade.values()[s.getItemDamage()]));
+		if ("".isEmpty())
+			Iterables.removeIf(subItems, s -> s.getItem() == this && !ModConfig.upgrades.get(Upgrade.values()[s.getItemDamage()]));
+	}
+
+	@Override
+	public ICapabilityProvider initCapabilities(ItemStack stack, NBTTagCompound nbt) {
+		if (!ModConfig.upgrades.get(Upgrade.values()[stack.getItemDamage()]))
+			stack.setCount(0);
+		return super.initCapabilities(stack, nbt);
 	}
 
 }
