@@ -46,7 +46,7 @@ public class ItemUpgrade extends CommonSubtypeItem {
 
 	@Override
 	public ICapabilityProvider initCapabilities(ItemStack stack, NBTTagCompound nbt) {
-		if (!ModConfig.upgrades.get(Upgrade.values()[stack.getItemDamage()]))
+		if (stack.getItemDamage() < Upgrade.values().length && !ModConfig.upgrades.get(Upgrade.values()[stack.getItemDamage()]))
 			stack.setCount(0);
 		return super.initCapabilities(stack, nbt);
 	}

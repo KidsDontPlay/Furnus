@@ -3,6 +3,7 @@ package mrriegel.furnus.tile;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import com.google.common.base.Predicates;
@@ -10,7 +11,8 @@ import com.google.common.collect.Maps;
 import com.google.common.primitives.Ints;
 
 import cofh.redstoneflux.api.IEnergyReceiver;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.Hash.Strategy;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import mrriegel.furnus.Furnus;
 import mrriegel.furnus.gui.ContainerDevice;
 import mrriegel.furnus.init.ModConfig;
@@ -54,7 +56,30 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	protected Map<Integer, Integer> progress = Maps.newHashMap();
 	protected boolean split;
 	protected double fuel, maxfuel, lastTickFuelUsed;
-	protected Map<ItemStack, ItemStack> results = new Object2ObjectOpenHashMap<>();
+	protected Map<ItemStack, ItemStack> results = new Object2ObjectOpenCustomHashMap<>(new Strategy<ItemStack>() {
+
+		@Override
+		public int hashCode(ItemStack o) {
+			if (o == null)
+				return 0;
+			int hash = 31;
+			hash ^= o.getItem().getRegistryName().hashCode();
+			hash ^= o.getMetadata();
+			hash ^= Objects.hashCode(o.getTagCompound());
+			return hash;
+		}
+
+		@Override
+		public boolean equals(ItemStack a, ItemStack b) {
+			if (a == null || b == null)
+				return false;
+			if (a.getItem() != b.getItem())
+				return false;
+			if (a.getMetadata() != b.getMetadata())
+				return false;
+			return Objects.equals(a.getTagCompound(), b.getTagCompound());
+		}
+	});
 
 	public TileDevice() {
 		super(13);
@@ -275,15 +300,10 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 
 	public abstract ItemStack getResult(ItemStack input);
 
-	protected int inputHash = Arrays.hashCode(Arrays.stream(getInputSlots()).mapToObj(this::getStackInSlot).toArray(ItemStack[]::new));
-
 	@Override
 	public void update() {
-		int newHashsum = Arrays.hashCode(Arrays.stream(getInputSlots()).mapToObj(this::getStackInSlot).toArray(ItemStack[]::new));
-		if (inputHash != newHashsum) {
-			inputHash = newHashsum;
+		if (world.getTotalWorldTime() % 50 == 0)
 			results.clear();
-		}
 		output();
 		input();
 		organizeItems();

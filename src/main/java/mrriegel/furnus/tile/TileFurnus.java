@@ -8,7 +8,7 @@ public class TileFurnus extends TileDevice {
 	@Override
 	public ItemStack getResult(ItemStack input) {
 		if (!results.containsKey(input))
-			results.put(input, FurnaceRecipes.instance().getSmeltingResult(input));
+			results.put(input, FurnaceRecipes.instance().getSmeltingResult(input).copy());
 		return results.get(input);
 	}
 
