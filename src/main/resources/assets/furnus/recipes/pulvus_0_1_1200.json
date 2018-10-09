@@ -1,0 +1,25 @@
+{
+  "result": {
+    "item": "furnus:pulvus"
+  },
+  "pattern": [
+    "ibi",
+    "bfb",
+    "#b#"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "b": {
+      "item": "#SANDSTONE"
+    },
+    "#": {
+      "item": "minecraft:flint"
+    },
+    "f": {
+      "item": "minecraft:furnace"
+    },
+    "i": {
+      "item": "#INGOTIRON"
+    }
+  }
+}

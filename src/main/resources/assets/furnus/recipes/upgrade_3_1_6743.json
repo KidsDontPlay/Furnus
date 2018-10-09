@@ -1,0 +1,20 @@
+{
+  "result": {
+    "item": "furnus:upgrade",
+    "data": 3
+  },
+  "pattern": [
+    " g ",
+    " i ",
+    " g "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "g": {
+      "item": "#GEMDIAMOND"
+    },
+    "i": {
+      "item": "#INGOTIRON"
+    }
+  }
+}

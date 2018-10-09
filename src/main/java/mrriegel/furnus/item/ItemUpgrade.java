@@ -39,7 +39,12 @@ public class ItemUpgrade extends CommonSubtypeItem {
 
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
-		super.getSubItems(tab, subItems);
+		if (isInCreativeTab(tab))
+			for (int i = 0; i < num; i++) {
+				ItemStack s = new ItemStack(this, 1, i);
+				if (!s.isEmpty())
+					subItems.add(s);
+			}
 		if ("".isEmpty())
 			Iterables.removeIf(subItems, s -> s.getItem() == this && !ModConfig.upgrades.get(Upgrade.values()[s.getItemDamage()]));
 	}
