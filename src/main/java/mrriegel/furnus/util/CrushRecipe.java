@@ -94,6 +94,7 @@ public class CrushRecipe {
 	}
 
 	public static void registerDefaultOreRecipes() {
+		//TODO add chance for duplication to crushrecipes
 		for (String ore : OreDictionary.getOreNames()) {
 			add(ore, "ore", "dust", 2, .5f);
 			add(ore, "ore", "gem", 3, .5f);
