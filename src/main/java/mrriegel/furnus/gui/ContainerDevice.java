@@ -21,6 +21,7 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketSetSlot;
 import net.minecraft.tileentity.TileEntityFurnace;
+import mrriegel.furnus.init.ModConfig;
 
 public class ContainerDevice extends CommonContainerTileInventory<TileDevice> {
 
@@ -47,11 +48,12 @@ public class ContainerDevice extends CommonContainerTileInventory<TileDevice> {
 			addSlotToContainer(new SlotOutput(getPlayer(), getTile(), 5, 93, 69));
 		addSlotToContainer(new SlotFilter(getTile(), 6, 57, 104, s -> getTile().isItemValidForSlot(6, s)));
 		addSlotToContainer(new SlotFilter(getTile(), 7, 75, 104, s -> getTile().isItemValidForSlot(7, s)));
-		addSlotToContainer(new SlotFilter(getTile(), 8, 152, 8, s -> getTile().isItemValidForSlot(8, s)));
-		addSlotToContainer(new SlotFilter(getTile(), 9, 152, 8 + 18, s -> getTile().isItemValidForSlot(9, s)));
-		addSlotToContainer(new SlotFilter(getTile(), 10, 152, 8 + 36, s -> getTile().isItemValidForSlot(10, s)));
-		addSlotToContainer(new SlotFilter(getTile(), 11, 152, 8 + 54, s -> getTile().isItemValidForSlot(11, s)));
-		addSlotToContainer(new SlotFilter(getTile(), 12, 152, 8 + 72, s -> getTile().isItemValidForSlot(12, s)));
+    
+		if(ModConfig.slots >= 1) addSlotToContainer(new SlotFilter(getTile(), 8, 152, 8, s -> getTile().isItemValidForSlot(8, s)));
+		if(ModConfig.slots >= 2) addSlotToContainer(new SlotFilter(getTile(), 9, 152, 8 + 18, s -> getTile().isItemValidForSlot(9, s)));
+		if(ModConfig.slots >= 3) addSlotToContainer(new SlotFilter(getTile(), 10, 152, 8 + 36, s -> getTile().isItemValidForSlot(10, s)));
+		if(ModConfig.slots >= 4) addSlotToContainer(new SlotFilter(getTile(), 11, 152, 8 + 54, s -> getTile().isItemValidForSlot(11, s)));
+		if(ModConfig.slots >= 5) addSlotToContainer(new SlotFilter(getTile(), 12, 152, 8 + 72, s -> getTile().isItemValidForSlot(12, s)));
 	}
 
 	@Override

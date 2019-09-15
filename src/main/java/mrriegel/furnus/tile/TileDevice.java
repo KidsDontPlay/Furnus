@@ -82,7 +82,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 	});
 
 	public TileDevice() {
-		super(13);
+		super(8+ModConfig.slots);
 		for (int i = 0; i < 3; i++)
 			progress.put(i, 0);
 		map.put("in", Maps.newHashMap());
@@ -107,7 +107,7 @@ public abstract class TileDevice extends CommonTileInventory implements ITickabl
 			cache = Maps.newEnumMap(Upgrade.class);
 			for (Upgrade u : Upgrade.values())
 				cache.put(u, 0);
-			for (int i = 8; i < 13; i++) {
+			for (int i = 8; i < 8+ModConfig.slots; i++) {
 				ItemStack u = getStackInSlot(i);
 				if (u.getItem() == ModItems.upgrade && ModConfig.upgrades.get(Upgrade.values()[u.getItemDamage()]))
 					cache.put(Upgrade.values()[u.getItemDamage()], u.getCount());
