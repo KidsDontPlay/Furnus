@@ -109,14 +109,14 @@ public class CrushRecipe {
 						ic.setInventorySlotContents(0, s);
 						ItemStack result = ItemStack.EMPTY;
 						try {
-						result = CraftingManager.findMatchingResult(ic, null);
+							result = CraftingManager.findMatchingResult(ic, null);
 						} catch (Exception e) {
 						}
 						if (!result.isEmpty() && result.getCount() == 1) {
-						CrushHandler.instance().addItemStack(s, ItemHandlerHelper.copyStackWithSize(result, 3), .1f);
+							CrushHandler.instance().addItemStack(s, ItemHandlerHelper.copyStackWithSize(result, 3), .1f);
 						}
 						if (!item.getHasSubtypes())
-						break;
+							break;
 					}
 				}
 			}

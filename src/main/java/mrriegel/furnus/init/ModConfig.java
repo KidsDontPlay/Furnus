@@ -22,8 +22,8 @@ public class ModConfig {
 	public static List<CrushRecipe> recipes;
 	public static String[] blacklistDusts;
 	public static boolean dusts;
-  public static boolean flowers;
-  public static int slots;
+	public static boolean flowers;
+	public static int slots;
 	public static Map<Upgrade, Boolean> upgrades = Maps.newHashMap();
 	public static Map<Upgrade, Integer> maxStacksize = Maps.newHashMap();
 	public static double speedMultiplier, speedFuelMultiplier, effiFuelMultiplier;
