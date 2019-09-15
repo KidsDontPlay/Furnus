@@ -22,6 +22,8 @@ public class ModConfig {
 	public static List<CrushRecipe> recipes;
 	public static String[] blacklistDusts;
 	public static boolean dusts;
+	public static boolean flowers;
+	public static int slots;
 	public static Map<Upgrade, Boolean> upgrades = Maps.newHashMap();
 	public static Map<Upgrade, Integer> maxStacksize = Maps.newHashMap();
 	public static double speedMultiplier, speedFuelMultiplier, effiFuelMultiplier;
@@ -40,7 +42,9 @@ public class ModConfig {
 		recipes = Arrays.stream(prop.getStringList()).map(s -> (CrushRecipe) gson.fromJson(s, new TypeToken<CrushRecipe>() {
 		}.getType())).collect(Collectors.toList());
 		blacklistDusts = config.getStringList("blacklistDusts", Configuration.CATEGORY_GENERAL, new String[] { "dustCoal" }, "Blacklist for dusts which should not be craftable in pulvus.");
+		slots = config.getInt("slots", Configuration.CATEGORY_GENERAL, 5, 0, 5, "Avaible upgrade slots.");
 		dusts = config.getBoolean("dusts", "recipe", true, "Enable built in dusts");
+		flowers = config.getBoolean("flowers", "recipe", true, "Enable built in flower recipes");
 		for (Upgrade u : Upgrade.values()) {
 			upgrades.put(u, config.getBoolean(u.name().toLowerCase(), "upgrades", true, "Enable " + u.name() + " upgrade"));
 			maxStacksize.put(u, u.maxStacksize <= 2 ? u.maxStacksize : config.getInt(u.name().toLowerCase() + "_stacksize", "upgrade_stacksize", u.maxStacksize, 1, 32, "Max stacksize for " + u.name()));

@@ -100,22 +100,24 @@ public class CrushRecipe {
 			add(ore, "ore", "gem", 3, .5f);
 			add(ore, "ingot", "dust", 1, .1f);
 		}
-		for (Item item : ForgeRegistries.ITEMS) {
-			if (item.getRegistryName().getResourcePath().contains("flower")) {
-				for (int i = 0; i < 16; i++) {
-					ItemStack s = new ItemStack(item, 1, i);
-					InventoryCrafting ic = new InventoryCrafting(new ContainerNull(), 3, 3);
-					ic.setInventorySlotContents(0, s);
-					ItemStack result = ItemStack.EMPTY;
-					try {
-						result = CraftingManager.findMatchingResult(ic, null);
-					} catch (Exception e) {
+		if(ModConfig.flowers) {
+			for (Item item : ForgeRegistries.ITEMS) {
+				if (item.getRegistryName().getResourcePath().contains("flower")) {
+					for (int i = 0; i < 16; i++) {
+						ItemStack s = new ItemStack(item, 1, i);
+						InventoryCrafting ic = new InventoryCrafting(new ContainerNull(), 3, 3);
+						ic.setInventorySlotContents(0, s);
+						ItemStack result = ItemStack.EMPTY;
+						try {
+							result = CraftingManager.findMatchingResult(ic, null);
+						} catch (Exception e) {
+						}
+						if (!result.isEmpty() && result.getCount() == 1) {
+							CrushHandler.instance().addItemStack(s, ItemHandlerHelper.copyStackWithSize(result, 3), .1f);
+						}
+						if (!item.getHasSubtypes())
+							break;
 					}
-					if (!result.isEmpty() && result.getCount() == 1) {
-						CrushHandler.instance().addItemStack(s, ItemHandlerHelper.copyStackWithSize(result, 3), .1f);
-					}
-					if (!item.getHasSubtypes())
-						break;
 				}
 			}
 		}
